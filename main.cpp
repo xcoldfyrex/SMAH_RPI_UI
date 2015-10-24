@@ -6,7 +6,33 @@
 #include <QFontDatabase>
 #include <QDebug>
 #include <QtXml/QDomDocument>
+#include "zone.h"
+#include <QList>
 
+void loadZones()
+{
+    QDomDocument zoneXMLDocument;
+    QFile zoneXMLFile("/home/lenny/house/config/lights.xml");
+
+    if (!zoneXMLDocument.setContent(&zoneXMLFile)) {
+        qDebug() << "failed to open XML";
+        return;
+    }
+
+    zoneXMLFile.close();
+
+    QDomElement root = zoneXMLDocument.firstChildElement();
+    QDomNodeList items = root.elementsByTagName("room");
+
+    for (int i = 0; i < items.count(); i++) {
+        QDomNode itemnode = items.at(i);
+        if (itemnode.isElement()) {
+            QDomElement element = itemnode.toElement();
+            Zone *zone = new Zone(element.attribute("id").toInt(),element.attribute("name").toLatin1().data(),true,true,true);
+            qDebug() << element.attribute("name");
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -26,27 +52,7 @@ int main(int argc, char *argv[])
 
     qApp->setStyleSheet(StyleSheet);
 
-    QDomDocument document;
-    QFile xmlDoc("/home/lenny/house/config/lights.xml");
-
-    if (!document.setContent(&xmlDoc)) {
-        qDebug() << "failed to open XML";
-        return -1;
-    }
-
-    xmlDoc.close();
-
-    QDomElement root = document.firstChildElement();
-    QDomNodeList items = root.elementsByTagName("room");
-    qDebug() << "Total " << items.count();
-
-    for (int i = 0; i < items.count(); i++) {
-        QDomNode itemnode = items.at(i);
-        if (itemnode.isElement()) {
-            QDomElement itemel = itemnode.toElement();
-            qDebug() << itemel.attribute("name");
-        }
-    }
+    loadZones();
 
     return a.exec();
 }

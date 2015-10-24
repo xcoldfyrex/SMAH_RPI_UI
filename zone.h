@@ -1,13 +1,13 @@
 #ifndef ZONE_H
 #define ZONE_H
+#include <QString>
 
-
-class zone
+class Zone
 {
 public:
-    zone(int id, char *name, bool hasLedRGB, bool hasLedWhite, bool hasEnviro);
+    Zone(int id, char *name, bool hasLedRGB, bool hasLedWhite, bool hasEnviro);
     int id;
-    char *name;
+    QString name;
     bool hasLedRGB, hasLedWhite, hasEnviro;
 };
 

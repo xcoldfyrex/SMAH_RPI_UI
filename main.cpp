@@ -8,6 +8,7 @@
 #include <QtXml/QDomDocument>
 #include "zone.h"
 #include <QList>
+#include <QDir>
 
 void loadZones()
 {
@@ -40,13 +41,14 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    QFontDatabase::addApplicationFont("/home/lenny/house/assets/Crescent-Regular.ttf");
-    QFontDatabase::addApplicationFont("/home/lenny/house/assets/sui-generis-free.ttf");
+    QFontDatabase::addApplicationFont("assets/Crescent-Regular.ttf");
+    QFontDatabase::addApplicationFont("assets/sui-generis-free.ttf");
 
     MainWindow w;
     w.show();
 
-    QFile File("/home/lenny/main.css");
+    QFile File(QDir::currentPath()+"/../assets/main.css");
+    qDebug() << "CWD: "<< QDir::currentPath();
     File.open(QFile::ReadOnly);
     QString StyleSheet = QLatin1String(File.readAll());
 

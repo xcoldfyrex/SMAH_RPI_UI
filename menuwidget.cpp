@@ -20,8 +20,6 @@ MenuWidget::MenuWidget(QWidget *parent) :
 
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
     connect(ui->btnMainLight,SIGNAL(clicked(bool)),myParent,SLOT(showLightWindow()));
-
-
 }
 
 MenuWidget::~MenuWidget()
@@ -31,7 +29,8 @@ MenuWidget::~MenuWidget()
 
 
 
-void MenuWidget::paintEvent(QPaintEvent *pe) {
+void MenuWidget::paintEvent(QPaintEvent *pe)
+{
   QStyleOption o;
   o.initFrom(this);
   QPainter p(this);

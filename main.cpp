@@ -10,6 +10,8 @@
 #include <QList>
 #include <QDir>
 
+QList<Zone*> *zoneList = new QList<Zone*>();
+
 void loadZones()
 {
     QDomDocument zoneXMLDocument;
@@ -24,13 +26,12 @@ void loadZones()
 
     QDomElement root = zoneXMLDocument.firstChildElement();
     QDomNodeList items = root.elementsByTagName("room");
-
     for (int i = 0; i < items.count(); i++) {
         QDomNode itemnode = items.at(i);
         if (itemnode.isElement()) {
             QDomElement element = itemnode.toElement();
             Zone *zone = new Zone(element.attribute("id").toInt(),element.attribute("name").toLatin1().data(),true,true,true);
-            qDebug() << element.attribute("name");
+            zoneList->append(zone);
         }
     }
 }
@@ -38,23 +39,22 @@ void loadZones()
 int main(int argc, char *argv[])
 {
 
+    loadZones();
 
     QApplication a(argc, argv);
-
-    QFontDatabase::addApplicationFont("assets/Crescent-Regular.ttf");
-    QFontDatabase::addApplicationFont("assets/sui-generis-free.ttf");
-
-    MainWindow w;
-    w.show();
 
     QFile File(QDir::currentPath()+"/../assets/main.css");
     qDebug() << "CWD: "<< QDir::currentPath();
     File.open(QFile::ReadOnly);
     QString StyleSheet = QLatin1String(File.readAll());
-
     qApp->setStyleSheet(StyleSheet);
 
-    loadZones();
+    QFontDatabase::addApplicationFont("../assets/Crescent-Regular.ttf");
+    QFontDatabase::addApplicationFont("../assets/sui-generis-free.ttf");
+
+    MainWindow mainWindow;
+    mainWindow.show();
+
 
     return a.exec();
 }

@@ -17,15 +17,21 @@ SOURCES += main.cpp\
     mainlightwindow.cpp \
     mainwindow.cpp \
     menuwidget.cpp \
-    zone.cpp
+    zone.cpp \
+    lightcontrolwidget.cpp \
+    hsvpalette.cpp
 
 HEADERS  += \
     hcheader.h \
     mainlightwindow.h \
     mainwindow.h \
     menuwidget.h \
-    zone.h
+    zone.h \
+    lightcontrolwidget.h \
+    hsvpalette.h
 
 FORMS    += \
     mainlightwindow.ui \
-    menuwindow.ui
+    menuwindow.ui \
+    mainwindow.ui \
+    lightcontrolwidget.ui

@@ -31,6 +31,7 @@ signals:
 public slots:
     void showMenuWindow();
     void showLightWindow();
+    void showLightControlWidget();
 };
 
 #endif // MAINWINDOW_H

@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include "QPaintEvent"
 #include "QPainter"
+#include "zone.h"
 
 namespace Ui {
 class MainLightWindow;

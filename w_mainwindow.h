@@ -2,8 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
-#include "hcheader.h"
-#include "mainlightwindow.h"
+#include "w_topheader.h"
 #include <QPaintEvent>
 #include "QPainter"
 #include <QStackedLayout>
@@ -17,21 +16,16 @@ public:
     void paintEvent(QPaintEvent *pe);
     QWidget *topWidget;
     QStackedLayout *contentLayout;
-    void changePage(QWidget *widget);
-    MainLightWindow *mainLightWindow;
-
 
 private:
-    HCHeader *hcheader;
-
+    TopHeaderWidget *hcheader;
 
 signals:
 
 
 public slots:
     void showMenuWindow();
-    void showLightWindow();
-    void showLightControlWidget();
+    void showZone(QString zone);
 };
 
 #endif // MAINWINDOW_H

@@ -1,7 +1,7 @@
-#include "hcheader.h"
-#include "mainwindow.h"
+#include "w_topheader.h"
+#include "w_mainwindow.h"
 
-HCHeader::HCHeader(QWidget *parent, const char *name) : QWidget(parent)
+TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(parent)
 {
     this->topWidget = new QWidget;
     this->topWidgetLayout = new QHBoxLayout(topWidget);

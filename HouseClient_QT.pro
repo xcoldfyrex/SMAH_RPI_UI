@@ -13,25 +13,30 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    hcheader.cpp \
-    mainlightwindow.cpp \
-    mainwindow.cpp \
-    menuwidget.cpp \
     zone.cpp \
-    lightcontrolwidget.cpp \
-    hsvpalette.cpp
+    w_hsvpalette.cpp \
+    w_colorpreview.cpp \
+    w_brightnesspalette.cpp \
+    w_mainwindow.cpp \
+    w_topheader.cpp \
+    w_zoneoverview.cpp \
+    w_zonechooser.cpp \
+    w_zonecontainer.cpp \
+    w_lightcontrolcontainer.cpp
 
 HEADERS  += \
-    hcheader.h \
-    mainlightwindow.h \
-    mainwindow.h \
-    menuwidget.h \
     zone.h \
-    lightcontrolwidget.h \
-    hsvpalette.h
+    w_zoneoverview.h \
+    w_zonecontainer.h \
+    w_mainwindow.h \
+    w_lightcontrolcontainer.h \
+    w_hsvpalette.h \
+    w_colorpreview.h \
+    w_topheader.h \
+    w_brightnesspalette.h \
+    w_zonechooser.h
 
 FORMS    += \
-    mainlightwindow.ui \
-    menuwindow.ui \
     mainwindow.ui \
-    lightcontrolwidget.ui
+    lightcontrolwidget.ui \
+    zonecontainerwidget.ui

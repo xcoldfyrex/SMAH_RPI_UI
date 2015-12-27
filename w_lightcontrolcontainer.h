@@ -7,27 +7,30 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QPicture>
+#include "w_colorpreview.h"
 
 
 namespace Ui {
 class LightControlWidget;
 }
 
-class LightControlWidget : public QWidget
+class LightControlContainerWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit LightControlWidget(QWidget *parent = 0);
-    ~LightControlWidget();
+    explicit LightControlContainerWidget(QWidget *parent = 0);
+    ~LightControlContainerWidget();
     QWidget *topWidget;
     QWidget *colorPalette;
-    void paintEvent(QPaintEvent *pe);
+    ColorPreview *preview;
     QGridLayout *contentLayout;
     QPicture *hsvSwatch;
+    QColor rgb;
 
 public slots:
-    void updateHSVSelected();
+    void updateHSVSelected(QColor qcol);
+    void updateBrightnessSelected(QColor qcol);
 
 private:
     Ui::LightControlWidget *ui;

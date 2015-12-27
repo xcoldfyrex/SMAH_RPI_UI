@@ -1,5 +1,5 @@
-#ifndef HSVPALETTE_H
-#define HSVPALETTE_H
+#ifndef BRIGHTNESSPALETTE_H
+#define BRIGHTNESSPALETTE_H
 
 #include <QWidget>
 #include <QPaintEvent>
@@ -8,18 +8,19 @@
 #include <QPen>
 #include <QMouseEvent>
 
-class HSVPalette : public QWidget
+class BrightnessPalette : public QWidget
 {
     Q_OBJECT
 public:
-    explicit HSVPalette(QWidget *parent = 0);
+    explicit BrightnessPalette(QWidget *parent = 0);
     void paintEvent(QPaintEvent *pe);
     void mouseMoveEvent(QMouseEvent *event);
+    QPainter painter;
 
 signals:
-    void changed();
+    void changed(QColor hsv);
 
 public slots:
 };
 
-#endif // HSVPALETTE_H
+#endif // BRIGHTNESSPALETTE_H

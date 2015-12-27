@@ -1,5 +1,5 @@
-#include "menuwidget.h"
-#include "mainwindow.h"
+#include "w_zonechooser.h"
+#include "w_mainwindow.h"
 #include <QApplication>
 #include <QFile>
 #include <QtGui>
@@ -11,6 +11,7 @@
 #include <QDir>
 
 QList<Zone*> *zoneList = new QList<Zone*>();
+QString activeZone;
 
 void loadZones()
 {
@@ -30,7 +31,7 @@ void loadZones()
         QDomNode itemnode = items.at(i);
         if (itemnode.isElement()) {
             QDomElement element = itemnode.toElement();
-            Zone *zone = new Zone(element.attribute("id").toInt(),element.attribute("name").toLatin1().data(),true,true,true);
+            Zone *zone = new Zone(element.attribute("id").toInt(),element.attribute("name"),true,true,true);
             zoneList->append(zone);
         }
     }
@@ -38,7 +39,7 @@ void loadZones()
 
 int main(int argc, char *argv[])
 {
-
+    activeZone = "NA";
     loadZones();
 
     QApplication a(argc, argv);

@@ -10,19 +10,18 @@ namespace Ui {
 class MenuWindow;
 }
 
-class MenuWidget : public QWidget
+class ZoneChooserWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MenuWidget(QWidget *parent = 0);
-    ~MenuWidget();
+    explicit ZoneChooserWidget(QWidget *parent = 0);
     void paintEvent(QPaintEvent *pe);
     QGridLayout *contentLayout;
     QWidget *topWidget;
 
 private:
-    Ui::MenuWindow *ui;
+    //Ui::ZoneChooser *ui;
 };
 
 #endif // MENUWINDOW_H

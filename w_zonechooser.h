@@ -21,7 +21,6 @@ public:
     QWidget *topWidget;
 
 private:
-    //Ui::ZoneChooser *ui;
 };
 
 #endif // MENUWINDOW_H

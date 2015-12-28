@@ -23,5 +23,5 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     this->topWidget->setAutoFillBackground(true);
 
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
-    connect(btnHome,SIGNAL(clicked(bool)),myParent,SLOT(showMenuWindow()));
+    connect(btnHome,SIGNAL(clicked(bool)),myParent,SLOT(showZoneChooser()));
 }

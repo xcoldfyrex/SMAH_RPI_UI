@@ -6,6 +6,7 @@ class Zone
 {
 public:
     Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasEnviro);
+    Zone();
     int id;
     QString name;
     bool hasLedRGB, hasLedWhite, hasEnviro;

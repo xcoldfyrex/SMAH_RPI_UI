@@ -1,10 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QWidget>
+
 #include "w_topheader.h"
+#include "w_zonecontainer.h"
+#include "zone.h"
+
+#include <QWidget>
 #include <QPaintEvent>
-#include "QPainter"
 #include <QStackedLayout>
 #include <QStyleOption>
 
@@ -16,16 +19,17 @@ public:
     void paintEvent(QPaintEvent *pe);
     QWidget *topWidget;
     QStackedLayout *contentLayout;
+    ZoneContainerWidget *zoneContainer;
 
 private:
     TopHeaderWidget *hcheader;
 
 signals:
-
+    void zoneChanged(Zone zone);
 
 public slots:
-    void showMenuWindow();
-    void showZone(QString zone);
+    void showZoneChooser();
+    void showZone(int zone);
 };
 
 #endif // MAINWINDOW_H

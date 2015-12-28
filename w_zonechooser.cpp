@@ -1,10 +1,11 @@
 #include "w_zonechooser.h"
 #include "w_mainwindow.h"
 #include "zone.h"
+
 #include <QDebug>
 #include <QSignalMapper>
 
-extern QList<Zone> *zoneList;
+extern QList<Zone> *gZoneList;
 extern QString *activeZone;
 
 ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
@@ -16,16 +17,22 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 
     int gridLoc = 0;
     int row = 0;
-    foreach (Zone zone, *zoneList) {
-        QPushButton *zonelabel = new QPushButton(zone.name);
-        MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
-        QSignalMapper* signalMapper = new QSignalMapper(this);
-        signalMapper->setMapping(zonelabel,zone.name);
-        connect(zonelabel,SIGNAL(clicked()),signalMapper,SLOT(map()));
-        connect(signalMapper,SIGNAL(mapped(QString)),myParent,SLOT(showZone(QString)));
 
+    MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
+
+    foreach (Zone zone, *gZoneList) {
+        QPushButton *zonelabel = new QPushButton(zone.name);
+        //ZoneContainerWidget* parentZoneContainer = dynamic_cast<ZoneContainerWidget*>(parent);
+
+        QSignalMapper* signalMapper = new QSignalMapper(this);
+
+        qDebug() << "CONT" << myParent->zoneContainer;
+
+        signalMapper->setMapping(zonelabel,zone.id);
+        connect(zonelabel,SIGNAL(clicked()),signalMapper,SLOT(map()));
+        connect(signalMapper,SIGNAL(mapped(int)),myParent,SLOT(showZone(int)));
+        connect(myParent,SIGNAL(zoneChanged(Zone)), myParent->zoneContainer->zoneOverViewWidget,SLOT(switchZone(Zone)));
         contentLayout->addWidget(zonelabel,gridLoc,row,1,1, Qt::AlignVCenter);
-        qDebug() << "ZONE " << zone.name;
         gridLoc++;
         if (gridLoc == 4) {
             row++;

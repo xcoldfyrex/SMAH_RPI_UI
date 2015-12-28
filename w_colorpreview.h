@@ -12,7 +12,7 @@ class ColorPreview : public QWidget
 public:
     explicit ColorPreview(QWidget *parent = 0);
     void paintEvent(QPaintEvent *pe);
-    QColor color = Qt::black;
+    QColor color;
 
 signals:
 

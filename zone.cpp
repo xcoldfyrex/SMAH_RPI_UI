@@ -8,3 +8,8 @@ Zone::Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasEnvir
     this->hasLedWhite = hasLedWhite;
     this->hasEnviro = hasEnviro;
 }
+
+Zone::Zone()
+{
+
+}

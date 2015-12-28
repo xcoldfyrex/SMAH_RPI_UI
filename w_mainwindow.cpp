@@ -7,12 +7,12 @@
 #include "w_zonechooser.h"
 #include "w_lightcontrolcontainer.h"
 #include "ui_mainwindow.h"
-#include "w_zonecontainer.h"
 
 #include <QDebug>
 #include <QSignalMapper>
 
-extern QString activeZone;
+extern Zone *gActiveZone;
+extern QList<Zone*> *gZoneList;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
@@ -31,8 +31,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     this->contentLayout = new QStackedLayout;
 
     //create node widgets
+    zoneContainer = new ZoneContainerWidget(this);
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
-    ZoneContainerWidget *zoneContainer = new ZoneContainerWidget(this);
 
     contentLayout->addWidget(zoneChooser->topWidget);
     contentLayout->addWidget(zoneContainer->topWidget);
@@ -52,12 +52,15 @@ void MainWindow::paintEvent(QPaintEvent *pe)
     style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 }
 
-void MainWindow::showMenuWindow() {
+void MainWindow::showZoneChooser() {
     contentLayout->setCurrentIndex(0);
 }
 
-void MainWindow::showZone(QString zone) {
+void MainWindow::showZone(int zone) {
+    /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
+
+    zone--;
+    emit zoneChanged(*gZoneList->at(zone));
     contentLayout->setCurrentIndex(1);
-    activeZone = zone;
 }
 

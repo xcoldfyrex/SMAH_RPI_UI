@@ -10,11 +10,12 @@
 #include <QList>
 #include <QDir>
 
-QList<Zone*> *zoneList = new QList<Zone*>();
-QString activeZone;
+QList<Zone*> *gZoneList;
+Zone *gActiveZone;
 
 void loadZones()
 {
+    gZoneList = new QList<Zone*>();
     QDomDocument zoneXMLDocument;
     QFile zoneXMLFile("/home/lenny/house/config/lights.xml");
 
@@ -32,14 +33,14 @@ void loadZones()
         if (itemnode.isElement()) {
             QDomElement element = itemnode.toElement();
             Zone *zone = new Zone(element.attribute("id").toInt(),element.attribute("name"),true,true,true);
-            zoneList->append(zone);
+            gZoneList->append(zone);
         }
     }
+    qDebug() << "Loaded " << gZoneList->count() << " zones.";
 }
 
 int main(int argc, char *argv[])
 {
-    activeZone = "NA";
     loadZones();
 
     QApplication a(argc, argv);

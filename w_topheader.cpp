@@ -8,20 +8,24 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     this->lblClock = new QLabel("CLOCK");
     this->lblPath = new QLabel(name);
     this->btnHome = new QPushButton();
+    this->btnInfo = new QPushButton();
     this->spcHeader = new QSpacerItem(1,1);
     this->topWidgetLayout->addWidget(lblClock);
     this->topWidgetLayout->addStretch(1);
-    this->topWidgetLayout->addWidget(lblPath);
+    //this->topWidgetLayout->addWidget(lblPath);
     this->topWidgetLayout->addSpacerItem(spcHeader);
+    topWidgetLayout->addWidget(btnInfo);
+    topWidgetLayout->addWidget(btnHome);
 
-    this->topWidgetLayout->addWidget(btnHome);
-    this->topWidget->setFixedHeight(50);
-    this->btnHome->setObjectName("btnhome");
-    this->topWidget->setObjectName("header");
-    this->lblClock->setObjectName("clock");
-    this->lblPath->setObjectName("path");
-    this->topWidget->setAutoFillBackground(true);
+    topWidget->setFixedHeight(50);
+    btnHome->setObjectName("btnhome");
+    topWidget->setObjectName("header");
+    lblClock->setObjectName("clock");
+    //lblPath->setObjectName("path");
+    btnInfo->setObjectName("btnMainInfo");
+    topWidget->setAutoFillBackground(true);
 
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
     connect(btnHome,SIGNAL(clicked(bool)),myParent,SLOT(showZoneChooser()));
+    connect(btnInfo,SIGNAL(clicked(bool)),myParent,SLOT(showSystemLog()));
 }

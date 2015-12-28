@@ -36,7 +36,6 @@ void loadZones()
             gZoneList->append(zone);
         }
     }
-    qDebug() << "Loaded " << gZoneList->count() << " zones.";
 }
 
 int main(int argc, char *argv[])

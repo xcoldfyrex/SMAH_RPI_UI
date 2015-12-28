@@ -4,6 +4,7 @@
 
 #include "w_topheader.h"
 #include "w_zonecontainer.h"
+#include "w_systemlog.h"
 #include "zone.h"
 
 #include <QWidget>
@@ -20,6 +21,7 @@ public:
     QWidget *topWidget;
     QStackedLayout *contentLayout;
     ZoneContainerWidget *zoneContainer;
+    SystemLogWidget *systemLogWidget;
 
 private:
     TopHeaderWidget *hcheader;
@@ -29,6 +31,7 @@ signals:
 
 public slots:
     void showZoneChooser();
+    void showSystemLog();
     void showZone(int zone);
 };
 

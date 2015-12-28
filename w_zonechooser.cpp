@@ -22,11 +22,7 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 
     foreach (Zone zone, *gZoneList) {
         QPushButton *zonelabel = new QPushButton(zone.name);
-        //ZoneContainerWidget* parentZoneContainer = dynamic_cast<ZoneContainerWidget*>(parent);
-
         QSignalMapper* signalMapper = new QSignalMapper(this);
-
-        qDebug() << "CONT" << myParent->zoneContainer;
 
         signalMapper->setMapping(zonelabel,zone.id);
         connect(zonelabel,SIGNAL(clicked()),signalMapper,SLOT(map()));

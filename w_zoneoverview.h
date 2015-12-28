@@ -24,6 +24,9 @@ signals:
 
 public slots:
     void switchZone(Zone zone);
+    void changePreset(QString preset);
+    void changeTemperature(QString temp);
+    void changeRH(QString rh);
 };
 
 #endif // ZONEOVERVIEWWIDGET_H

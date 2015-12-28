@@ -23,13 +23,14 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     //outer layout
     //
     topWidget->setLayout(vboxContainer);
-    vboxContainer->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Fixed,QSizePolicy::Expanding));
     vboxContainer->addLayout(mainLayout);
     vboxContainer->addLayout(zoneFunctions);
 
     //panel container
     //
     mainLayout->addLayout(contentLayout);
+    //mainLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Expanding,QSizePolicy::Expanding));
+    mainLayout->addStretch(1);
 
     //create node widgets(left panel)
     //
@@ -37,7 +38,7 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     zoneOverViewWidget = new ZoneOverviewWidget(this);
     contentLayout->addWidget(zoneOverViewWidget->topWidget);
     //contentLayout->addWidget(lightControlWidget->topWidget);
-    contentLayout->setAlignment(Qt::AlignTop);
+    //contentLayout->setAlignment(Qt::AlignTop);
 
     //zone functions(right panel)
     //
@@ -51,9 +52,5 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     zoneFunctions->addStretch(1);
 
     zoneFunctions->setContentsMargins(10,10,10,10);
-
-    MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
-
-    //myParent->contentLayout->setCurrentIndex(1);
 }
 

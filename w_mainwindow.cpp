@@ -33,9 +33,11 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     //create node widgets
     zoneContainer = new ZoneContainerWidget(this);
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
+    systemLogWidget = new SystemLogWidget(this);
 
     contentLayout->addWidget(zoneChooser->topWidget);
     contentLayout->addWidget(zoneContainer->topWidget);
+    contentLayout->addWidget(systemLogWidget);
 
     setLayout(mainLayout);
 
@@ -58,9 +60,11 @@ void MainWindow::showZoneChooser() {
 
 void MainWindow::showZone(int zone) {
     /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
-
     zone--;
     emit zoneChanged(*gZoneList->at(zone));
     contentLayout->setCurrentIndex(1);
 }
 
+void MainWindow::showSystemLog() {
+    contentLayout->setCurrentIndex(2);
+}

@@ -1,12 +1,14 @@
 #include "w_zonechooser.h"
 #include "w_mainwindow.h"
+#include "zone.h"
+#include "network.h"
+
 #include <QApplication>
 #include <QFile>
 #include <QtGui>
 #include <QFontDatabase>
 #include <QDebug>
 #include <QtXml/QDomDocument>
-#include "zone.h"
 #include <QList>
 #include <QDir>
 
@@ -56,6 +58,8 @@ int main(int argc, char *argv[])
     MainWindow mainWindow;
     mainWindow.show();
 
+    Network network;
+    network.start("127.0.0.1", 9002);
 
     return a.exec();
 }

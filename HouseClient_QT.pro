@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     w_zonechooser.cpp \
     w_zonecontainer.cpp \
     w_lightcontrolcontainer.cpp \
-    w_systemlog.cpp
+    w_systemlog.cpp \
+    network.cpp
 
 HEADERS  += \
     zone.h \
@@ -36,7 +37,8 @@ HEADERS  += \
     w_topheader.h \
     w_brightnesspalette.h \
     w_zonechooser.h \
-    w_systemlog.h
+    w_systemlog.h \
+    network.h
 
 FORMS    += \
     mainwindow.ui \

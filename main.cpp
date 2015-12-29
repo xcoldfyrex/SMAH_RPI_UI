@@ -19,7 +19,7 @@ void loadZones()
 {
     gZoneList = new QList<Zone*>();
     QDomDocument zoneXMLDocument;
-    QFile zoneXMLFile("/home/lenny/house/config/lights.xml");
+    QFile zoneXMLFile(QDir::currentPath() + "/../assets/lights.xml");
 
     if (!zoneXMLDocument.setContent(&zoneXMLFile)) {
         qDebug() << "failed to open XML";

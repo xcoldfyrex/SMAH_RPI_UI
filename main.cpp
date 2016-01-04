@@ -57,9 +57,13 @@ int main(int argc, char *argv[])
 
     MainWindow mainWindow;
     mainWindow.show();
+    mainWindow.startNetworking();
 
-    Network network;
-    network.start("127.0.0.1", 9002);
 
+/*
+    if (network.isConnected()) {
+        qDebug() << "connected";
+    }
+*/
     return a.exec();
 }

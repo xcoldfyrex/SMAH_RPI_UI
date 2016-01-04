@@ -33,6 +33,7 @@ public slots:
     void showZoneChooser();
     void showSystemLog();
     void showZone(int zone);
+    void startNetworking();
 };
 
 #endif // MAINWINDOW_H

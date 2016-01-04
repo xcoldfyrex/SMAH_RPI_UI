@@ -4,19 +4,41 @@
 #include <QTcpSocket>
 #include <QObject>
 #include <QHostAddress>
+#include <QThread>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <sys/time.h>
+#include <QDebug>
 
-class Network: public QObject
+class NetworkThread: public QThread
 {
     Q_OBJECT
+
 public:
-    explicit Network(QObject* parent = 0);
-    void start(QString address, quint16 port);
+    explicit NetworkThread(QString address, quint16 port, QObject *parent);
+    bool isConnected();
+    void run();
+
 
 public slots:
-    void networkOut();
+    void readyRead();
+    void disconnected();
+    void sendData(QJsonObject data);
+    void sendPing();
+    void sendStart();
+    QJsonObject buildPayload();
+
+private slots:
+    void processPayload(QJsonObject data);
+
+signals:
+    void error(QTcpSocket::SocketError socketError);
 
 private:
-    QTcpSocket *tcpSocket;
+    int socketDescriptor;
+    QString address;
+    quint16 port;
+    QTcpSocket *socket;
 };
 
 #endif // NETWORK_H

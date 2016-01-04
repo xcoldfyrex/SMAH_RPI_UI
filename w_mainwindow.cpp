@@ -7,6 +7,7 @@
 #include "w_zonechooser.h"
 #include "w_lightcontrolcontainer.h"
 #include "ui_mainwindow.h"
+#include "network.h"
 
 #include <QDebug>
 #include <QSignalMapper>
@@ -44,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
+
 }
 
 void MainWindow::paintEvent(QPaintEvent *pe)
@@ -67,4 +69,12 @@ void MainWindow::showZone(int zone) {
 
 void MainWindow::showSystemLog() {
     contentLayout->setCurrentIndex(2);
+}
+
+void MainWindow::startNetworking()
+{
+    //setup networking
+    NetworkThread *thread = new NetworkThread("127.0.0.1", 9002, this);
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    thread->start();
 }

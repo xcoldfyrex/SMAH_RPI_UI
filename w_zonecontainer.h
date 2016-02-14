@@ -4,6 +4,7 @@
 #include "w_zoneoverview.h"
 
 #include <QWidget>
+#include <QStackedLayout>
 
 class ZoneContainerWidget : public QWidget
 {
@@ -13,8 +14,16 @@ public:
     explicit ZoneContainerWidget(QWidget *parent = 0);
     ZoneOverviewWidget *zoneOverViewWidget;
     QWidget *topWidget;
+    QStackedLayout *contentLayout;
+
 
 private:
+
+private slots:
+    void showLightContainer();
+    void showOverview();
+
+
 };
 
 #endif // ZONECONTAINERWIDGET_H

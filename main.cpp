@@ -14,6 +14,7 @@
 
 QList<Zone*> *gZoneList;
 Zone *gActiveZone;
+QTextEdit *txtLogger;
 
 void loadZones()
 {
@@ -56,14 +57,9 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont("../assets/sui-generis-free.ttf");
 
     MainWindow mainWindow;
+    qInstallMessageHandler(MainWindow::logHandler);
     mainWindow.show();
     mainWindow.startNetworking();
 
-
-/*
-    if (network.isConnected()) {
-        qDebug() << "connected";
-    }
-*/
     return a.exec();
 }

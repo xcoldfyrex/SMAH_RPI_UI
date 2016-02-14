@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     w_zonecontainer.cpp \
     w_lightcontrolcontainer.cpp \
     w_systemlog.cpp \
-    network.cpp
+    network.cpp \
+    logger.cpp
 
 HEADERS  += \
     zone.h \
@@ -38,7 +39,8 @@ HEADERS  += \
     w_brightnesspalette.h \
     w_zonechooser.h \
     w_systemlog.h \
-    network.h
+    network.h \
+    logger.h
 
 FORMS    += \
     mainwindow.ui \

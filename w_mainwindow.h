@@ -22,6 +22,7 @@ public:
     QStackedLayout *contentLayout;
     ZoneContainerWidget *zoneContainer;
     SystemLogWidget *systemLogWidget;
+    static void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 private:
     TopHeaderWidget *hcheader;

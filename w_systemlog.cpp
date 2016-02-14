@@ -6,6 +6,7 @@ SystemLogWidget::SystemLogWidget(QWidget *parent) :
     ui(new Ui::SystemLogWidget)
 {
     ui->setupUi(this);
+    //this->txtLogger = ui->txtLog;
 }
 
 SystemLogWidget::~SystemLogWidget()

@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <sys/time.h>
 #include <QDebug>
+#include <QSslSocket>
 
 class NetworkThread: public QThread
 {
@@ -19,17 +20,19 @@ public:
     bool isConnected();
     void run();
 
-
 public slots:
-    void readyRead();
-    void disconnected();
-    void sendData(QJsonObject data);
-    void sendPing();
-    void sendStart();
-    QJsonObject buildPayload();
+
 
 private slots:
     void processPayload(QJsonObject data);
+    void socketConnect();
+    void socketError();
+    void sendPing();
+    void sendStart();
+    void socketRead();
+    void socketDisconnect();
+    void socketWrite(QJsonObject data);
+
 
 signals:
     void error(QTcpSocket::SocketError socketError);
@@ -39,6 +42,9 @@ private:
     QString address;
     quint16 port;
     QTcpSocket *socket;
+    QJsonObject buildPayload();
+    int errcnt;
+
 };
 
 #endif // NETWORK_H

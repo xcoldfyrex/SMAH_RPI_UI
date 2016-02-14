@@ -7,37 +7,37 @@ NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
     this->port = port;
 }
 
-
 void NetworkThread::run()
 {
-    QHostAddress addr(this->address);
-    qDebug() << "Conencting to " << addr << this->port;
     socket = new QTcpSocket();
-    socket->connectToHost(addr, this->port);
-    if (socket->waitForConnected(5000)) {
-        sendStart();
-    }else {
-        qDebug() << "Unable to connect:" << socket->errorString();
-        exit(0);
-    }
-    connect(socket, SIGNAL(readyRead()),this,SLOT(readyRead()),Qt::DirectConnection);
-    connect(socket, SIGNAL(disconnected()),this,SLOT(disconnected()),Qt::DirectConnection);
+    //connect(socket, SIGNAL(connected()), this, SLOT(socketConnect()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
+    connect(socket, SIGNAL(readyRead()),this,SLOT(socketRead()),Qt::DirectConnection);
+    connect(socket, SIGNAL(disconnected()),this,SLOT(socketDisconnect()),Qt::DirectConnection);
+    errcnt = 0;
+    socketConnect();
+
     exec();
 }
 
-void NetworkThread::sendStart()
+void NetworkThread::socketConnect()
 {
-    QJsonObject payloadStart = buildPayload();
-    payloadStart["command"] = "START";
-    sendData(payloadStart);
+    QHostAddress addr(this->address);
+    qDebug() << "Conencting to " << addr << this->port;
+    socket->connectToHost(addr, this->port);
+    if (socket->waitForConnected(5000))
+    {
+        sendStart();
+    }
 }
 
-void NetworkThread::readyRead()
+void NetworkThread::socketRead()
 {
     QByteArray Data = socket->readAll();
     qDebug() << "IN" << Data;
     int len = sizeof(Data);
-    if (len < 1024) {
+    if (len < 1024)
+    {
         QString buffer = QString::fromUtf8(Data.data());
         QJsonDocument doc = QJsonDocument::fromJson(buffer.toUtf8());
         if(!doc.isNull())
@@ -58,7 +58,7 @@ void NetworkThread::readyRead()
     }
 }
 
-void NetworkThread::sendData(QJsonObject data)
+void NetworkThread::socketWrite(QJsonObject data)
 {
     if(socket->state() == QAbstractSocket::ConnectedState)
     {
@@ -72,23 +72,41 @@ void NetworkThread::sendData(QJsonObject data)
         qDebug() << "OUT" << buffer;
         socket->flush();
     }
-    else
-    {
-
-    }
 }
 
-void NetworkThread::disconnected() {
+void NetworkThread::socketDisconnect() {
     qDebug() << socketDescriptor  << "CLOSED" <<  socket->peerAddress().toString();
     //mainWindow.logActivity(mainWindow.txtLog,tr("Lost connection from ").arg(socket->peerAddress().toString()));
-    socket->deleteLater();
-    exit(0);
 }
 
-void NetworkThread::sendPing() {
+void NetworkThread::socketError()
+{
+    if (errcnt >= 4096)
+    {
+        qDebug() << "Unable able to connect after " << errcnt << "tries, giving up";
+        socket->deleteLater();
+        this->exit(1);
+        return;
+    }
+    errcnt++;
+    qDebug() << "Socket error:" << errcnt << socket->errorString();
+    socket->reset();
+    this->sleep(1);
+    socketConnect();
+}
+
+void NetworkThread::sendStart()
+{
+    QJsonObject payloadStart = buildPayload();
+    payloadStart["command"] = "START";
+    socketWrite(payloadStart);
+}
+
+void NetworkThread::sendPing()
+{
     QJsonObject payloadStart = buildPayload();
     payloadStart["command"] = "PING";
-    sendData(payloadStart);
+    socketWrite(payloadStart);
 }
 
 QJsonObject NetworkThread::buildPayload()
@@ -107,16 +125,18 @@ QJsonObject NetworkThread::buildPayload()
     return payloadOut;
 }
 
-void NetworkThread::processPayload(QJsonObject data) {
+void NetworkThread::processPayload(QJsonObject data)
+{
     QString command = data.value("command").toString();
 
-    if (command == "START" ) {
+    if (command == "START" )
+    {
         QJsonObject payloadObject;
         QJsonObject payloadStart = buildPayload();
         payloadStart["responseTo"] = data.value("requestID").toString();
         payloadStart["command"] = "ID";
         payloadObject["clientid"] = "100";
         payloadStart["payload"] = payloadObject;
-        sendData(payloadStart);
+        socketWrite(payloadStart);
     }
 }

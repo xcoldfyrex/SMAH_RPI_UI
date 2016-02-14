@@ -75,6 +75,26 @@ void MainWindow::startNetworking()
 {
     //setup networking
     NetworkThread *thread = new NetworkThread("127.0.0.1", 9002, this);
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    connect(this, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->start();
+}
+
+void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        //systemLogWidget->txtLogger.setText(msg);
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        abort();
+    }
 }

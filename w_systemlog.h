@@ -2,6 +2,7 @@
 #define W_SYSTEMLOG_H
 
 #include <QWidget>
+#include <QTextEdit>
 
 namespace Ui {
 class SystemLogWidget;
@@ -14,8 +15,7 @@ class SystemLogWidget : public QWidget
 public:
     explicit SystemLogWidget(QWidget *parent = 0);
     ~SystemLogWidget();
-
-private:
+    static QTextEdit *txtLogger;
     Ui::SystemLogWidget *ui;
 };
 

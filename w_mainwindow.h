@@ -6,6 +6,7 @@
 #include "w_zonecontainer.h"
 #include "w_systemlog.h"
 #include "zone.h"
+#include "network.h"
 
 #include <QWidget>
 #include <QPaintEvent>
@@ -22,6 +23,7 @@ public:
     QStackedLayout *contentLayout;
     ZoneContainerWidget *zoneContainer;
     SystemLogWidget *systemLogWidget;
+    NetworkThread *networkConnection;
     static void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 private:

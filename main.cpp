@@ -2,6 +2,7 @@
 #include "w_mainwindow.h"
 #include "zone.h"
 #include "network.h"
+#include "preset.h"
 
 #include <QApplication>
 #include <QFile>
@@ -13,6 +14,7 @@
 #include <QDir>
 
 QList<Zone*> *gZoneList;
+QList<Preset*> *gPresetList;
 Zone *gActiveZone;
 QTextEdit *txtLogger;
 
@@ -41,9 +43,43 @@ void loadZones()
     }
 }
 
+void loadPresets()
+{
+    gPresetList = new QList<Preset*>();
+    QDomDocument zoneXMLDocument;
+    QFile zoneXMLFile(QDir::currentPath() + "/../assets/light_presets.xml");
+
+    if (!zoneXMLDocument.setContent(&zoneXMLFile)) {
+        qDebug() << "failed to open XML";
+        return;
+    }
+
+    zoneXMLFile.close();
+
+    QDomElement root = zoneXMLDocument.firstChildElement();
+    QDomNodeList items = root.elementsByTagName("static");
+    for (int i = 0; i < items.count(); i++) {
+        QDomNode itemnode = items.at(i);
+        if (itemnode.isElement()) {
+            QDomElement presetElement = itemnode.toElement();
+            Preset *preset = new Preset(presetElement.attribute("name"));
+            QString staticCode = presetElement.attribute("code");
+            if (staticCode.length() != 8) {
+                qDebug() << "Invalid code: " << staticCode;
+            } else {
+                preset->setColor(staticCode);
+                gPresetList->append(preset);
+                qDebug() << "Loaded preset " << presetElement.attribute("name") << staticCode ;
+
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     loadZones();
+    loadPresets();
 
     QApplication a(argc, argv);
 

@@ -28,6 +28,7 @@ public:
 
     QMap<int,Step> getSteps();
     void setColor(QString color);
+    QString getName();
 
 private:
     bool dynamic;

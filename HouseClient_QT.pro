@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     w_systemlog.cpp \
     network.cpp \
     logger.cpp \
-    preset.cpp
+    preset.cpp \
+    w_presetchooser.cpp
 
 HEADERS  += \
     zone.h \
@@ -42,7 +43,8 @@ HEADERS  += \
     w_systemlog.h \
     network.h \
     logger.h \
-    preset.h
+    preset.h \
+    w_presetchooser.h
 
 FORMS    += \
     mainwindow.ui \

@@ -5,6 +5,7 @@
 #include "w_zonecontainer.h"
 #include "w_lightcontrolcontainer.h"
 #include "w_mainwindow.h"
+#include "w_presetchooser.h"
 #include <QDebug>
 #include <QStackedLayout>
 #include <QPushButton>
@@ -40,7 +41,10 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
      * create node widgets(left panel)
     */
     LightControlContainerWidget *lightControlWidget = new LightControlContainerWidget(this);
+    PresetChooser *presetChooserWidget = new PresetChooser(this);
     zoneOverViewWidget = new ZoneOverviewWidget(this);
+    contentLayout->addWidget(presetChooserWidget->topWidget);
+
     contentLayout->addWidget(zoneOverViewWidget->topWidget);
     contentLayout->addWidget(lightControlWidget->topWidget);
     contentLayout->setCurrentIndex(0);

@@ -16,3 +16,7 @@ void Preset::setColor(QString color) {
     this->b = color.mid(5,1).toShort();
     this->w = color.mid(7,1).toShort();
 }
+
+QString Preset::getName() {
+    return this->name;
+}

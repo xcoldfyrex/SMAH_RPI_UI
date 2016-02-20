@@ -13,3 +13,11 @@ Zone::Zone()
 {
 
 }
+
+int Zone::getActivePreset() {
+    return this->activePreset;
+}
+
+void Zone::setActivePreset(int preset) {
+    this->activePreset = preset;
+}

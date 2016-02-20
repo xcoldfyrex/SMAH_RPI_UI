@@ -43,10 +43,9 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     LightControlContainerWidget *lightControlWidget = new LightControlContainerWidget(this);
     PresetChooser *presetChooserWidget = new PresetChooser(this);
     zoneOverViewWidget = new ZoneOverviewWidget(this);
-    contentLayout->addWidget(presetChooserWidget->topWidget);
-
     contentLayout->addWidget(zoneOverViewWidget->topWidget);
     contentLayout->addWidget(lightControlWidget->topWidget);
+    contentLayout->addWidget(presetChooserWidget->topWidget);
     contentLayout->setCurrentIndex(0);
     //contentLayout->setAlignment(Qt::AlignTop);
 
@@ -76,4 +75,8 @@ void ZoneContainerWidget::showOverview() {
 
 void ZoneContainerWidget::showLightContainer() {
     contentLayout->setCurrentIndex(1);
+}
+
+void ZoneContainerWidget::showPresetChooser() {
+    contentLayout->setCurrentIndex(2);
 }

@@ -10,6 +10,11 @@ public:
     int id;
     QString name;
     bool hasLedRGB, hasLedWhite, hasEnviro;
+    int getActivePreset();
+    void setActivePreset(int preset);
+
+private:
+    int activePreset;
 };
 
 #endif // ZONE_H

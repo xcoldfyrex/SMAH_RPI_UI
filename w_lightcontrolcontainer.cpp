@@ -3,6 +3,7 @@
 #include "w_hsvpalette.h"
 #include "w_brightnesspalette.h"
 #include "w_colorpreview.h"
+#include "w_zonecontainer.h"
 #include <QLinearGradient>
 #include <QBrush>
 #include <QDebug>
@@ -33,6 +34,10 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
 
     connect(hsvSwatch,SIGNAL(changed(QColor)),this,SLOT(updateHSVSelected(QColor)));
     connect(brightness,SIGNAL(changed(QColor)),this,SLOT(updateBrightnessSelected(QColor)));
+
+    ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
+    connect(ui->btnSelectPreset,SIGNAL(clicked(bool)),myParent,SLOT(showPresetChooser()));
+
 
 }
 

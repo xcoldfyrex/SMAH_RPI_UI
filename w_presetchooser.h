@@ -18,6 +18,9 @@ public:
 signals:
 
 public slots:
+
+private slots:
+    void setPreset();
 };
 
 #endif // W_PRESETCHOOSER_H

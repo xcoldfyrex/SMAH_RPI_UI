@@ -28,6 +28,7 @@ void ZoneOverviewWidget::setActiveZone(Zone zone) {
 
 void ZoneOverviewWidget::switchZone(Zone zone) {
     this->lblZoneName->setText("Selected zone: " + zone.name);
+    *gActiveZone = zone;
 }
 
 void ZoneOverviewWidget::changePreset(QString preset) {

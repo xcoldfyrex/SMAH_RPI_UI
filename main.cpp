@@ -15,7 +15,7 @@
 
 QList<Zone*> *gZoneList;
 QList<Preset*> *gPresetList;
-Zone *gActiveZone;
+Zone *gActiveZone = new Zone();
 QTextEdit *txtLogger;
 
 void loadZones()
@@ -58,15 +58,17 @@ void loadPresets()
 
     QDomElement root = zoneXMLDocument.firstChildElement();
     QDomNodeList items = root.elementsByTagName("static");
+    short presetID = 0;
     for (int i = 0; i < items.count(); i++) {
         QDomNode itemnode = items.at(i);
         if (itemnode.isElement()) {
             QDomElement presetElement = itemnode.toElement();
-            Preset *preset = new Preset(presetElement.attribute("name"));
             QString staticCode = presetElement.attribute("code");
             if (staticCode.length() != 8) {
                 qDebug() << "Invalid code: " << staticCode;
             } else {
+                Preset *preset = new Preset(presetElement.attribute("name"),presetID);
+                presetID++;
                 preset->setColor(staticCode);
                 gPresetList->append(preset);
                 qDebug() << "Loaded preset " << presetElement.attribute("name") << staticCode ;

@@ -1,9 +1,10 @@
 #include "preset.h"
 
-Preset::Preset(QString name, bool dynamic)
+Preset::Preset(QString name, short id, bool dynamic)
 {
     this->name = name;
     this->dynamic = dynamic;
+    this->id = id;
 }
 
 QMap<int,Preset::Step> Preset::getSteps() {

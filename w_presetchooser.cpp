@@ -19,7 +19,12 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
     contentLayout->addWidget(presetList);
     contentLayout->addWidget(btnActivate);
     foreach (Preset *preset, *gPresetList) {
-        presetList->addItem(preset->getName());
+        QListWidgetItem *item = new QListWidgetItem();
+        QVariant data(preset->id);
+        item->setData(Qt::UserRole, data);
+        item->setText(preset->getName());
+        //item->setData(0,preset->id);
+        presetList->addItem(item);
     }
     presetList->setObjectName("presetList");
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));
@@ -27,7 +32,8 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
 }
 
 void PresetChooser::setPreset() {
-    qDebug() << "Preset " << this->presetList->currentItem()->text();
+    int presetInt = this->presetList->currentItem()->data(Qt::UserRole).toInt();
+    qDebug() << "Preset " << gActiveZone->name;
     //fix this....
-    gActiveZone->setActivePreset(0);
+    gActiveZone->setActivePreset(presetInt);
 }

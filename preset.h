@@ -6,7 +6,7 @@
 class Preset
 {
 public:
-    Preset(QString name, bool dynamic = false);
+    Preset(QString name, short id, bool dynamic = false);
     class Step {
     public:
         void getHSV();
@@ -25,6 +25,7 @@ public:
     void getHSV();
     void addStep(Step step, int key);
     void getStep(int key);
+    short id;
 
     QMap<int,Step> getSteps();
     void setColor(QString color);

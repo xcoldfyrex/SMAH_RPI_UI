@@ -14,6 +14,7 @@
 
 extern Zone *gActiveZone;
 extern QList<Zone*> *gZoneList;
+extern NetworkThread *networkConnection;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
@@ -50,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 
 void MainWindow::paintEvent(QPaintEvent *pe)
 {
+    Q_UNUSED(pe);
+
     QStyleOption o;
     o.initFrom(this);
     QPainter p(this);
@@ -74,9 +77,11 @@ void MainWindow::showSystemLog() {
 void MainWindow::startNetworking()
 {
     //setup networking
-    networkConnection = new NetworkThread("127.0.0.1", 9002, this);
+    NetworkThread *thread = new NetworkThread("127.0.0.1", 9002, this);
+    networkConnection = thread;
     connect(this, SIGNAL(finished()), networkConnection, SLOT(deleteLater()));
     networkConnection->start();
+
 }
 
 void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -97,4 +102,9 @@ void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, c
         fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         abort();
     }
+}
+
+void MainWindow::sendToNetwork(QString command, QJsonObject jsonPayload) {
+    jsonPayload["zone"] = gActiveZone->id;
+    networkConnection->prepareToSend(command,jsonPayload, "");
 }

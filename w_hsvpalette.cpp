@@ -10,6 +10,8 @@ HSVPalette::HSVPalette(QWidget *parent) : QWidget(parent)
 
 void HSVPalette::paintEvent(QPaintEvent *pe)
 {
+    Q_UNUSED(pe);
+
     QPainter painter(this);
     float step = ((float) this->width() / (float) 360);
     float offset = 1;
@@ -25,7 +27,6 @@ void HSVPalette::paintEvent(QPaintEvent *pe)
         }
         offset = offset + step;
     }
-    qDebug() << step;
 }
 
 
@@ -34,6 +35,5 @@ void HSVPalette::mouseMoveEvent(QMouseEvent *event)
     QPixmap pm = this->grab();
     if (((event->x() < 0) || (event->x() > pm.width())) || ((event->y() < 0) || event->y() > pm.height())) return;
     QColor color = pm.toImage().pixel(event->x(),event->y());
-    //qDebug() << color << event->x() << event->y() << pm.size();
     emit changed(color);
 }

@@ -39,6 +39,7 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 
 void ZoneChooserWidget::paintEvent(QPaintEvent *pe)
 {
+    Q_UNUSED(pe);
     QStyleOption o;
     o.initFrom(this);
     QPainter p(this);

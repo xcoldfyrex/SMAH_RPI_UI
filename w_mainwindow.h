@@ -23,7 +23,6 @@ public:
     QStackedLayout *contentLayout;
     ZoneContainerWidget *zoneContainer;
     SystemLogWidget *systemLogWidget;
-    NetworkThread *networkConnection;
     static void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 private:
@@ -37,6 +36,7 @@ public slots:
     void showSystemLog();
     void showZone(int zone);
     void startNetworking();
+    void sendToNetwork(QString command, QJsonObject jsonPayload);
 };
 
 #endif // MAINWINDOW_H

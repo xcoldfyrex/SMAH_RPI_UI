@@ -4,11 +4,13 @@
 #include "w_brightnesspalette.h"
 #include "w_colorpreview.h"
 #include "w_zonecontainer.h"
+#include "w_mainwindow.h"
 #include <QLinearGradient>
 #include <QBrush>
 #include <QDebug>
 #include <QPicture>
 
+extern
 LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LightControlWidget)
@@ -30,12 +32,15 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
 
     contentLayout->addWidget(hsvSwatch,1,0,1,4);
     contentLayout->addWidget(brightness,2,0,1,4);
-    contentLayout->addWidget(preview,3,0,1,4);
+    contentLayout->addWidget(preview,3,0,1,4);    
 
     connect(hsvSwatch,SIGNAL(changed(QColor)),this,SLOT(updateHSVSelected(QColor)));
     connect(brightness,SIGNAL(changed(QColor)),this,SLOT(updateBrightnessSelected(QColor)));
 
     ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
+    MainWindow* mwParent = dynamic_cast<MainWindow*>(parent);
+    this->mwParent = mwParent;
+
     connect(ui->btnSelectPreset,SIGNAL(clicked(bool)),myParent,SLOT(showPresetChooser()));
 
 
@@ -53,6 +58,10 @@ void LightControlContainerWidget::updateHSVSelected(QColor qcol)
     this->preview->color.setHsv(qcol.hue(),qcol.saturation(),this->rgb.value());
     this->preview->repaint();
     qDebug() << "RGB"  << rgb.red() << rgb.green() << rgb.blue();
+
+    QJsonObject jsonPayload;
+    jsonPayload["rbga"] = qcol.name();;
+    this->mwParent->sendToNetwork("SET",jsonPayload);
 }
 
 void LightControlContainerWidget::updateBrightnessSelected(QColor qcol)
@@ -62,4 +71,8 @@ void LightControlContainerWidget::updateBrightnessSelected(QColor qcol)
 
     qDebug() << "RGB"  << rgb.red() << rgb.green() << rgb.blue();
     this->preview->repaint();
+
+    QJsonObject jsonPayload;
+    jsonPayload["rbga"] = qcol.name();;
+    this->mwParent->sendToNetwork("SET",jsonPayload);
 }

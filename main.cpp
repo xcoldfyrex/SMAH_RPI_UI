@@ -17,6 +17,8 @@ QList<Zone*> *gZoneList;
 QList<Preset*> *gPresetList;
 Zone *gActiveZone = new Zone();
 QTextEdit *txtLogger;
+NetworkThread *networkConnection = new NetworkThread();
+
 
 void loadZones()
 {

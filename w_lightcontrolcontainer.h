@@ -8,6 +8,7 @@
 #include <QGraphicsScene>
 #include <QPicture>
 #include "w_colorpreview.h"
+#include "w_mainwindow.h"
 
 
 namespace Ui {
@@ -35,6 +36,7 @@ public slots:
 private:
     Ui::LightControlWidget *ui;
     QGraphicsScene *scene;
+    MainWindow* mwParent;
 };
 
 #endif // LIGHTCONTROLWIDGET_H

@@ -8,6 +8,7 @@ ColorPreview::ColorPreview(QWidget *parent) : QWidget(parent)
 
 void ColorPreview::paintEvent(QPaintEvent *pe)
 {
+    Q_UNUSED(pe);
     QPainter painter(this);
     color.setRgb(color.red(),color.green(),color.blue());
     QPen paintpen(color);

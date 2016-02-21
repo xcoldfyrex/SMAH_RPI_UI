@@ -16,9 +16,11 @@ class NetworkThread: public QThread
     Q_OBJECT
 
 public:
-    explicit NetworkThread(QString address, quint16 port, QObject *parent);
+    NetworkThread(QString address, quint16 port, QObject *parent);
+    NetworkThread();
     bool isConnected();
     void run();
+    void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
 

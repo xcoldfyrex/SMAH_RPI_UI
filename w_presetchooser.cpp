@@ -23,7 +23,6 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
         QVariant data(preset->id);
         item->setData(Qt::UserRole, data);
         item->setText(preset->getName());
-        //item->setData(0,preset->id);
         presetList->addItem(item);
     }
     presetList->setObjectName("presetList");
@@ -34,6 +33,5 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
 void PresetChooser::setPreset() {
     int presetInt = this->presetList->currentItem()->data(Qt::UserRole).toInt();
     qDebug() << "Preset " << gActiveZone->name;
-    //fix this....
     gActiveZone->setActivePreset(presetInt);
 }

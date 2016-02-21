@@ -7,6 +7,10 @@ NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
     this->port = port;
 }
 
+NetworkThread::NetworkThread() {
+
+}
+
 void NetworkThread::run()
 {
     socket = new QTcpSocket();
@@ -131,12 +135,17 @@ void NetworkThread::processPayload(QJsonObject data)
 
     if (command == "START" )
     {
-        QJsonObject payloadObject;
-        QJsonObject payloadStart = buildPayload();
-        payloadStart["responseTo"] = data.value("requestID").toString();
-        payloadStart["command"] = "ID";
-        payloadObject["clientid"] = "100";
-        payloadStart["payload"] = payloadObject;
-        socketWrite(payloadStart);
+        QJsonObject jsonPayload;
+        jsonPayload["clientid"] = "100";
+        prepareToSend("ID",jsonPayload,data.value("requestID").toString());
     }
+}
+
+void NetworkThread::prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo = "") {
+    QJsonObject jsonObject = buildPayload();
+    jsonObject["command"] = command;
+    jsonObject["payload"] = jsonPayload;
+    if (responseTo != "") jsonObject["responseTo"] = responseTo;
+
+    socketWrite(jsonObject);
 }

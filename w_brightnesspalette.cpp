@@ -7,6 +7,7 @@ BrightnessPalette::BrightnessPalette(QWidget *parent) : QWidget(parent)
 
 void BrightnessPalette::paintEvent(QPaintEvent *pe)
 {
+    Q_UNUSED(pe);
     QPainter painter(this);
     float step = ((float) this->width() / (float) 255);
     float offset = 0;

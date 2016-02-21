@@ -60,7 +60,8 @@ void LightControlContainerWidget::updateHSVSelected(QColor qcol)
     qDebug() << "RGB"  << rgb.red() << rgb.green() << rgb.blue();
 
     QJsonObject jsonPayload;
-    jsonPayload["rbga"] = qcol.name();;
+    jsonPayload["type"] = "01";
+    jsonPayload["value"] = qcol.name().replace("#","") + "FF";
     this->mwParent->sendToNetwork("SET",jsonPayload);
 }
 
@@ -73,6 +74,7 @@ void LightControlContainerWidget::updateBrightnessSelected(QColor qcol)
     this->preview->repaint();
 
     QJsonObject jsonPayload;
-    jsonPayload["rbga"] = qcol.name();;
+    jsonPayload["type"] = "01";
+    jsonPayload["value"] = qcol.name().replace("#","") + "FF";
     this->mwParent->sendToNetwork("SET",jsonPayload);
 }

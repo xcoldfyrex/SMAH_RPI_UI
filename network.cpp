@@ -94,7 +94,7 @@ void NetworkThread::socketError()
     }
     errcnt++;
     qDebug() << "Socket error:" << errcnt << socket->errorString();
-    socket->reset();
+    socket->abort();
     this->sleep(1);
     socketConnect();
 }

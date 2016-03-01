@@ -20,10 +20,9 @@ public:
     NetworkThread();
     bool isConnected();
     void run();
-    void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
-
+    void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
 
 private slots:
     void processPayload(QJsonObject data);

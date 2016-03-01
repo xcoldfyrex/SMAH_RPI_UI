@@ -57,7 +57,7 @@ void LightControlContainerWidget::updateHSVSelected(QColor qcol)
     this->rgb.setHsv(qcol.hue(),qcol.saturation(),this->preview->color.value());
     this->preview->color.setHsv(qcol.hue(),qcol.saturation(),this->rgb.value());
     this->preview->repaint();
-    qDebug() << "RGB"  << rgb.red() << rgb.green() << rgb.blue();
+    //qDebug() << "RGB"  << rgb.red() << rgb.green() << rgb.blue();
 
     QJsonObject jsonPayload;
     jsonPayload["type"] = "01";
@@ -70,7 +70,8 @@ void LightControlContainerWidget::updateBrightnessSelected(QColor qcol)
     this->rgb.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
     this->preview->color.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
 
-    qDebug() << "RGB"  << rgb.red() << rgb.green() << rgb.blue();
+    qcol.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
+    //qDebug() << qcol.name();
     this->preview->repaint();
 
     QJsonObject jsonPayload;

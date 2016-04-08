@@ -61,7 +61,7 @@ void LightControlContainerWidget::updateHSVSelected(QColor qcol)
 
     QJsonObject jsonPayload;
     jsonPayload["type"] = "01";
-    jsonPayload["value"] = qcol.name().replace("#","") + "FF";
+    jsonPayload["value"] = this->preview->color.name().replace("#","") + "FF";
     this->mwParent->sendToNetwork("SET",jsonPayload);
 }
 

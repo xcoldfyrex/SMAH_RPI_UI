@@ -79,9 +79,10 @@ void MainWindow::startNetworking()
     //setup networking
     NetworkThread *thread = new NetworkThread("127.0.0.1", 9002, this);
     networkConnection = thread;
-    connect(this, SIGNAL(finished()), networkConnection, SLOT(deleteLater()));
-    networkConnection->start();
 
+    //networkConnection->run();
+    networkConnection->start();
+    connect(this, SIGNAL(finished()), networkConnection, SLOT(deleteLater()));
 }
 
 void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

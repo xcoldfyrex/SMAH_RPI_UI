@@ -70,10 +70,16 @@ void NetworkThread::socketWrite(QJsonObject data)
         QString jso(temp.toJson(QJsonDocument::Compact));
         QByteArray ba = jso.toLatin1();
         const char *c_str2 = ba.data();
-        char buffer[256];
-        sprintf(buffer, "%s\n", c_str2);
+        char buffer[128];
+
+        sprintf(buffer, "%s", c_str2);
+        int slen = strlen(buffer);
+        for(; slen < sizeof(buffer)-1;slen++) {
+            buffer[slen] = '*';
+        }
+        buffer[slen] = 0;
         socket->write(buffer);
-        qDebug() << "OUT" << buffer;
+        qDebug() << strlen(buffer) << "OUT" << buffer;
         socket->flush();
     }
 }

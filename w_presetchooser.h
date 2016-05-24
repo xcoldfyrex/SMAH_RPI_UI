@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QVBoxLayout>
-
+#include "w_mainwindow.h"
 
 class PresetChooser : public QWidget
 {
@@ -14,6 +14,8 @@ public:
     QWidget *topWidget;
     QListWidget *presetList;
     QVBoxLayout *contentLayout;
+private:
+    MainWindow* mwParent;
 
 signals:
 

@@ -16,8 +16,13 @@ void Preset::setColor(QString color) {
     this->g = color.mid(3,1).toShort();
     this->b = color.mid(5,1).toShort();
     this->w = color.mid(7,1).toShort();
+    this->colorHex = color;
 }
 
 QString Preset::getName() {
     return this->name;
+}
+
+QString Preset::getHex() {
+    return this->colorHex;
 }

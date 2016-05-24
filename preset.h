@@ -22,7 +22,7 @@ public:
 
     };
 
-    void getHSV();
+    QString getHex();
     void addStep(Step step, int key);
     void getStep(int key);
     short id;
@@ -39,6 +39,7 @@ private:
     short b;
     short w;
     QString name;
+    QString colorHex;
     QMap<int,Step> stepMap;
 
 };

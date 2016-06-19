@@ -26,6 +26,8 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
         item->setData(Qt::UserRole, data);
         item->setText(preset->getName());
         presetList->addItem(item);
+        //connect(item, SIGNAL(itemClicked(QListWidgetItem * item)), this, SLOT(setPreset()));
+
     }
     presetList->setObjectName("presetList");
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));

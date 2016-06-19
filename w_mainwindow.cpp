@@ -106,6 +106,8 @@ void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, c
 }
 
 void MainWindow::sendToNetwork(QString command, QJsonObject jsonPayload) {
-    jsonPayload["zone"] = gActiveZone->id;
+    char zoneString[3];
+    sprintf(zoneString, "%d", gActiveZone->id);
+    jsonPayload["zone"] = zoneString;
     networkConnection->prepareToSend(command,jsonPayload, "");
 }

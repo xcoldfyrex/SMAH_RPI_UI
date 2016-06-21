@@ -10,14 +10,14 @@
 #include "w_zonechooser.h"
 #include "w_mainwindow.h"
 #include "zone.h"
-#include "network.h"
 #include "preset.h"
 
 QList<Zone*> *gZoneList;
 QList<Preset*> *gPresetList;
 Zone *gActiveZone = new Zone();
 QTextEdit *txtLogger;
-NetworkThread *networkConnection = new NetworkThread();
+NetworkThread *networkThread;
+
 
 int main(int argc, char *argv[])
 {
@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
 
     MainWindow mainWindow;
     qInstallMessageHandler(MainWindow::logHandler);
-    mainWindow.startNetworking();
     mainWindow.show();
 
     return a.exec();

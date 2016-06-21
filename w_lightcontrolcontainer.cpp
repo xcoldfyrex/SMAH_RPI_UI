@@ -1,3 +1,8 @@
+#include <QLinearGradient>
+#include <QBrush>
+#include <QDebug>
+#include <QPicture>
+
 #include "w_lightcontrolcontainer.h"
 #include "ui_lightcontrolwidget.h"
 #include "w_hsvpalette.h"
@@ -5,12 +10,11 @@
 #include "w_colorpreview.h"
 #include "w_zonecontainer.h"
 #include "w_mainwindow.h"
-#include <QLinearGradient>
-#include <QBrush>
-#include <QDebug>
-#include <QPicture>
+#include "network.h"
 
-extern
+extern NetworkThread *networkThread;
+extern Zone *gActiveZone;
+
 LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LightControlWidget)
@@ -19,6 +23,8 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
 
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
+
+    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
 
     contentLayout->setContentsMargins(0,0,0,0);
     contentLayout->addWidget(ui->btnSelectPreset,0,0);
@@ -40,6 +46,7 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
     ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
     MainWindow* mwParent = dynamic_cast<MainWindow*>(parent);
     this->mwParent = mwParent;
+    qDebug() << networkThread;
 
     connect(ui->btnSelectPreset,SIGNAL(clicked(bool)),myParent,SLOT(showPresetChooser()));
 
@@ -53,16 +60,14 @@ LightControlContainerWidget::~LightControlContainerWidget()
 
 void LightControlContainerWidget::updateHSVSelected(QColor qcol)
 {
-
     this->rgb.setHsv(qcol.hue(),qcol.saturation(),this->preview->color.value());
     this->preview->color.setHsv(qcol.hue(),qcol.saturation(),this->rgb.value());
     this->preview->repaint();
-    //qDebug() << "RGB"  << rgb.red() << rgb.green() << rgb.blue();
 
     QJsonObject jsonPayload;
     jsonPayload["type"] = "01";
     jsonPayload["value"] = this->preview->color.name().toUpper().replace("#","") + "FF";
-    this->mwParent->sendToNetwork("SET",jsonPayload);
+    this->sendToNetwork("SET",jsonPayload);
 }
 
 void LightControlContainerWidget::updateBrightnessSelected(QColor qcol)
@@ -71,11 +76,18 @@ void LightControlContainerWidget::updateBrightnessSelected(QColor qcol)
     this->preview->color.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
 
     qcol.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
-    //qDebug() << qcol.name();
     this->preview->repaint();
 
     QJsonObject jsonPayload;
     jsonPayload["type"] = "01";
     jsonPayload["value"] = qcol.name().toUpper().replace("#","") + "FF";
-    this->mwParent->sendToNetwork("SET",jsonPayload);
+
+    this->sendToNetwork("SET",jsonPayload);
+}
+
+void LightControlContainerWidget::sendToNetwork(QString command, QJsonObject jsonPayload) {
+    char zoneString[3];
+    sprintf(zoneString, "%d", gActiveZone->id);
+    jsonPayload["zone"] = zoneString;
+    emit(requestingNetworkOut(command,jsonPayload, ""));
 }

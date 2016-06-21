@@ -13,12 +13,15 @@
 
 extern Zone *gActiveZone;
 extern QList<Zone*> *gZoneList;
-extern NetworkThread *networkConnection;
+extern NetworkThread *networkThread;
 
 Q_DECLARE_METATYPE(Zone)
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
+
+    //setup networking
+    networkThread = new NetworkThread("127.0.0.1", 9002, this);
 
     this->setObjectName("MainWindow");
     this->setStyle(QApplication::style());
@@ -48,13 +51,10 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
 
-    //setup networking
-    NetworkThread *thread = new NetworkThread("127.0.0.1", 9002, this);
-    networkConnection = thread;
-    connect(networkConnection,SIGNAL(zoneAdded(Zone)),zoneChooser,SLOT(addZoneButton(Zone)),Qt::QueuedConnection);
+    networkThread->start();
+    connect(networkThread,SIGNAL(zoneArrived(Zone*)),zoneChooser,SLOT(addZoneButton(Zone*)),Qt::QueuedConnection);
+    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
 
-    //networkConnection->run();
-    networkConnection->start();
     //connect(this, SIGNAL(finished()), networkConnection, SLOT(deleteLater()));
 
 }
@@ -84,12 +84,6 @@ void MainWindow::showSystemLog() {
     contentLayout->setCurrentIndex(2);
 }
 
-void MainWindow::startNetworking()
-{
-
-
-}
-
 void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
@@ -97,6 +91,9 @@ void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, c
     case QtDebugMsg:
         fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         //systemLogWidget->txtLogger.setText(msg);
+        break;
+    case QtInfoMsg:
+        fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;
     case QtWarningMsg:
         fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
@@ -108,11 +105,4 @@ void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, c
         fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         abort();
     }
-}
-
-void MainWindow::sendToNetwork(QString command, QJsonObject jsonPayload) {
-    char zoneString[3];
-    sprintf(zoneString, "%d", gActiveZone->id);
-    jsonPayload["zone"] = zoneString;
-    networkConnection->prepareToSend(command,jsonPayload, "");
 }

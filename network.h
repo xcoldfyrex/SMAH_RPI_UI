@@ -43,7 +43,7 @@ private slots:
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void zoneAdded(Zone *zone);
+    void zoneArrived(Zone *zone);
 
 private:
     int socketDescriptor;

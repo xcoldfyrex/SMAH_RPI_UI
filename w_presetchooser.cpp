@@ -51,5 +51,7 @@ void PresetChooser::setPreset() {
     QJsonObject jsonPayload;
     jsonPayload["type"] = "01";
     jsonPayload["value"] = targetPreset->getHex();
+    /* CHANGE TO SIGNAL/SLOT
     this->mwParent->sendToNetwork("SET",jsonPayload);
+    */
 }

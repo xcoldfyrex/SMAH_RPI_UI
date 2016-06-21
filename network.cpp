@@ -74,13 +74,13 @@ void NetworkThread::socket_write(QJsonObject data)
         const char *c_str2 = ba.data();
         char buffer[128];
         sprintf(buffer, "%s", c_str2);
-        /*
+
         int slen = strlen(buffer);
         for(; slen < sizeof(buffer)-1;slen++) {
             buffer[slen] = '*';
         }
         buffer[slen] = 0;
-        */
+
         socket->write(buffer);
         qDebug() << strlen(buffer) << "OUT" << buffer;
         socket->flush();
@@ -175,7 +175,7 @@ void NetworkThread::processPayload(QJsonObject data)
                     //qDebug() << "ID" << obj["name"].toString();
                     Zone *zone = new Zone(obj["id"].toInt(), obj["name"].toString(), true, true, true);
                     gZoneList->append(zone);
-                    emit zoneAdded(zone);
+                    emit zoneArrived(zone);
                 }
 
                 //qDebug() << "FOUND " << jsonPayload;

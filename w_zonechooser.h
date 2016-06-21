@@ -32,7 +32,7 @@ public:
 
 
 public slots:
-    void addZoneButton(Zone zone);
+    void addZoneButton(Zone *zone);
 
 private:
 };

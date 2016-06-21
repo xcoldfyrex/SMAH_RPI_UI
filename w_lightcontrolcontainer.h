@@ -28,10 +28,13 @@ public:
     QGridLayout *contentLayout;
     QPicture *hsvSwatch;
     QColor rgb;
+signals:
+    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
     void updateHSVSelected(QColor qcol);
     void updateBrightnessSelected(QColor qcol);
+    void sendToNetwork(QString command, QJsonObject jsonPayload);
 
 private:
     Ui::LightControlWidget *ui;

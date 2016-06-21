@@ -30,13 +30,12 @@ private:
 
 signals:
     void zoneChanged(Zone zone);
+    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
     void showZoneChooser();
     void showSystemLog();
     void showZone(int zone);
-    void startNetworking();
-    void sendToNetwork(QString command, QJsonObject jsonPayload);
 };
 
 #endif // MAINWINDOW_H

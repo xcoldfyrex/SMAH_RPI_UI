@@ -1,17 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-
-#include "w_topheader.h"
-#include "w_zonecontainer.h"
-#include "w_systemlog.h"
-#include "zone.h"
-#include "network.h"
-
 #include <QWidget>
 #include <QPaintEvent>
 #include <QStackedLayout>
 #include <QStyleOption>
+
+#include "zone.h"
+#include "w_zonechooser.h"
+#include "w_topheader.h"
+#include "w_zonecontainer.h"
+#include "w_systemlog.h"
+#include "network.h"
 
 class MainWindow : public QWidget
 {

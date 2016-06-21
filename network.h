@@ -7,9 +7,13 @@
 #include <QThread>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonArray>
 #include <sys/time.h>
 #include <QDebug>
 #include <QSslSocket>
+#include <QMap>
+
+#include "zone.h"
 
 class NetworkThread: public QThread
 {
@@ -32,11 +36,14 @@ private slots:
     void sendStart();
     void socketRead();
     void socketDisconnect();
-    void socketWrite(QJsonObject data);
+    void socket_write(QJsonObject data);
+    void get_zones();
+    void get_presets();
 
 
 signals:
     void error(QTcpSocket::SocketError socketError);
+    void zoneAdded(Zone *zone);
 
 private:
     int socketDescriptor;
@@ -45,6 +52,7 @@ private:
     QTcpSocket *socket;
     QJsonObject buildPayload();
     int errcnt;
+    QMap<QString,QString>outstanding;
 
 };
 

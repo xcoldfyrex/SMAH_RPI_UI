@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml network
+QT       += core gui network widgets xml
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 TARGET = HouseClient_QT
 TEMPLATE = app

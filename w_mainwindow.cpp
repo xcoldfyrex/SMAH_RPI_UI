@@ -4,7 +4,6 @@
 */
 
 #include "w_mainwindow.h"
-#include "w_zonechooser.h"
 #include "w_lightcontrolcontainer.h"
 #include "ui_mainwindow.h"
 #include "network.h"
@@ -15,6 +14,8 @@
 extern Zone *gActiveZone;
 extern QList<Zone*> *gZoneList;
 extern NetworkThread *networkConnection;
+
+Q_DECLARE_METATYPE(Zone)
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
@@ -33,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     this->contentLayout = new QStackedLayout;
 
     //create node widgets
-    zoneContainer = new ZoneContainerWidget(this);
+    this->zoneContainer = new ZoneContainerWidget(this);
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
     systemLogWidget = new SystemLogWidget(this);
 
@@ -46,6 +47,15 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
+
+    //setup networking
+    NetworkThread *thread = new NetworkThread("127.0.0.1", 9002, this);
+    networkConnection = thread;
+    connect(networkConnection,SIGNAL(zoneAdded(Zone)),zoneChooser,SLOT(addZoneButton(Zone)),Qt::QueuedConnection);
+
+    //networkConnection->run();
+    networkConnection->start();
+    //connect(this, SIGNAL(finished()), networkConnection, SLOT(deleteLater()));
 
 }
 
@@ -76,13 +86,8 @@ void MainWindow::showSystemLog() {
 
 void MainWindow::startNetworking()
 {
-    //setup networking
-    NetworkThread *thread = new NetworkThread("127.0.0.1", 9002, this);
-    networkConnection = thread;
 
-    //networkConnection->run();
-    networkConnection->start();
-    connect(this, SIGNAL(finished()), networkConnection, SLOT(deleteLater()));
+
 }
 
 void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

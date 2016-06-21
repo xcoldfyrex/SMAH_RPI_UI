@@ -20,8 +20,6 @@ private:
 signals:
 
 public slots:
-
-private slots:
     void setPreset();
 };
 

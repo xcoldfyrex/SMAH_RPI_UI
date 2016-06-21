@@ -20,6 +20,8 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
     contentLayout->addStretch(1);
     contentLayout->addWidget(presetList);
     contentLayout->addWidget(btnActivate);
+    /*
+     * READD FROM SERVER
     foreach (Preset *preset, *gPresetList) {
         QListWidgetItem *item = new QListWidgetItem();
         QVariant data(preset->id);
@@ -29,6 +31,7 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
         //connect(item, SIGNAL(itemClicked(QListWidgetItem * item)), this, SLOT(setPreset()));
 
     }
+    */
     presetList->setObjectName("presetList");
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));
 

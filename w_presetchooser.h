@@ -27,6 +27,7 @@ public slots:
     void setPreset();
     void addPreset(Preset *preset);
     void sendToNetwork(QString command, QJsonObject jsonPayload);
+    void onListMailItemClicked(QListWidgetItem *item);
 
 };
 

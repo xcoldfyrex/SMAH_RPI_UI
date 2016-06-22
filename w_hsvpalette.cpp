@@ -1,6 +1,7 @@
-#include "w_hsvpalette.h"
 #include <QDebug>
 #include <QScreen>
+
+#include "w_hsvpalette.h"
 
 HSVPalette::HSVPalette(QWidget *parent) : QWidget(parent)
 {

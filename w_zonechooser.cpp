@@ -16,15 +16,6 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
     this->myParent = dynamic_cast<MainWindow*>(parent);
 }
 
-void ZoneChooserWidget::paintEvent(QPaintEvent *pe)
-{
-    Q_UNUSED(pe);
-    QStyleOption o;
-    o.initFrom(this);
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
-}
-
 void ZoneChooserWidget::addZoneButton(Zone *zone)
 {
     QPushButton *zonelabel = new QPushButton(zone->name);

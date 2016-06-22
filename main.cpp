@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
 {
 
     gZoneList = new QList<Zone*>();
+    gPresetList = new QList<Preset*>();
 
     QApplication a(argc, argv);
 

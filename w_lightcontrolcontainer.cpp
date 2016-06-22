@@ -44,10 +44,6 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
     connect(brightness,SIGNAL(changed(QColor)),this,SLOT(updateBrightnessSelected(QColor)));
 
     ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
-    MainWindow* mwParent = dynamic_cast<MainWindow*>(parent);
-    this->mwParent = mwParent;
-    qDebug() << networkThread;
-
     connect(ui->btnSelectPreset,SIGNAL(clicked(bool)),myParent,SLOT(showPresetChooser()));
 
 

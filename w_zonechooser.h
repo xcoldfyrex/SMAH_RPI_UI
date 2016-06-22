@@ -1,17 +1,11 @@
 #ifndef MENUWINDOW_H
 #define MENUWINDOW_H
 
-#include "w_mainwindow.h"
-
 #include <QWidget>
 #include <QGridLayout>
-#include <QPaintEvent>
-#include <QPainter>
 
 #include "w_mainwindow.h"
-
 #include "zone.h"
-
 
 namespace Ui {
 class MenuWindow;
@@ -25,7 +19,6 @@ class ZoneChooserWidget : public QWidget
 
 public:
     explicit ZoneChooserWidget(QWidget *parent = 0);
-    void paintEvent(QPaintEvent *pe);
     QGridLayout *contentLayout;
     QWidget *topWidget;
     MainWindow *myParent;

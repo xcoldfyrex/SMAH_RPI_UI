@@ -14,6 +14,8 @@
 #include <QMap>
 
 #include "zone.h"
+#include "preset.h"
+
 
 class NetworkThread: public QThread
 {
@@ -44,6 +46,7 @@ private slots:
 signals:
     void error(QTcpSocket::SocketError socketError);
     void zoneArrived(Zone *zone);
+    void presetArrived(Preset *preset);
 
 private:
     int socketDescriptor;

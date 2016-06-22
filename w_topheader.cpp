@@ -12,7 +12,6 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     this->spcHeader = new QSpacerItem(1,1);
     this->topWidgetLayout->addWidget(lblClock);
     this->topWidgetLayout->addStretch(1);
-    //this->topWidgetLayout->addWidget(lblPath);
     this->topWidgetLayout->addSpacerItem(spcHeader);
     topWidgetLayout->addWidget(btnInfo);
     topWidgetLayout->addWidget(btnHome);
@@ -21,7 +20,6 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     btnHome->setObjectName("btnhome");
     topWidget->setObjectName("header");
     lblClock->setObjectName("clock");
-    //lblPath->setObjectName("path");
     btnInfo->setObjectName("btnMainInfo");
     topWidget->setAutoFillBackground(true);
 

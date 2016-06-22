@@ -39,29 +39,34 @@ void NetworkThread::socketConnect()
 
 void NetworkThread::socketRead()
 {
-    QByteArray Data = socket->readAll();
-    qDebug() << "IN" << Data;
-    int len = sizeof(Data);
-    if (len < 1024)
+
+    QByteArray stream;
+    QByteArray data = "";
+    while (socket->bytesAvailable() && !data.contains('\n')) {
+        QByteArray data = socket->read(1);
+        stream.append(data);
+
+    }
+    //qDebug() << "IN" << stream;
+
+    QString buffer = QString::fromUtf8(stream.data());
+    QJsonDocument doc = QJsonDocument::fromJson(buffer.toUtf8());
+    if(!doc.isNull())
     {
-        QString buffer = QString::fromUtf8(Data.data());
-        QJsonDocument doc = QJsonDocument::fromJson(buffer.toUtf8());
-        if(!doc.isNull())
+        if(doc.isObject())
         {
-            if(doc.isObject())
-            {
-                processPayload(doc.object());
-            }
-            else
-            {
-                qDebug() << socketDescriptor << "ERROR Document is not an object" << endl;
-            }
+            processPayload(doc.object());
         }
         else
         {
-            qDebug() << socketDescriptor << "ERROR Invalid JSON...\n" << buffer << endl;
+            qDebug() << socketDescriptor << "ERROR Document is not an object" << endl;
         }
     }
+    else
+    {
+        qDebug() << socketDescriptor << "ERROR Invalid JSON...\n" << buffer << endl;
+    }
+
 }
 
 void NetworkThread::socket_write(QJsonObject data)
@@ -73,13 +78,7 @@ void NetworkThread::socket_write(QJsonObject data)
         QByteArray ba = jso.toLatin1();
         const char *c_str2 = ba.data();
         char buffer[128];
-        sprintf(buffer, "%s", c_str2);
-
-        int slen = strlen(buffer);
-        for(; slen < sizeof(buffer)-1;slen++) {
-            buffer[slen] = '*';
-        }
-        buffer[slen] = 0;
+        sprintf(buffer, "%s\n", c_str2);
 
         socket->write(buffer);
         qDebug() << strlen(buffer) << "OUT" << buffer;
@@ -87,7 +86,8 @@ void NetworkThread::socket_write(QJsonObject data)
     }
 }
 
-void NetworkThread::socketDisconnect() {
+void NetworkThread::socketDisconnect()
+{
     qDebug() << socketDescriptor  << "CLOSED" <<  socket->peerAddress().toString();
     //mainWindow.logActivity(mainWindow.txtLog,tr("Lost connection from ").arg(socket->peerAddress().toString()));
 }
@@ -124,14 +124,10 @@ void NetworkThread::sendPing()
 
 QJsonObject NetworkThread::buildPayload()
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    unsigned long long ts =
-            (unsigned long long)(tv.tv_sec) * 1000 +
-            (unsigned long long)(tv.tv_usec) / 1000;
-
-    char buffer[50];
-    sprintf(buffer,"%llx",ts);
+    char buffer[12];
+    for(int i = 0; i < 11; i++) {
+        sprintf(buffer + i, "%x", rand() % 16);
+    }
     QJsonObject payloadOut;
 
     payloadOut["requestID"] = QString(buffer);
@@ -154,6 +150,7 @@ void NetworkThread::processPayload(QJsonObject data)
     if (command == "OK" )
     {
         this->get_zones();
+        this->get_presets();
     }
 
     //server responded to a GET_RESOURCE
@@ -165,28 +162,32 @@ void NetworkThread::processPayload(QJsonObject data)
             QString type = outstanding.value(id);
             if (type == "ZONES")
             {
-                //QJsonObject jsonPayload = data["payload"].toObject();
                 QJsonArray array = data.value("payload").toArray();
-                //qDebug() << "FOUND " << data["payload"];
-
                 foreach (const QJsonValue & value, array)
                 {
                     QJsonObject obj = value.toObject();
-                    //qDebug() << "ID" << obj["name"].toString();
                     Zone *zone = new Zone(obj["id"].toInt(), obj["name"].toString(), true, true, true);
                     gZoneList->append(zone);
                     emit zoneArrived(zone);
                 }
-
-                //qDebug() << "FOUND " << jsonPayload;
-
             }
 
-
+            if (type == "PRESETS")
+            {
+                QJsonArray array = data.value("payload").toArray();
+                short presetID = 0;
+                foreach (const QJsonValue & value, array)
+                {
+                    QJsonObject obj = value.toObject();
+                    Preset *preset = new Preset(obj["name"].toString(),presetID);
+                    preset->setColor(obj["color"].toString());
+                    presetID++;
+                    emit presetArrived(preset);
+                }
+            }
             outstanding.remove(id);
         }
     }
-
 }
 
 void NetworkThread::prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo = "") {
@@ -213,5 +214,6 @@ void NetworkThread::get_presets()
     QJsonObject jsonObject = buildPayload();
     jsonObject["command"] = "GET_RESOURCE";
     jsonObject["resource"] = "PRESETS";
+    outstanding.insert(jsonObject["requestID"].toString(), jsonObject["resource"].toString());
     socket_write(jsonObject);
 }

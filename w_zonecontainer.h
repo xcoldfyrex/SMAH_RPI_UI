@@ -2,7 +2,7 @@
 #define ZONECONTAINERWIDGET_H
 
 #include <QWidget>
-#include <QStackedLayout>
+#include <QStackedWidget>
 
 #include "w_zoneoverview.h"
 #include "w_presetchooser.h"
@@ -15,7 +15,7 @@ public:
     explicit ZoneContainerWidget(QWidget *parent = 0);
     ZoneOverviewWidget *zoneOverViewWidget;
     QWidget *topWidget;
-    QStackedLayout *contentLayout;
+    QStackedWidget *contentLayout;
     PresetChooser *presetChooserWidget = new PresetChooser(this);
 
 private:

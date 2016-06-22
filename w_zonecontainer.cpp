@@ -6,14 +6,14 @@
 #include "w_lightcontrolcontainer.h"
 #include "w_mainwindow.h"
 #include <QDebug>
-#include <QStackedLayout>
+#include <QStackedWidget>
 #include <QPushButton>
 
 ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
 {
 
     topWidget = new QWidget;
-    contentLayout = new QStackedLayout;
+    contentLayout = new QStackedWidget;
     QBoxLayout *zoneFunctions = new QBoxLayout(QBoxLayout::TopToBottom);;
     QBoxLayout *mainLayout = new QBoxLayout(QBoxLayout::TopToBottom);
     QBoxLayout *vboxContainer = new QBoxLayout(QBoxLayout::LeftToRight);;
@@ -32,14 +32,17 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     /*
      * panel container
     */
-    mainLayout->addLayout(contentLayout);
-    mainLayout->addStretch(1);
+    contentLayout->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    mainLayout->addWidget(contentLayout);
+    mainLayout->setStretchFactor(contentLayout,0);
 
     /*
      * create node widgets(left panel)
     */
     LightControlContainerWidget *lightControlWidget = new LightControlContainerWidget(this);
     presetChooserWidget = new PresetChooser(this);
+    presetChooserWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+
     zoneOverViewWidget = new ZoneOverviewWidget(this);
     contentLayout->addWidget(zoneOverViewWidget->topWidget);
     contentLayout->addWidget(lightControlWidget->topWidget);
@@ -57,7 +60,7 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     zoneFunctions->addWidget(btnShowLights,0);
     zoneFunctions->addWidget(btnShowPower,0);
     zoneFunctions->addSpacerItem(spacer2);
-    zoneFunctions->addStretch(1);
+    zoneFunctions->addStretch(0);
     zoneFunctions->addWidget(btnShowOverview);
     zoneFunctions->setContentsMargins(10,10,10,10);
 

@@ -16,9 +16,16 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
     this->topWidget = new QWidget;
     this->contentLayout = new QVBoxLayout(topWidget);
     this->presetList = new QListWidget(this);
+    //presetList->resize(600, 800);
     //presetList->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    contentLayout->addStretch(1);
+    //contentLayout->resize(700,700);
+    //btnActivate->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+
     contentLayout->addWidget(presetList);
+    //QSpacerItem *spacer = new QSpacerItem(500,500,QSizePolicy::Maximum);
+    //topWidget->setStyleSheet("background-color:blue;");
+
+    //contentLayout->addSpacerItem(spacer);
     contentLayout->addWidget(btnActivate);
     presetList->setObjectName("presetList");
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));

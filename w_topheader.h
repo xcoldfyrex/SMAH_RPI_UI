@@ -25,6 +25,7 @@ private:
 signals:
 
 public slots:
+    void showTime();
 };
 
 #endif // HCHEADER_H

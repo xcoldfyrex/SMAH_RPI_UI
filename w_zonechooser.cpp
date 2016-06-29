@@ -24,6 +24,6 @@ void ZoneChooserWidget::addZoneButton(Zone *zone)
     signalMapper->setMapping(zonelabel,zone->id);
     connect(zonelabel,SIGNAL(clicked()),signalMapper,SLOT(map()));
     connect(signalMapper,SIGNAL(mapped(int)),myParent,SLOT(showZone(int)));
-    connect(myParent,SIGNAL(zoneChanged(Zone)), myParent->zoneContainer->zoneOverViewWidget,SLOT(switchZone(Zone)));
+    connect(myParent,SIGNAL(zoneChanged(Zone)), myParent->zoneContainer->zoneContainerHeader,SLOT(switchZone(Zone)));
     contentLayout->addWidget(zonelabel,zone->id /*gridLoc*/, 0, 1, 1, Qt::AlignVCenter);
 }

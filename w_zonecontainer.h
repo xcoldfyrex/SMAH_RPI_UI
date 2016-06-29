@@ -6,6 +6,7 @@
 
 #include "w_zoneoverview.h"
 #include "w_presetchooser.h"
+#include "w_zonecontainerheader.h"
 
 class ZoneContainerWidget : public QWidget
 {
@@ -17,6 +18,8 @@ public:
     QWidget *topWidget;
     QStackedWidget *contentLayout;
     PresetChooser *presetChooserWidget = new PresetChooser(this);
+    ZoneContainerHeaderWidget *zoneContainerHeader;
+
 
 private:
 

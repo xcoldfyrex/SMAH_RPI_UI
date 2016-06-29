@@ -1,3 +1,5 @@
+#include <QTimer>
+
 #include "w_topheader.h"
 #include "w_mainwindow.h"
 
@@ -26,4 +28,14 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
     connect(btnHome,SIGNAL(clicked(bool)),myParent,SLOT(showZoneChooser()));
     connect(btnInfo,SIGNAL(clicked(bool)),myParent,SLOT(showSystemLog()));
+
+    //timer for clock
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(showTime()));
+    timer->start(1000);
+}
+
+void TopHeaderWidget::showTime()
+{
+    this->lblClock->setText(QTime::currentTime().toString("h:mm:ss "));
 }

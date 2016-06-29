@@ -47,7 +47,7 @@ void NetworkThread::socketRead()
         stream.append(data);
 
     }
-    //qDebug() << "IN" << stream;
+    qDebug() << "IN" << stream;
 
     QString buffer = QString::fromUtf8(stream.data());
     QJsonDocument doc = QJsonDocument::fromJson(buffer.toUtf8());
@@ -175,13 +175,11 @@ void NetworkThread::processPayload(QJsonObject data)
             if (type == "PRESETS")
             {
                 QJsonArray array = data.value("payload").toArray();
-                short presetID = 0;
                 foreach (const QJsonValue & value, array)
                 {
                     QJsonObject obj = value.toObject();
+                    int presetID = obj["id"].toInt();
                     Preset *preset = new Preset(obj["name"].toString(),presetID);
-                    preset->setColor(obj["color"].toString());
-                    presetID++;
                     emit presetArrived(preset);
                 }
             }

@@ -2,12 +2,13 @@
     Get here from the zone selector. List of funztions for given zone.
 */
 
-#include "w_zonecontainer.h"
-#include "w_lightcontrolcontainer.h"
-#include "w_mainwindow.h"
 #include <QDebug>
 #include <QStackedWidget>
 #include <QPushButton>
+
+#include "w_zonecontainer.h"
+#include "w_lightcontrolcontainer.h"
+#include "w_mainwindow.h"
 
 ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
 {
@@ -30,14 +31,22 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     vboxContainer->addLayout(zoneFunctions);
 
     /*
+     * panel container header
+     */
+    zoneContainerHeader = new ZoneContainerHeaderWidget(this);
+    mainLayout->addWidget(zoneContainerHeader->topWidget);
+
+
+    /*
      * panel container
     */
     contentLayout->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     mainLayout->addWidget(contentLayout);
     mainLayout->setStretchFactor(contentLayout,0);
 
+
     /*
-     * create node widgets(left panel)
+     * panel container widgets(left panel)
     */
     LightControlContainerWidget *lightControlWidget = new LightControlContainerWidget(this);
     presetChooserWidget = new PresetChooser(this);

@@ -56,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     connect(networkThread,SIGNAL(presetArrived(Preset*)),zoneContainer->presetChooserWidget,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
 
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
-
     connect(this, SIGNAL(finished()), networkThread, SLOT(deleteLater()));
 
 }

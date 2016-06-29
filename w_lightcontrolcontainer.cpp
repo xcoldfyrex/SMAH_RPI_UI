@@ -24,26 +24,38 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
 
-    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
-
     contentLayout->setContentsMargins(0,0,0,0);
     contentLayout->addWidget(ui->btnSelectPreset,0,0);
-    contentLayout->addWidget(ui->lblActivePreset,0,2);
 
     HSVPalette *hsvSwatch = new HSVPalette(this);
-    BrightnessPalette *brightness = new BrightnessPalette(this);
+    ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
+    QSlider *brightnessSlider = new QSlider(Qt::Horizontal);
+
+    brightnessSlider->setMinimum(0);
+    brightnessSlider->setMaximum(255);
+    brightnessSlider->setSliderPosition(255);
+    brightnessSlider->setSingleStep(1);
+    brightnessSlider->setPageStep(20);
+
+    QSlider *saturationSlider = new QSlider(Qt::Horizontal);
+    saturationSlider->setMinimum(0);
+    saturationSlider->setMaximum(255);
+    saturationSlider->setSliderPosition(255);
+    saturationSlider->setSingleStep(1);
 
     preview = new ColorPreview(this);
     preview->color.setRgb(255,255,255);
-
     contentLayout->addWidget(hsvSwatch,1,0,1,4);
-    contentLayout->addWidget(brightness,2,0,1,4);
-    contentLayout->addWidget(preview,3,0,1,4);    
+    contentLayout->addWidget(new QLabel("Brightness"),2,0,1,4);
+    contentLayout->addWidget(brightnessSlider,3,0,1,4);
+    contentLayout->addWidget(new QLabel("Saturation"),4,0,1,4);
+    contentLayout->addWidget(saturationSlider,5,0,1,4);
+    contentLayout->addWidget(preview,6,0,1,4);
 
+    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
     connect(hsvSwatch,SIGNAL(changed(QColor)),this,SLOT(updateHSVSelected(QColor)));
-    connect(brightness,SIGNAL(changed(QColor)),this,SLOT(updateBrightnessSelected(QColor)));
-
-    ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
+    connect(brightnessSlider,SIGNAL(valueChanged(int)),this,SLOT(updateBrightnessSelected(int)));
+    connect(saturationSlider,SIGNAL(valueChanged(int)),this,SLOT(updateSaturationSelected(int)));
     connect(ui->btnSelectPreset,SIGNAL(clicked(bool)),myParent,SLOT(showPresetChooser()));
 
 
@@ -66,18 +78,27 @@ void LightControlContainerWidget::updateHSVSelected(QColor qcol)
     this->sendToNetwork("SET",jsonPayload);
 }
 
-void LightControlContainerWidget::updateBrightnessSelected(QColor qcol)
+void LightControlContainerWidget::updateBrightnessSelected(int qcol)
 {
-    this->rgb.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
-    this->preview->color.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
-
-    qcol.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol.value());
+    this->rgb.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol);
+    this->preview->color.setHsv(this->rgb.hue(),this->rgb.saturation(),qcol);
     this->preview->repaint();
 
     QJsonObject jsonPayload;
     jsonPayload["type"] = "01";
-    jsonPayload["value"] = qcol.name().toUpper().replace("#","") + "FF";
+    jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
+    this->sendToNetwork("SET",jsonPayload);
+}
 
+void LightControlContainerWidget::updateSaturationSelected(int qcol)
+{
+    this->rgb.setHsv(this->rgb.hue(),qcol,this->rgb.value());
+    this->preview->color.setHsv(this->rgb.hue(),qcol,this->rgb.value());
+    this->preview->repaint();
+
+    QJsonObject jsonPayload;
+    jsonPayload["type"] = "01";
+    jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
     this->sendToNetwork("SET",jsonPayload);
 }
 

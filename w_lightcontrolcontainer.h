@@ -34,7 +34,8 @@ signals:
 
 public slots:
     void updateHSVSelected(QColor qcol);
-    void updateBrightnessSelected(QColor qcol);
+    void updateBrightnessSelected(int qcol);
+    void updateSaturationSelected(int qcol);
     void sendToNetwork(QString command, QJsonObject jsonPayload);
 
 private:

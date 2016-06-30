@@ -188,7 +188,8 @@ void NetworkThread::processPayload(QJsonObject data)
     }
 }
 
-void NetworkThread::prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo = "") {
+void NetworkThread::prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo = "")
+{
     QJsonObject jsonObject = buildPayload();
     jsonObject["command"] = command;
     jsonObject["payload"] = jsonPayload;

@@ -12,12 +12,13 @@
 #include <QDebug>
 #include <QSslSocket>
 #include <QMap>
+#include <QTimer>
 
 #include "zone.h"
 #include "preset.h"
 
 
-class NetworkThread: public QThread
+class NetworkThread: public QObject
 {
     Q_OBJECT
 
@@ -25,7 +26,6 @@ public:
     NetworkThread(QString address, quint16 port, QObject *parent);
     NetworkThread();
     bool isConnected();
-    void run();
 
 public slots:
     void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
@@ -55,6 +55,8 @@ private:
     QTcpSocket *socket;
     QJsonObject buildPayload();
     int errcnt;
+    QTimer *reconnectTimer;
+
     QMap<QString,QString>outstanding;
 
 };

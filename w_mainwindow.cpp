@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
 
-    networkThread->start();
+    //networkThread->start();
     connect(networkThread,SIGNAL(zoneArrived(Zone*)),zoneChooser,SLOT(addZoneButton(Zone*)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(presetArrived(Preset*)),zoneContainer->presetChooserWidget,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
 

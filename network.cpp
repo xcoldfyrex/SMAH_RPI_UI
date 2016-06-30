@@ -3,27 +3,25 @@
 extern QList<Zone*> *gZoneList;
 
 NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
-    : QThread(parent)
+    : QObject(parent)
 {
     this->address = address;
     this->port = port;
-}
-
-NetworkThread::NetworkThread() {
-
-}
-
-void NetworkThread::run()
-{
     socket = new QTcpSocket();
-    //connect(socket, SIGNAL(connected()), this, SLOT(socketConnect()));
+
+    reconnectTimer = new QTimer();
+    reconnectTimer->setInterval(5000);
+
+    connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(socketConnect()),Qt::DirectConnection);
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
     connect(socket, SIGNAL(readyRead()),this,SLOT(socketRead()),Qt::DirectConnection);
     connect(socket, SIGNAL(disconnected()),this,SLOT(socketDisconnect()),Qt::DirectConnection);
     errcnt = 0;
     socketConnect();
+}
 
-    exec();
+NetworkThread::NetworkThread() {
+
 }
 
 void NetworkThread::socketConnect()
@@ -33,6 +31,7 @@ void NetworkThread::socketConnect()
     socket->connectToHost(addr, this->port);
     if (socket->waitForConnected(5000))
     {
+        reconnectTimer->stop();
         sendStart();
     }
 }
@@ -89,23 +88,13 @@ void NetworkThread::socket_write(QJsonObject data)
 void NetworkThread::socketDisconnect()
 {
     qDebug() << socketDescriptor  << "CLOSED" <<  socket->peerAddress().toString();
-    //mainWindow.logActivity(mainWindow.txtLog,tr("Lost connection from ").arg(socket->peerAddress().toString()));
 }
 
 void NetworkThread::socketError()
 {
-    if (errcnt >= 4096)
-    {
-        qDebug() << "Unable able to connect after " << errcnt << "tries, giving up";
-        socket->deleteLater();
-        this->exit(1);
-        return;
-    }
-    errcnt++;
     qDebug() << "Socket error:" << errcnt << socket->errorString();
-    socket->abort();
-    this->sleep(1);
-    socketConnect();
+    if (!reconnectTimer->isActive())
+        reconnectTimer->start();
 }
 
 void NetworkThread::sendStart()

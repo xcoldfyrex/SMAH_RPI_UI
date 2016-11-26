@@ -48,6 +48,14 @@ void PresetChooser::setPreset()
 void PresetChooser::addPreset(Preset *preset)
 {
 
+    if (gPresetList->size() > 0)
+    {
+        foreach (Preset *old_preset, *gPresetList)
+        {
+            if (old_preset->id == preset->id)
+                return;
+        }
+    }
     QListWidgetItem *item = new QListWidgetItem();
     QVariant data(preset->id);
     item->setData(Qt::UserRole, data);
@@ -59,8 +67,8 @@ void PresetChooser::addPreset(Preset *preset)
 
 void PresetChooser::sendToNetwork(QString command, QJsonObject jsonPayload)
 {
-    char zoneString[3];
-    sprintf(zoneString, "%d", gActiveZone->id);
-    jsonPayload["zone"] = zoneString;
+    //char zoneString[3];
+    //sprintf(zoneString, "%d", gActiveZone->id);
+    jsonPayload["zone"] = gActiveZone->id;
     emit(requestingNetworkOut(command,jsonPayload, ""));
 }

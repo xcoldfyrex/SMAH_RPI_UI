@@ -27,14 +27,17 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    QFile File(QDir::currentPath()+"/../assets/main.css");
+    QString homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
+    QDir::setCurrent(homeLocation + "/.smah/assets");
+
+    QFile File("main.css");
     qDebug() << "CWD: "<< QDir::currentPath();
     File.open(QFile::ReadOnly);
     QString StyleSheet = QLatin1String(File.readAll());
     qApp->setStyleSheet(StyleSheet);
 
-    QFontDatabase::addApplicationFont("../assets/Crescent-Regular.ttf");
-    QFontDatabase::addApplicationFont("../assets/sui-generis-free.ttf");
+    QFontDatabase::addApplicationFont(homeLocation + "Crescent-Regular.ttf");
+    QFontDatabase::addApplicationFont(homeLocation + "sui-generis-free.ttf");
 
     MainWindow mainWindow;
     qInstallMessageHandler(MainWindow::logHandler);

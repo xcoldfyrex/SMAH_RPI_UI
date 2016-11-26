@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
 
     //setup networking
-    networkThread = new NetworkThread("127.0.0.1", 9002, this);
+    networkThread = new NetworkThread("10.1.10.110", 9002, this);
 
     this->setObjectName("MainWindow");
     this->setStyle(QApplication::style());
@@ -93,9 +93,9 @@ void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, c
         fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         //systemLogWidget->txtLogger.setText(msg);
         break;
-    case QtInfoMsg:
-        fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
+    //case QtInfoMsg:
+    //    fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+    //    break;
     case QtWarningMsg:
         fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;

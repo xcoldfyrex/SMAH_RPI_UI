@@ -2,6 +2,7 @@
 #define PRESET_H
 
 #include <QMap>
+#include <QString>
 
 class Preset
 {

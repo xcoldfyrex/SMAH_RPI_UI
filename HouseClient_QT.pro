@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui network widgets xml
-CONFIG += console
+# CONFIG += console
 
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     logger.cpp \
     preset.cpp \
     w_presetchooser.cpp \
-    w_zonecontainerheader.cpp
+    w_zonecontainerheader.cpp \
+    w_scheduledactions.cpp
 
 HEADERS  += \
     zone.h \
@@ -47,7 +48,8 @@ HEADERS  += \
     logger.h \
     preset.h \
     w_presetchooser.h \
-    w_zonecontainerheader.h
+    w_zonecontainerheader.h \
+    w_scheduledactions.h
 
 FORMS    += \
     mainwindow.ui \

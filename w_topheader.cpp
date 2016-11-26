@@ -37,5 +37,5 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
 
 void TopHeaderWidget::showTime()
 {
-    this->lblClock->setText(QTime::currentTime().toString("h:mm:ss "));
+    //this->lblClock->setText(QTime::currentTime().toString("h:mm:ss "));
 }

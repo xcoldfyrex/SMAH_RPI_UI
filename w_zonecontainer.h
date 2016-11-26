@@ -27,6 +27,7 @@ private slots:
     void showLightContainer();
     void showOverview();
     void showPresetChooser();
+    void showActions();
 
 };
 

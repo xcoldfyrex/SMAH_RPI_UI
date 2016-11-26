@@ -6,7 +6,6 @@
 #include <QVBoxLayout>
 #include <QJsonObject>
 
-//#include "w_mainwindow.h"
 #include "preset.h"
 
 class PresetChooser : public QWidget
@@ -18,7 +17,6 @@ public:
     QListWidget *presetList;
     QVBoxLayout *contentLayout;
 private:
-    //MainWindow* mwParent;
 
 signals:
     void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);

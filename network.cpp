@@ -1,6 +1,7 @@
 #include "network.h"
 
 extern QList<Zone*> *gZoneList;
+QByteArray socketBuffer;
 
 NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
     : QObject(parent)
@@ -38,17 +39,18 @@ void NetworkThread::socketConnect()
 
 void NetworkThread::socketRead()
 {
+    while (socket->bytesAvailable() && !socketBuffer.contains('\n')) {
 
-    QByteArray stream;
-    QByteArray data = "";
-    while (socket->bytesAvailable() && !data.contains('\n')) {
         QByteArray data = socket->read(1);
-        stream.append(data);
-
+        socketBuffer.append(data);
     }
-    qDebug() << "IN" << stream;
 
-    QString buffer = QString::fromUtf8(stream.data());
+    qDebug("IN \n%s", socketBuffer.toStdString().c_str());
+
+
+    QString buffer = QString::fromUtf8(socketBuffer.data());
+    socketBuffer = "";
+
     QJsonDocument doc = QJsonDocument::fromJson(buffer.toUtf8());
     if(!doc.isNull())
     {
@@ -63,7 +65,8 @@ void NetworkThread::socketRead()
     }
     else
     {
-        qDebug() << socketDescriptor << "ERROR Invalid JSON...\n" << buffer << endl;
+        qDebug() << socketDescriptor << "ERROR Invalid JSON...";
+        qDebug("%s", buffer.toStdString().c_str());
     }
 
 }
@@ -77,7 +80,7 @@ void NetworkThread::socket_write(QJsonObject data)
         QByteArray ba = jso.toLatin1();
         const char *c_str2 = ba.data();
         char buffer[128];
-        sprintf(buffer, "%s\n", c_str2);
+        sprintf(buffer, "%s\n\n", c_str2);
 
         socket->write(buffer);
         qDebug() << strlen(buffer) << "OUT" << buffer;
@@ -155,9 +158,19 @@ void NetworkThread::processPayload(QJsonObject data)
                 foreach (const QJsonValue & value, array)
                 {
                     QJsonObject obj = value.toObject();
+                    if (gZoneList->size() > 0)
+                    {
+                        foreach (Zone *zone, *gZoneList)
+                        {
+                            if (zone->id == obj["id"].toInt())
+                                return;
+                        }
+                    }
+
                     Zone *zone = new Zone(obj["id"].toInt(), obj["name"].toString(), true, true, true);
                     gZoneList->append(zone);
                     emit zoneArrived(zone);
+
                 }
             }
 

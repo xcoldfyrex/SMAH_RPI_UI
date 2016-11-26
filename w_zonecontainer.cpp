@@ -9,6 +9,7 @@
 #include "w_zonecontainer.h"
 #include "w_lightcontrolcontainer.h"
 #include "w_mainwindow.h"
+#include "w_scheduledactions.h"
 
 ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
 {
@@ -20,6 +21,7 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     QBoxLayout *vboxContainer = new QBoxLayout(QBoxLayout::LeftToRight);;
     QPushButton *btnShowLights = new QPushButton;
     QPushButton *btnShowPower = new QPushButton;
+    QPushButton *btnShowActions = new QPushButton;
     QPushButton *btnShowOverview = new QPushButton;
 
 
@@ -49,6 +51,8 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
      * panel container widgets(left panel)
     */
     LightControlContainerWidget *lightControlWidget = new LightControlContainerWidget(this);
+    ScheduledActionsWidget *scheduledActionsWidget = new ScheduledActionsWidget(this);
+
     presetChooserWidget = new PresetChooser(this);
     presetChooserWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
@@ -56,6 +60,7 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     contentLayout->addWidget(zoneOverViewWidget->topWidget);
     contentLayout->addWidget(lightControlWidget->topWidget);
     contentLayout->addWidget(presetChooserWidget->topWidget);
+    contentLayout->addWidget(scheduledActionsWidget->topWidget);
     contentLayout->setCurrentIndex(0);
 
     /*
@@ -64,16 +69,19 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     QSpacerItem *spacer2 = new QSpacerItem(1,1);
     btnShowLights->setObjectName("btnShowLights");
     btnShowPower->setObjectName("btnShowPower");
+    btnShowActions->setObjectName("btnShowActions");
     btnShowOverview->setObjectName("btnhome");
 
     zoneFunctions->addWidget(btnShowLights,0);
     zoneFunctions->addWidget(btnShowPower,0);
+    zoneFunctions->addWidget(btnShowActions,0);
     zoneFunctions->addSpacerItem(spacer2);
     zoneFunctions->addStretch(0);
     zoneFunctions->addWidget(btnShowOverview);
     zoneFunctions->setContentsMargins(10,10,10,10);
 
     connect(btnShowLights,SIGNAL(clicked()),this,SLOT(showLightContainer()));
+    connect(btnShowActions,SIGNAL(clicked()),this,SLOT(showActions()));
     connect(btnShowOverview,SIGNAL(clicked()),this,SLOT(showOverview()));
 
 }
@@ -88,4 +96,8 @@ void ZoneContainerWidget::showLightContainer() {
 
 void ZoneContainerWidget::showPresetChooser() {
     contentLayout->setCurrentIndex(2);
+}
+
+void ZoneContainerWidget::showActions() {
+    contentLayout->setCurrentIndex(3);
 }

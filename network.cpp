@@ -45,7 +45,7 @@ void NetworkThread::socketRead()
         socketBuffer.append(data);
     }
 
-    qDebug("IN \n%s", socketBuffer.toStdString().c_str());
+    //qDebug("IN \n%s", socketBuffer.toStdString().c_str());
 
 
     QString buffer = QString::fromUtf8(socketBuffer.data());
@@ -66,7 +66,7 @@ void NetworkThread::socketRead()
     else
     {
         qDebug() << socketDescriptor << "ERROR Invalid JSON...";
-        qDebug("%s", buffer.toStdString().c_str());
+        //qDebug("%s", buffer.toStdString().c_str());
     }
 
 }
@@ -155,6 +155,8 @@ void NetworkThread::processPayload(QJsonObject data)
             if (type == "ZONES")
             {
                 QJsonArray array = data.value("payload").toArray();
+                int envZones = 0;
+                int controlZones = 0;
                 foreach (const QJsonValue & value, array)
                 {
                     QJsonObject obj = value.toObject();
@@ -166,10 +168,20 @@ void NetworkThread::processPayload(QJsonObject data)
                                 return;
                         }
                     }
-
-                    Zone *zone = new Zone(obj["id"].toInt(), obj["name"].toString(), true, true, true);
+                    bool hasEnviro = obj["hasEnviro"].toString().contains("true");
+                    bool hasRGB = obj["hasLedRGB"].toString().contains("true");
+                    QString zoneName = obj["name"].toString();
+                    Zone *zone = new Zone(obj["id"].toInt(), zoneName, hasRGB, true, hasEnviro);
                     gZoneList->append(zone);
-                    emit zoneArrived(zone);
+                    emit zoneArrived(zone, envZones, controlZones);
+
+                    if (hasEnviro) {
+                        envZones++;
+                    }
+
+                    if (hasRGB) {
+                        controlZones++;
+                    }
 
                 }
             }

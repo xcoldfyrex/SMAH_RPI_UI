@@ -7,6 +7,8 @@ SystemLogWidget::SystemLogWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     //this->txtLogger = ui->txtLog;
+    this->ui->txtLog->viewport()->setAutoFillBackground(false);
+
 }
 
 SystemLogWidget::~SystemLogWidget()

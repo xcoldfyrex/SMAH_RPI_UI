@@ -1,4 +1,5 @@
 #include <QTimer>
+#include <QTime>
 
 #include "w_topheader.h"
 #include "w_mainwindow.h"
@@ -7,10 +8,10 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
 {
     this->topWidget = new QWidget;
     this->topWidgetLayout = new QHBoxLayout(topWidget);
-    this->lblClock = new QLabel("CLOCK");
+    this->lblClock = new QLabel("");
     this->lblPath = new QLabel(name);
-    this->btnHome = new QPushButton();
-    this->btnInfo = new QPushButton();
+    this->btnHome = new QPushButton("Zones");
+    this->btnInfo = new QPushButton("System");
     this->spcHeader = new QSpacerItem(1,1);
     this->topWidgetLayout->addWidget(lblClock);
     this->topWidgetLayout->addStretch(1);
@@ -19,10 +20,10 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     topWidgetLayout->addWidget(btnHome);
 
     topWidget->setFixedHeight(50);
-    btnHome->setObjectName("btnhome");
+    btnHome->setObjectName("btnTopZones");
+    btnInfo->setObjectName("btnTopSystem");
     topWidget->setObjectName("header");
     lblClock->setObjectName("clock");
-    btnInfo->setObjectName("btnMainInfo");
     topWidget->setAutoFillBackground(true);
 
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
@@ -37,5 +38,5 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
 
 void TopHeaderWidget::showTime()
 {
-    //this->lblClock->setText(QTime::currentTime().toString("h:mm:ss "));
+    this->lblClock->setText(QTime::currentTime().toString("hh:mm:ss "));
 }

@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     this->setAutoFillBackground(true);
     this->style()->unpolish(this);
     this->style()->polish(this);
+    this->resize(800,480);
     this->update();
     this->repaint();
 
@@ -51,8 +52,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
 
-    //networkThread->start();
-    connect(networkThread,SIGNAL(zoneArrived(Zone*)),zoneChooser,SLOT(addZoneButton(Zone*)),Qt::QueuedConnection);
+    connect(networkThread,SIGNAL(zoneArrived(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(presetArrived(Preset*)),zoneContainer->presetChooserWidget,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
 
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);

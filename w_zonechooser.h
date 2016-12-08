@@ -25,7 +25,7 @@ public:
 
 
 public slots:
-    void addZoneButton(Zone *zone);
+    void addZoneButton(Zone *zone, int envZones, int controlZones);
 
 private:
 };

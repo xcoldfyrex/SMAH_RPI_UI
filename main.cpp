@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
     QString StyleSheet = QLatin1String(File.readAll());
     qApp->setStyleSheet(StyleSheet);
 
-    QFontDatabase::addApplicationFont(homeLocation + "Crescent-Regular.ttf");
-    QFontDatabase::addApplicationFont(homeLocation + "sui-generis-free.ttf");
+    QFontDatabase::addApplicationFont("Crescent-Regular.ttf");
+    QFontDatabase::addApplicationFont("sui-generis-free.ttf");
 
     MainWindow mainWindow;
     qInstallMessageHandler(MainWindow::logHandler);

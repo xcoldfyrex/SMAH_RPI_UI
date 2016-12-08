@@ -6,7 +6,6 @@
 #include "w_lightcontrolcontainer.h"
 #include "ui_lightcontrolwidget.h"
 #include "w_hsvpalette.h"
-#include "w_brightnesspalette.h"
 #include "w_colorpreview.h"
 #include "w_zonecontainer.h"
 #include "w_mainwindow.h"
@@ -29,33 +28,14 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
 
     HSVPalette *hsvSwatch = new HSVPalette(this);
     ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
-    QSlider *brightnessSlider = new QSlider(Qt::Horizontal);
-
-    brightnessSlider->setMinimum(0);
-    brightnessSlider->setMaximum(255);
-    brightnessSlider->setSliderPosition(255);
-    brightnessSlider->setSingleStep(1);
-    brightnessSlider->setPageStep(20);
-
-    QSlider *saturationSlider = new QSlider(Qt::Horizontal);
-    saturationSlider->setMinimum(0);
-    saturationSlider->setMaximum(255);
-    saturationSlider->setSliderPosition(255);
-    saturationSlider->setSingleStep(1);
 
     preview = new ColorPreview(this);
     preview->color.setRgb(255,255,255);
     contentLayout->addWidget(hsvSwatch,1,0,1,4);
-    contentLayout->addWidget(new QLabel("Brightness"),2,0,1,4);
-    contentLayout->addWidget(brightnessSlider,3,0,1,4);
-    contentLayout->addWidget(new QLabel("Saturation"),4,0,1,4);
-    contentLayout->addWidget(saturationSlider,5,0,1,4);
     contentLayout->addWidget(preview,6,0,1,4);
 
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
-    connect(hsvSwatch,SIGNAL(changed(QColor)),this,SLOT(updateHSVSelected(QColor)));
-    connect(brightnessSlider,SIGNAL(valueChanged(int)),this,SLOT(updateBrightnessSelected(int)));
-    connect(saturationSlider,SIGNAL(valueChanged(int)),this,SLOT(updateSaturationSelected(int)));
+    connect(hsvSwatch,SIGNAL(colorChange(QColor)),this,SLOT(updateHSVSelected(QColor)));
     connect(ui->btnSelectPreset,SIGNAL(clicked(bool)),myParent,SLOT(showPresetChooser()));
 
 

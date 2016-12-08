@@ -45,7 +45,7 @@ private slots:
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void zoneArrived(Zone *zone);
+    void zoneArrived(Zone *zone, int envZones, int controlZones);
     void presetArrived(Preset *preset);
 
 private:

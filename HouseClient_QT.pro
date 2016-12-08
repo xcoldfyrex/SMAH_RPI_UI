@@ -17,7 +17,6 @@ SOURCES += main.cpp\
     zone.cpp \
     w_hsvpalette.cpp \
     w_colorpreview.cpp \
-    w_brightnesspalette.cpp \
     w_mainwindow.cpp \
     w_topheader.cpp \
     w_zoneoverview.cpp \
@@ -30,7 +29,8 @@ SOURCES += main.cpp\
     preset.cpp \
     w_presetchooser.cpp \
     w_zonecontainerheader.cpp \
-    w_scheduledactions.cpp
+    w_scheduledactions.cpp \
+    w_zoneenvironment.cpp
 
 HEADERS  += \
     zone.h \
@@ -41,7 +41,6 @@ HEADERS  += \
     w_hsvpalette.h \
     w_colorpreview.h \
     w_topheader.h \
-    w_brightnesspalette.h \
     w_zonechooser.h \
     w_systemlog.h \
     network.h \
@@ -49,7 +48,8 @@ HEADERS  += \
     preset.h \
     w_presetchooser.h \
     w_zonecontainerheader.h \
-    w_scheduledactions.h
+    w_scheduledactions.h \
+    w_zoneenvironment.h
 
 FORMS    += \
     mainwindow.ui \

@@ -39,7 +39,7 @@ void NetworkThread::socketConnect()
 
 void NetworkThread::socketRead()
 {
-    while (socket->bytesAvailable() && !socketBuffer.contains('\n')) {
+    while (!socketBuffer.contains('\n')) {
 
         QByteArray data = socket->read(1);
         socketBuffer.append(data);
@@ -134,7 +134,7 @@ void NetworkThread::processPayload(QJsonObject data)
     if (command == "START" )
     {
         QJsonObject jsonPayload;
-        jsonPayload["clientid"] = "100";
+        jsonPayload["clientid"] = 100;
         prepareToSend("ID",jsonPayload,data.value("requestID").toString());
     }
 

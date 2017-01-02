@@ -53,7 +53,7 @@ void LightControlContainerWidget::updateHSVSelected(QColor qcol)
     this->preview->repaint();
 
     QJsonObject jsonPayload;
-    jsonPayload["type"] = "01";
+    jsonPayload["type"] = 01;
     jsonPayload["value"] = this->preview->color.name().toUpper().replace("#","") + "FF";
     this->sendToNetwork("SET",jsonPayload);
 }
@@ -65,7 +65,7 @@ void LightControlContainerWidget::updateBrightnessSelected(int qcol)
     this->preview->repaint();
 
     QJsonObject jsonPayload;
-    jsonPayload["type"] = "01";
+    jsonPayload["type"] = 01;
     jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
     this->sendToNetwork("SET",jsonPayload);
 }
@@ -77,7 +77,7 @@ void LightControlContainerWidget::updateSaturationSelected(int qcol)
     this->preview->repaint();
 
     QJsonObject jsonPayload;
-    jsonPayload["type"] = "01";
+    jsonPayload["type"] = 01;
     jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
     this->sendToNetwork("SET",jsonPayload);
 }
@@ -85,6 +85,6 @@ void LightControlContainerWidget::updateSaturationSelected(int qcol)
 void LightControlContainerWidget::sendToNetwork(QString command, QJsonObject jsonPayload) {
     char zoneString[3];
     sprintf(zoneString, "%d", gActiveZone->id);
-    jsonPayload["zone"] = zoneString;
+    jsonPayload["zone"] = gActiveZone->id;
     emit(requestingNetworkOut(command,jsonPayload, ""));
 }

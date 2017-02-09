@@ -8,6 +8,7 @@
 #include <QGraphicsScene>
 #include <QPicture>
 
+#include "w_hslswatch.h"
 #include "w_colorpreview.h"
 #include "w_mainwindow.h"
 
@@ -33,14 +34,15 @@ signals:
     void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
-    void updateHSVSelected(QColor qcol);
-    void updateBrightnessSelected(int qcol);
-    void updateSaturationSelected(int qcol);
+    void updateFromWheel(QColor qcol);
+    void updateFromSwatch(QColor qcol);
     void sendToNetwork(QString command, QJsonObject jsonPayload);
 
 private:
     Ui::LightControlWidget *ui;
     QGraphicsScene *scene;
+    HSLSwatch *hslSwatch;
+
 };
 
 #endif // LIGHTCONTROLWIDGET_H

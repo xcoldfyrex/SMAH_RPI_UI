@@ -8,15 +8,16 @@ NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
 {
     this->address = address;
     this->port = port;
-    socket = new QTcpSocket();
+    this->blockSize = 0;
+    tcpSocket = new QTcpSocket();
 
     reconnectTimer = new QTimer();
     reconnectTimer->setInterval(5000);
 
     connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(socketConnect()),Qt::DirectConnection);
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
-    connect(socket, SIGNAL(readyRead()),this,SLOT(socketRead()),Qt::DirectConnection);
-    connect(socket, SIGNAL(disconnected()),this,SLOT(socketDisconnect()),Qt::DirectConnection);
+    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
+    connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(socketRead()),Qt::DirectConnection);
+    connect(tcpSocket, SIGNAL(disconnected()),this,SLOT(socketDisconnect()),Qt::DirectConnection);
     errcnt = 0;
     socketConnect();
 }
@@ -29,8 +30,8 @@ void NetworkThread::socketConnect()
 {
     QHostAddress addr(this->address);
     qDebug() << "Conencting to " << addr << this->port;
-    socket->connectToHost(addr, this->port);
-    if (socket->waitForConnected(5000))
+    tcpSocket->connectToHost(addr, this->port);
+    if (tcpSocket->waitForConnected(5000))
     {
         reconnectTimer->stop();
         sendStart();
@@ -39,41 +40,37 @@ void NetworkThread::socketConnect()
 
 void NetworkThread::socketRead()
 {
-    while (!socketBuffer.contains('\n')) {
+    QDataStream in(tcpSocket);
+    in.setVersion(QDataStream::Qt_5_0);
 
-        QByteArray data = socket->read(1);
-        socketBuffer.append(data);
-    }
-
-    //qDebug("IN \n%s", socketBuffer.toStdString().c_str());
+    QByteArray buffer;
 
 
-    QString buffer = QString::fromUtf8(socketBuffer.data());
-    socketBuffer = "";
-
-    QJsonDocument doc = QJsonDocument::fromJson(buffer.toUtf8());
-    if(!doc.isNull())
+    while( true )
     {
-        if(doc.isObject())
+        if( blockSize == 0 )
         {
-            processPayload(doc.object());
+            if( tcpSocket->bytesAvailable() < sizeof(quint16) )
+                return;
+            in >> blockSize;
         }
-        else
-        {
-            qDebug() << socketDescriptor << "ERROR Document is not an object" << endl;
-        }
-    }
-    else
-    {
-        qDebug() << socketDescriptor << "ERROR Invalid JSON...";
-        //qDebug("%s", buffer.toStdString().c_str());
-    }
 
+
+        if (tcpSocket->bytesAvailable() < (int) blockSize)
+            return;
+
+        in >> buffer;
+        qDebug() << "IN" << buffer;
+
+        processPayload(buffer);
+        blockSize = 0;
+
+    }
 }
 
 void NetworkThread::socket_write(QJsonObject data)
 {
-    if(socket->state() == QAbstractSocket::ConnectedState)
+    if(tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
         QJsonDocument temp(data);
         QString jso(temp.toJson(QJsonDocument::Compact));
@@ -82,20 +79,20 @@ void NetworkThread::socket_write(QJsonObject data)
         char buffer[128];
         sprintf(buffer, "%s\n\n", c_str2);
 
-        socket->write(buffer);
+        tcpSocket->write(buffer);
         qDebug() << strlen(buffer) << "OUT" << buffer;
-        socket->flush();
+        tcpSocket->flush();
     }
 }
 
 void NetworkThread::socketDisconnect()
 {
-    qDebug() << socketDescriptor  << "CLOSED" <<  socket->peerAddress().toString();
+    qDebug() << socketDescriptor  << "CLOSED" <<  tcpSocket->peerAddress().toString();
 }
 
 void NetworkThread::socketError()
 {
-    qDebug() << "Socket error:" << errcnt << socket->errorString();
+    qDebug() << "Socket error:" << errcnt << tcpSocket->errorString();
     if (!reconnectTimer->isActive())
         reconnectTimer->start();
 }
@@ -126,8 +123,16 @@ QJsonObject NetworkThread::buildPayload()
     return payloadOut;
 }
 
-void NetworkThread::processPayload(QJsonObject data)
+void NetworkThread::processPayload(QByteArray buffer)
 {
+    QJsonDocument doc = QJsonDocument::fromJson(buffer.data());
+    if(doc.isNull())
+    {
+        qDebug() << socketDescriptor << "ERROR Invalid JSON...";
+        return;
+    }
+
+    QJsonObject data = doc.object();
     QString command = data.value("command").toString();
 
     //start negotiation

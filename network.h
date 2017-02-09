@@ -13,6 +13,7 @@
 #include <QSslSocket>
 #include <QMap>
 #include <QTimer>
+#include <QDataStream>
 
 #include "zone.h"
 #include "preset.h"
@@ -31,7 +32,7 @@ public slots:
     void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
 
 private slots:
-    void processPayload(QJsonObject data);
+    void processPayload(QByteArray buffer);
     void socketConnect();
     void socketError();
     void sendPing();
@@ -52,12 +53,13 @@ private:
     int socketDescriptor;
     QString address;
     quint16 port;
-    QTcpSocket *socket;
+    QTcpSocket *tcpSocket;
     QJsonObject buildPayload();
     int errcnt;
     QTimer *reconnectTimer;
-
     QMap<QString,QString>outstanding;
+    quint16 blockSize;
+
 
 };
 

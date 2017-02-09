@@ -5,45 +5,37 @@
 
 #include "w_hsvpalette.h"
 
-HSVPalette::HSVPalette(QWidget *parent) :
+HSVWheel::HSVWheel(QWidget *parent) :
     QWidget(parent),
     initSize(200,200),
     mouseDown(false),
     margin(0),
-    wheelWidth(60),
+    wheelWidth(120),
     current(Qt::red),
     inWheel(false),
-    inSquare(true)
+    inSquare(false)
 {
-    //    resize(initSize);
     current = current.toHsv();
-    //    setMinimumSize(200,200);
     setCursor(Qt::CrossCursor);
 }
 
-QColor HSVPalette::color()
+QColor HSVWheel::color()
 {
     return current;
 }
 
-void HSVPalette::setColor(const QColor &color)
+void HSVWheel::setColor(const QColor &color)
 {
     if(color == current) return;
     if(color.hue() != current.hue()){
         hueChanged(color.hue());
     }
-
-    if( color.saturation() != current.saturation()
-            || color.value() != current.value() ){
-        svChanged(color);
-    }
-
     update();
     emit colorChange(color);
 }
 
 
-QColor HSVPalette::posColor(const QPoint &point)
+QColor HSVWheel::posColor(const QPoint &point)
 {
     if( ! wheel.rect().contains(point) ) return QColor();
     if(inWheel){
@@ -90,16 +82,16 @@ QColor HSVPalette::posColor(const QPoint &point)
     return QColor();
 }
 
-QSize HSVPalette::sizeHint () const
+QSize HSVWheel::sizeHint () const
 {
     return QSize(height(),height());
 }
-QSize HSVPalette::minimumSizeHint () const
+QSize HSVWheel::minimumSizeHint () const
 {
     return initSize;
 }
 
-void HSVPalette::mousePressEvent(QMouseEvent *event)
+void HSVWheel::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     if(wheelRegion.contains(lastPos)){
@@ -107,25 +99,17 @@ void HSVPalette::mousePressEvent(QMouseEvent *event)
         inSquare = false;
         QColor color = posColor(lastPos);
         hueChanged(color.hue());
-    }else if(squareRegion.contains(lastPos)){
-        inWheel = false;
-        inSquare = true;
-        QColor color = posColor(lastPos);
-        svChanged(color);
     }
     mouseDown = true;
 }
 
-void HSVPalette::mouseMoveEvent(QMouseEvent *event)
+void HSVWheel::mouseMoveEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     if( !mouseDown ) return;
     if(wheelRegion.contains(lastPos) && inWheel){
         QColor color = posColor(lastPos);
         hueChanged(color.hue());
-    }else if(squareRegion.contains(lastPos) && inSquare){
-        QColor color = posColor(lastPos);
-        svChanged(color);
     }else{
         // TODO: due with cursor out of region after press
         //        int length = qMin(width(), height());
@@ -145,23 +129,21 @@ void HSVPalette::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void HSVPalette::mouseReleaseEvent(QMouseEvent *)
+void HSVWheel::mouseReleaseEvent(QMouseEvent *)
 {
     mouseDown = false;
     inWheel = false;
     inSquare = false;
 }
 
-void HSVPalette::resizeEvent(QResizeEvent *event)
+void HSVWheel::resizeEvent(QResizeEvent *event)
 {
     wheel = QPixmap(event->size());
-    //wheel.fill(palette().background().color());
     drawWheelImage(event->size());
-    drawSquareImage(current.hue());
     update();
 }
 
-void HSVPalette::paintEvent(QPaintEvent *)
+void HSVWheel::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     QStyleOption opt;
@@ -171,7 +153,7 @@ void HSVPalette::paintEvent(QPaintEvent *)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 }
 
-void HSVPalette::drawWheelImage(const QSize &newSize)
+void HSVWheel::drawWheelImage(const QSize &newSize)
 {
 
     int r = qMin(newSize.width(), newSize.height());
@@ -218,42 +200,9 @@ void HSVPalette::drawWheelImage(const QSize &newSize)
     wheelRegion -= subRe;
 }
 
-void HSVPalette::drawSquareImage(const int &hue)
-{
-    //    QPainter painter(&squarePixmap);
-    //    painter.setRenderHint(QPainter::Antialiasing);
 
-    // region of the widget
-    int w = qMin(width(), height());
-    // radius of outer circle
-    qreal r = w/2-margin;
-    // radius of inner circle
-    qreal ir = r-wheelWidth;
-    // left corner of square
-    qreal m = w/2.0-ir/qSqrt(2);
-    //painter.translate(m, m);
-    //painter.setPen(Qt::NoPen);
-    QImage square(255,255, QImage::Format_ARGB32_Premultiplied);
-    QColor color;
-    QRgb vv;
-    for(int i=0;i<255;++i){
-        for(int j=0;j<255;++j){
-            color = QColor::fromHsv(hue,i,j);
-            vv = qRgb(color.red(),color.green(),color.blue());
-            square.setPixel(i,j,vv);
-        }
-    }
-    qreal SquareWidth = 2*ir/qSqrt(2);
-    squareImage = square.scaled(SquareWidth,SquareWidth);
-    //    painter.drawImage(0,0,square);
 
-    //    QPainter painter2(&wheel);
-    //    painter2.drawImage(0,0,source);
-
-    squareRegion = QRegion(m, m, SquareWidth, SquareWidth);
-}
-
-void HSVPalette::drawIndicator(const int &hue)
+void HSVWheel::drawIndicator(const int &hue)
 {
     QPainter painter(&wheel);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -274,7 +223,7 @@ void HSVPalette::drawIndicator(const int &hue)
     painter.drawEllipse(QPointF(r,0.0),5,5);
 }
 
-void HSVPalette::drawPicker(const QColor &color)
+void HSVWheel::drawPicker(const QColor &color)
 {
     QPainter painter(&wheel);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -301,7 +250,7 @@ void HSVPalette::drawPicker(const QColor &color)
     painter.drawEllipse(S,V,10,10);
 }
 
-void HSVPalette::composeWheel()
+void HSVWheel::composeWheel()
 {
     QPainter composePainter(&wheel);
 
@@ -318,13 +267,13 @@ void HSVPalette::composeWheel()
 //return;
     composePainter.drawImage(0, 0, wheelImage);
     //    composePainter.drawImage(wheelImage.width() +1, 0, squareImage);
-    composePainter.drawImage(squareRegion.boundingRect().topLeft(), squareImage);
+    //composePainter.drawImage(squareRegion.boundingRect().topLeft(), squareImage);
     composePainter.end();
     drawIndicator(current.hue());
     drawPicker(current);
 }
 
-void HSVPalette::hueChanged(const int &hue)
+void HSVWheel::hueChanged(const int &hue)
 {
     if( hue<0 ||hue>359)return;
     int s = current.saturation();
@@ -332,22 +281,9 @@ void HSVPalette::hueChanged(const int &hue)
     current.setHsv(hue, s, v);
     if(!isVisible()) return;
     //drawWheel(size());
-    drawSquareImage(hue);
+    //drawSquareImage(hue);
     //drawIndicator(hue);
     //drawPicker(current);
-    repaint();
-    emit colorChange(current);
-}
-
-void HSVPalette::svChanged(const QColor &newcolor)
-{
-    int hue = current.hue();
-    current.setHsv(hue, newcolor.saturation(), newcolor.value());
-    if(!isVisible()) return;
-    //drawWheel(size());
-    //drawSquare(hue);
-    //drawIndicator(hue);
-    //drawPicker(newcolor);
     repaint();
     emit colorChange(current);
 }

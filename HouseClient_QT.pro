@@ -15,7 +15,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     zone.cpp \
-    w_hsvpalette.cpp \
     w_colorpreview.cpp \
     w_mainwindow.cpp \
     w_topheader.cpp \
@@ -30,7 +29,9 @@ SOURCES += main.cpp\
     w_presetchooser.cpp \
     w_zonecontainerheader.cpp \
     w_scheduledactions.cpp \
-    w_zoneenvironment.cpp
+    w_zoneenvironment.cpp \
+    w_hsvwheel.cpp \
+    w_hslswatch.cpp
 
 HEADERS  += \
     zone.h \
@@ -49,7 +50,8 @@ HEADERS  += \
     w_presetchooser.h \
     w_zonecontainerheader.h \
     w_scheduledactions.h \
-    w_zoneenvironment.h
+    w_zoneenvironment.h \
+    w_hslswatch.h
 
 FORMS    += \
     mainwindow.ui \

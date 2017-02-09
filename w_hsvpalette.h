@@ -8,11 +8,11 @@
 #include <QPen>
 #include <QMouseEvent>
 
-class HSVPalette : public QWidget
+class HSVWheel : public QWidget
 {
     Q_OBJECT
 public:
-    explicit HSVPalette(QWidget *parent = 0);
+    explicit HSVWheel(QWidget *parent = 0);
 
     virtual QSize sizeHint () const;
     virtual QSize minimumSizeHint () const;
@@ -33,14 +33,12 @@ protected:
 private:
     QSize initSize;
     QImage wheelImage;
-    QImage squareImage;
     QPixmap wheel;
     bool mouseDown;
     QPoint lastPos;
     int margin;
     int wheelWidth;
     QRegion wheelRegion;
-    QRegion squareRegion;
     QColor current;
     bool inWheel;
     bool inSquare;
@@ -48,11 +46,9 @@ private:
     void drawWheelImage(const QSize &newSize);
     void drawIndicator(const int &hue);
     void drawPicker(const QColor &color);
-    void drawSquareImage(const int &hue);
     void composeWheel();
 private slots:
     void hueChanged(const int &hue);
-    void svChanged(const QColor &newcolor);
 };
 
 #endif // HSVPALETTE_H

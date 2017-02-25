@@ -1,5 +1,4 @@
 #include <QPushButton>
-#include <QDebug>
 
 #include "w_presetchooser.h"
 #include "zone.h"
@@ -67,8 +66,6 @@ void PresetChooser::addPreset(Preset *preset)
 
 void PresetChooser::sendToNetwork(QString command, QJsonObject jsonPayload)
 {
-    //char zoneString[3];
-    //sprintf(zoneString, "%d", gActiveZone->id);
     jsonPayload["zone"] = gActiveZone->id;
     emit(requestingNetworkOut(command,jsonPayload, ""));
 }

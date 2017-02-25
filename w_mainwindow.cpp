@@ -8,11 +8,10 @@
 #include "ui_mainwindow.h"
 #include "network.h"
 
-#include <QDebug>
 #include <QSignalMapper>
 
 extern Zone *gActiveZone;
-extern QList<Zone*> *gZoneList;
+extern QMap<int, Zone*> *gZoneMap;
 extern NetworkThread *networkThread;
 
 Q_DECLARE_METATYPE(Zone)
@@ -76,8 +75,8 @@ void MainWindow::showZoneChooser() {
 
 void MainWindow::showZone(int zone) {
     /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
-    zone--;
-    emit zoneChanged(*gZoneList->at(zone));
+    qDebug() << zone;
+    emit zoneChanged(*gZoneMap->value(zone));
     contentLayout->setCurrentIndex(1);
 }
 

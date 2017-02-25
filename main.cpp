@@ -12,7 +12,7 @@
 #include "zone.h"
 #include "preset.h"
 
-QList<Zone*> *gZoneList;
+QMap<int, Zone*> *gZoneMap;
 QList<Preset*> *gPresetList;
 Zone *gActiveZone = new Zone();
 QTextEdit *txtLogger;
@@ -22,7 +22,7 @@ NetworkThread *networkThread;
 int main(int argc, char *argv[])
 {
 
-    gZoneList = new QList<Zone*>();
+    gZoneMap = new QMap<int, Zone*>();
     gPresetList = new QList<Preset*>();
 
     QApplication a(argc, argv);

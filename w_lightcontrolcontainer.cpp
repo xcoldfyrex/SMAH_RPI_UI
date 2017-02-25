@@ -1,6 +1,5 @@
 #include <QLinearGradient>
 #include <QBrush>
-#include <QDebug>
 #include <QPicture>
 
 #include "w_lightcontrolcontainer.h"

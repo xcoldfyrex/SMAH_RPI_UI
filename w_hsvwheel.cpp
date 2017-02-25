@@ -1,4 +1,3 @@
-#include <QDebug>
 #include <QScreen>
 #include <QMatrix>
 #include <QtCore/qmath.h>

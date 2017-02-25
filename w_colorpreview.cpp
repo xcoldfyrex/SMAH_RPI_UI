@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "w_colorpreview.h"
 
 ColorPreview::ColorPreview(QWidget *parent) : QWidget(parent)

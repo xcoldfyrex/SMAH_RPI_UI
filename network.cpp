@@ -1,6 +1,7 @@
 #include "network.h"
 
-extern QList<Zone*> *gZoneList;
+extern QMap<int, Zone*> *gZoneMap;
+
 QByteArray socketBuffer;
 
 NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
@@ -165,9 +166,9 @@ void NetworkThread::processPayload(QByteArray buffer)
                 foreach (const QJsonValue & value, array)
                 {
                     QJsonObject obj = value.toObject();
-                    if (gZoneList->size() > 0)
+                    if (gZoneMap->size() > 0)
                     {
-                        foreach (Zone *zone, *gZoneList)
+                        foreach (Zone *zone, *gZoneMap)
                         {
                             if (zone->id == obj["id"].toInt())
                                 return;
@@ -177,7 +178,7 @@ void NetworkThread::processPayload(QByteArray buffer)
                     bool hasRGB = obj["hasLedRGB"].toString().contains("true");
                     QString zoneName = obj["name"].toString();
                     Zone *zone = new Zone(obj["id"].toInt(), zoneName, hasRGB, true, hasEnviro);
-                    gZoneList->append(zone);
+                    gZoneMap->insert(zone->id, zone);
                     emit zoneArrived(zone, envZones, controlZones);
 
                     if (hasEnviro) {

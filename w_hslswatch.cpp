@@ -1,5 +1,4 @@
 #include "w_hslswatch.h"
-#include <QDebug>
 
 HSLSwatch::HSLSwatch(QWidget *parent) : QWidget(parent)
 {
@@ -103,7 +102,6 @@ void HSLSwatch::mouseReleaseEvent(QMouseEvent *)
 
 void HSLSwatch::updateHue(QColor color)
 {
-    qDebug() << color.hue();
     current.setHsv(color.hue(), current.saturation(), current.value());
     compose();
     repaint();

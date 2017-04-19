@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
     QDir::setCurrent(homeLocation + "/.smah/assets");
 
     QFile File("main.css");
-    qDebug() << "CWD: "<< QDir::currentPath();
     File.open(QFile::ReadOnly);
     QString StyleSheet = QLatin1String(File.readAll());
     qApp->setStyleSheet(StyleSheet);

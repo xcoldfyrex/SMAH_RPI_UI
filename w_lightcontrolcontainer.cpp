@@ -54,7 +54,8 @@ LightControlContainerWidget::~LightControlContainerWidget()
 void LightControlContainerWidget::updateFromWheel(QColor qcol)
 {
     rgb.setHsv(qcol.hue(),rgb.saturation(),rgb.value());
-    hslSwatch->updateHue(qcol);
+    hslSwatch->current.setHsv(rgb.hue(),rgb.saturation(),rgb.value());
+    hslSwatch->repaint();
     preview->color.setHsv(rgb.hue(),rgb.saturation(),rgb.value());
     preview->repaint();
 

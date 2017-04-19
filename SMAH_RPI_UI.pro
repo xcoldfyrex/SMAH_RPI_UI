@@ -9,7 +9,7 @@ QT       += core gui network widgets xml
 
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
-TARGET = HouseClient_QT
+TARGET = SMAH_RPI_UI
 TEMPLATE = app
 
 
@@ -57,3 +57,5 @@ FORMS    += \
     mainwindow.ui \
     lightcontrolwidget.ui \
     w_systemlog.ui
+
+DEFINES += QT_MESSAGELOGCONTEXT

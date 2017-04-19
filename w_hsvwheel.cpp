@@ -268,8 +268,8 @@ void HSVWheel::composeWheel()
     //    composePainter.drawImage(wheelImage.width() +1, 0, squareImage);
     //composePainter.drawImage(squareRegion.boundingRect().topLeft(), squareImage);
     composePainter.end();
-    drawIndicator(current.hue());
-    drawPicker(current);
+    //drawIndicator(current.hue());
+    //drawPicker(current);
 }
 
 void HSVWheel::hueChanged(const int &hue)

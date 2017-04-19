@@ -92,9 +92,9 @@ void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, c
         fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         //systemLogWidget->txtLogger.setText(msg);
         break;
-    //case QtInfoMsg:
-    //    fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-    //    break;
+    case QtInfoMsg:
+        fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
     case QtWarningMsg:
         fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         break;

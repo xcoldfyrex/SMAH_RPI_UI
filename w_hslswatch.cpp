@@ -4,7 +4,7 @@ HSLSwatch::HSLSwatch(QWidget *parent) : QWidget(parent)
 {
     current = current.toHsv();
 }
-
+/*
 void HSLSwatch::drawSquareImage(const int &hue)
 {
     QImage square(255,255, QImage::Format_ARGB32_Premultiplied);
@@ -40,58 +40,70 @@ void HSLSwatch::compose()
     brush2.setStyle(Qt::SolidPattern);
     composePainter.setBrush(brush2);
     composePainter.drawRect(0, 0, 600, 600);
-
-    //return;
     composePainter.drawImage(0, 0, squareImage);
-    //    composePainter.drawImage(wheelImage.width() +1, 0, squareImage);
-    //composePainter.drawImage(squareRegion.boundingRect().topLeft(), squareImage);
     composePainter.end();
-    //drawIndicator(current.hue());
-    //drawPicker(current);
-}
 
+}
+*/
 
 QColor HSLSwatch::posColor(const QPoint &point)
 {
-    if( ! square.rect().contains(point) ) return QColor();
 
-    // region of the widget
-    int w = qMin(width(), height());
-    QRgb pixel = squareImage.pixel(point.x(), point.y());
-    return QColor(pixel);
 }
 
-void HSLSwatch::resizeEvent(QResizeEvent *event)
+/*
+ * void HSLSwatch::resizeEvent(QResizeEvent *event)
 {
 
     square = QPixmap(event->size());
     drawSquareImage(current.hue());
     update();
 }
+*/
 
 void HSLSwatch::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    QStyleOption opt;
-    opt.initFrom(this);
-    compose();
-    painter.drawPixmap(0,0,square);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+    QImage square(255,255, QImage::Format_ARGB32_Premultiplied);
+    QColor color;
+    QRgb vv;
+    for(int i=0;i<255;++i){
+        for(int j=0;j<255;++j){
+            color = QColor::fromHsv(current.hue(),i,j);
+            vv = qRgb(color.red(),color.green(),color.blue());
+            square.setPixel(i,j,vv);
+        }
+    }
+    // qreal SquareWidth = 2*ir/qSqrt(2);
+    squareImage = square.scaled(255,255);
+    //    painter.drawImage(0,0,square);
+
+    //    QPainter painter2(&wheel);
+    //    painter2.drawImage(0,0,source);
+
+    squareRegion = QRegion(0, 0, width(),height());
+    painter.drawImage(0, 0, square);
 }
+
 
 void HSLSwatch::mousePressEvent(QMouseEvent *event)
 {
-    lastPos = event->pos();
-    QColor color = posColor(lastPos);
+    QPixmap pm = this->grab();
+    if( ! pm.rect().contains(event->pos()) ) return;
+    QColor color = pm.toImage().pixel(event->x(),event->y());
+
     emit colorChange(color);
     mouseDown = true;
 }
+
 
 void HSLSwatch::mouseMoveEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     if( !mouseDown ) return;
-    QColor color = posColor(lastPos);
+    QPixmap pm = this->grab();
+    if( ! pm.rect().contains(event->pos()) ) return;
+    QColor color = pm.toImage().pixel(event->x(),event->y());
     emit colorChange(color);
 }
 
@@ -99,12 +111,9 @@ void HSLSwatch::mouseReleaseEvent(QMouseEvent *)
 {
     mouseDown = false;
 }
-
+/*
 void HSLSwatch::updateHue(QColor color)
 {
     current.setHsv(color.hue(), current.saturation(), current.value());
-    compose();
-    repaint();
-    update();
-
 }
+*/

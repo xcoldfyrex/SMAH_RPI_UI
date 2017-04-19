@@ -195,6 +195,7 @@ void NetworkThread::processPayload(QByteArray buffer)
             if (type == "PRESETS")
             {
                 QJsonArray array = data.value("payload").toArray();
+                qDebug() << data.value("payload");
                 foreach (const QJsonValue & value, array)
                 {
                     QJsonObject obj = value.toObject();

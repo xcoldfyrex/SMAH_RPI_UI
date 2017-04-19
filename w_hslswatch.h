@@ -14,21 +14,19 @@ class HSLSwatch : public QWidget
 
 public:
     explicit HSLSwatch(QWidget *parent = 0);
-    QColor current;
-
 
 public slots:
-    //void updateHue(QColor color);
-    //void compose();
-
+    void updateHue(QColor color);
 
 signals:
     void colorChange(QColor color);
 
 private:
     void drawSquareImage(const int &hue);
+    void compose();
     QImage squareImage;
     QRegion squareRegion;
+    QColor current;
     QPixmap square;
     QPoint lastPos;
     bool mouseDown;
@@ -38,7 +36,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *);
-    //void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *);
 };
 

@@ -262,14 +262,9 @@ void HSVWheel::composeWheel()
     brush2.setStyle(Qt::SolidPattern);
     composePainter.setBrush(brush2);
     composePainter.drawRect(0, 0, 600, 600);
-
-//return;
     composePainter.drawImage(0, 0, wheelImage);
-    //    composePainter.drawImage(wheelImage.width() +1, 0, squareImage);
-    //composePainter.drawImage(squareRegion.boundingRect().topLeft(), squareImage);
     composePainter.end();
-    //drawIndicator(current.hue());
-    //drawPicker(current);
+    drawIndicator(current.hue());
 }
 
 void HSVWheel::hueChanged(const int &hue)
@@ -279,11 +274,7 @@ void HSVWheel::hueChanged(const int &hue)
     int v = current.value();
     current.setHsv(hue, s, v);
     if(!isVisible()) return;
-    //drawWheel(size());
-    //drawSquareImage(hue);
-    //drawIndicator(hue);
-    //drawPicker(current);
+    drawIndicator(hue);
     repaint();
     emit colorChange(current);
 }
-

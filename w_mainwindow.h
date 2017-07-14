@@ -36,6 +36,9 @@ public slots:
     void showZoneChooser();
     void showSystemLog();
     void showZone(int zone);
+
+private slots:
+    void updateEnviroMap(QJsonObject jso, int zone);
 };
 
 #endif // MAINWINDOW_H

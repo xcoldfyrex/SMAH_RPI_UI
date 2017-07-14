@@ -23,7 +23,7 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
     presetList->setObjectName("presetList");
 
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));
-    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
+    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
     connect(presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(setPreset()));
 }
 

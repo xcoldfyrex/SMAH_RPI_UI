@@ -13,6 +13,7 @@
 extern Zone *gActiveZone;
 extern QMap<int, Zone*> *gZoneMap;
 extern NetworkThread *networkThread;
+extern QMap<int, QList<int>> *gEnvironmentMap;
 
 Q_DECLARE_METATYPE(Zone)
 
@@ -53,10 +54,9 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 
     connect(networkThread,SIGNAL(zoneArrived(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(presetArrived(Preset*)),zoneContainer->presetChooserWidget,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
+    connect(networkThread,SIGNAL(zoneEnvironmentArrived(QJsonObject, int)),this,SLOT(updateEnviroMap(QJsonObject, int)),Qt::QueuedConnection);
 
-    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSend(QString,QJsonObject,QString)),Qt::QueuedConnection);
-    connect(this, SIGNAL(finished()), networkThread, SLOT(deleteLater()));
-
+    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
 }
 
 void MainWindow::paintEvent(QPaintEvent *pe)
@@ -82,6 +82,16 @@ void MainWindow::showZone(int zone) {
 
 void MainWindow::showSystemLog() {
     contentLayout->setCurrentIndex(2);
+}
+
+void MainWindow::updateEnviroMap(QJsonObject jso, int zone)
+{
+    QList<int> values;
+    foreach (const QJsonValue &jsonvalue, jso) {
+        int value = jsonvalue.toInt();
+        values.append(value);
+    }
+    gEnvironmentMap->insert(zone, values);
 }
 
 void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)

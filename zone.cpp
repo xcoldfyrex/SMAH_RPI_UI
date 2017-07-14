@@ -4,13 +4,14 @@ Zone::Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasEnvir
 {
     this->id = id;
     this->name = name;
-    this-> hasLedRGB = hasLedRGB;
+    this->hasLedRGB = hasLedRGB;
     this->hasLedWhite = hasLedWhite;
     this->hasEnviro = hasEnviro;
 }
 
 Zone::Zone()
 {
+    this->hasEnviro = false;
 
 }
 

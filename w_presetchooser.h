@@ -6,7 +6,7 @@
 #include <QVBoxLayout>
 #include <QJsonObject>
 
-#include "preset.h"
+#include "libsmah_preset.h"
 
 class PresetChooser : public QWidget
 {

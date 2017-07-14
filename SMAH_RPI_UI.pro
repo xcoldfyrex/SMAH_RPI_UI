@@ -24,8 +24,6 @@ SOURCES += main.cpp\
     w_lightcontrolcontainer.cpp \
     w_systemlog.cpp \
     network.cpp \
-    logger.cpp \
-    preset.cpp \
     w_presetchooser.cpp \
     w_zonecontainerheader.cpp \
     w_scheduledactions.cpp \
@@ -45,8 +43,6 @@ HEADERS  += \
     w_zonechooser.h \
     w_systemlog.h \
     network.h \
-    logger.h \
-    preset.h \
     w_presetchooser.h \
     w_zonecontainerheader.h \
     w_scheduledactions.h \
@@ -59,3 +55,12 @@ FORMS    += \
     w_systemlog.ui
 
 DEFINES += QT_MESSAGELOGCONTEXT
+
+INCLUDEPATH += $$PWD/../_lib
+DEPENDPATH += $$PWD/../_lib
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/arm/ -lSMAH
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/x86_64/ -lSMAH
+
+INCLUDEPATH += $$PWD/../../libSMAH/src
+DEPENDPATH += $$PWD/../../libSMAH/src

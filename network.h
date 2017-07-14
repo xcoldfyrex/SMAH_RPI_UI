@@ -16,7 +16,7 @@
 #include <QDataStream>
 
 #include "zone.h"
-#include "preset.h"
+#include "libsmah_preset.h"
 
 
 class NetworkThread: public QObject
@@ -29,34 +29,34 @@ public:
     bool isConnected();
 
 public slots:
-    void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
+    void prepareToSendWrapper(QString, QJsonObject, QString string2);
 
 private slots:
     void processPayload(QByteArray buffer);
     void socketConnect();
     void socketError();
-    void sendPing();
-    void sendStart();
     void socketRead();
     void socketDisconnect();
-    void socket_write(QJsonObject data);
     void get_zones();
     void get_presets();
+    void enviroPoll();
 
 
 signals:
     void error(QTcpSocket::SocketError socketError);
     void zoneArrived(Zone *zone, int envZones, int controlZones);
     void presetArrived(Preset *preset);
+    void zoneEnvironmentArrived(QJsonObject payload, int zone);
 
 private:
     int socketDescriptor;
     QString address;
     quint16 port;
     QTcpSocket *tcpSocket;
-    QJsonObject buildPayload();
     int errcnt;
     QTimer *reconnectTimer;
+    QTimer *enviroTimer;
+
     QMap<QString,QString>outstanding;
     quint16 blockSize;
 

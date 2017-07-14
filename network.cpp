@@ -1,4 +1,6 @@
 #include "network.h"
+#include "libsmah_network.h"
+
 
 extern QMap<int, Zone*> *gZoneMap;
 
@@ -15,7 +17,12 @@ NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
     reconnectTimer = new QTimer();
     reconnectTimer->setInterval(5000);
 
+    enviroTimer = new QTimer();
+    enviroTimer->setInterval(5000);
+
     connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(socketConnect()),Qt::DirectConnection);
+    connect(enviroTimer, SIGNAL(timeout()), this, SLOT(enviroPoll()),Qt::DirectConnection);
+
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(socketRead()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(disconnected()),this,SLOT(socketDisconnect()),Qt::DirectConnection);
@@ -30,12 +37,12 @@ NetworkThread::NetworkThread() {
 void NetworkThread::socketConnect()
 {
     QHostAddress addr(this->address);
-    qDebug() << "Conencting to " << addr << this->port;
+    qInfo() << "Connecting to" << addr.toString() << this->port;
     tcpSocket->connectToHost(addr, this->port);
     if (tcpSocket->waitForConnected(5000))
     {
         reconnectTimer->stop();
-        sendStart();
+        smah::sendStart(tcpSocket);
     }
 }
 
@@ -69,22 +76,6 @@ void NetworkThread::socketRead()
     }
 }
 
-void NetworkThread::socket_write(QJsonObject data)
-{
-    if(tcpSocket->state() == QAbstractSocket::ConnectedState)
-    {
-        QJsonDocument temp(data);
-        QString jso(temp.toJson(QJsonDocument::Compact));
-        QByteArray ba = jso.toLatin1();
-        const char *c_str2 = ba.data();
-        char buffer[128];
-        sprintf(buffer, "%s\n\n", c_str2);
-
-        tcpSocket->write(buffer);
-        qDebug() << strlen(buffer) << "OUT" << buffer;
-        tcpSocket->flush();
-    }
-}
 
 void NetworkThread::socketDisconnect()
 {
@@ -93,35 +84,12 @@ void NetworkThread::socketDisconnect()
 
 void NetworkThread::socketError()
 {
-    qDebug() << "Socket error:" << errcnt << tcpSocket->errorString();
+    qWarning() << "Socket error:" << tcpSocket->errorString().toStdString().c_str();
     if (!reconnectTimer->isActive())
+    {
         reconnectTimer->start();
-}
-
-void NetworkThread::sendStart()
-{
-    QJsonObject payloadStart = buildPayload();
-    payloadStart["command"] = "START";
-    socket_write(payloadStart);
-}
-
-void NetworkThread::sendPing()
-{
-    QJsonObject payloadStart = buildPayload();
-    payloadStart["command"] = "PING";
-    socket_write(payloadStart);
-}
-
-QJsonObject NetworkThread::buildPayload()
-{
-    char buffer[12];
-    for(int i = 0; i < 11; i++) {
-        sprintf(buffer + i, "%x", rand() % 16);
+        enviroTimer->stop();
     }
-    QJsonObject payloadOut;
-
-    payloadOut["requestID"] = QString(buffer);
-    return payloadOut;
 }
 
 void NetworkThread::processPayload(QByteArray buffer)
@@ -139,22 +107,23 @@ void NetworkThread::processPayload(QByteArray buffer)
     //start negotiation
     if (command == "START" )
     {
-        QJsonObject jsonPayload;
-        jsonPayload["clientid"] = 100;
-        prepareToSend("ID",jsonPayload,data.value("requestID").toString());
+        smah::send_id(tcpSocket, data);
     }
 
     //negotiated
     if (command == "OK" )
     {
-        this->get_zones();
-        this->get_presets();
+        get_zones();
+        get_presets();
+        enviroTimer->start();
     }
 
-    //server responded to a GET_RESOURCE
+    //server responded to a GET_RESOURCE or GET
     if (command == "RESPOND" )
     {
         QString id = data.value("responseTo").toString();
+        int zone = data.value("zone").toInt();
+
         if (outstanding.contains(id))
         {
             QString type = outstanding.value(id);
@@ -183,6 +152,14 @@ void NetworkThread::processPayload(QByteArray buffer)
 
                     if (hasEnviro) {
                         envZones++;
+                        // TEST ADD
+                        QJsonObject jsonObject = smah::buildPayload();
+                        jsonObject["command"] = "GET";
+                        jsonObject["resource"] = "MCP320X";
+                        jsonObject["zone"] = zone->id;
+
+                        outstanding.insert(jsonObject["requestID"].toString(), jsonObject["resource"].toString());
+                        smah::socket_write(jsonObject, tcpSocket);
                     }
 
                     if (hasRGB) {
@@ -195,7 +172,6 @@ void NetworkThread::processPayload(QByteArray buffer)
             if (type == "PRESETS")
             {
                 QJsonArray array = data.value("payload").toArray();
-                qDebug() << data.value("payload");
                 foreach (const QJsonValue & value, array)
                 {
                     QJsonObject obj = value.toObject();
@@ -204,36 +180,61 @@ void NetworkThread::processPayload(QByteArray buffer)
                     emit presetArrived(preset);
                 }
             }
+
+            if (type == "MCP320X")
+            {
+                QJsonObject payload = data.value("payload").toObject();
+                emit zoneEnvironmentArrived(payload, zone);
+                //qDebug() << data;
+            }
             outstanding.remove(id);
         }
     }
 }
 
-void NetworkThread::prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo = "")
-{
-    QJsonObject jsonObject = buildPayload();
-    jsonObject["command"] = command;
-    jsonObject["payload"] = jsonPayload;
-    if (responseTo != "") jsonObject["responseTo"] = responseTo;
 
-    socket_write(jsonObject);
-}
-
-void NetworkThread::get_zones()
-{
-    QJsonObject jsonObject = buildPayload();
-    jsonObject["command"] = "GET_RESOURCE";
-    jsonObject["resource"] = "ZONES";
-    outstanding.insert(jsonObject["requestID"].toString(), jsonObject["resource"].toString());
-    socket_write(jsonObject);
-}
-
+// LIBSMAH ??
 
 void NetworkThread::get_presets()
 {
-    QJsonObject jsonObject = buildPayload();
+    QJsonObject jsonObject = smah::buildPayload();
     jsonObject["command"] = "GET_RESOURCE";
     jsonObject["resource"] = "PRESETS";
     outstanding.insert(jsonObject["requestID"].toString(), jsonObject["resource"].toString());
-    socket_write(jsonObject);
+    smah::socket_write(jsonObject, tcpSocket);
+}
+
+// LIBSMAH ??
+
+void NetworkThread::get_zones()
+{
+    QJsonObject jsonObject = smah::buildPayload();
+    jsonObject["command"] = "GET_RESOURCE";
+    jsonObject["resource"] = "ZONES";
+    outstanding.insert(jsonObject["requestID"].toString(), jsonObject["resource"].toString());
+    smah::socket_write(jsonObject, tcpSocket);
+}
+
+/* wrapper for signals to reference */
+void NetworkThread::prepareToSendWrapper(QString string1, QJsonObject jso1, QString string2)
+{
+    smah::prepareToSend(string1, jso1, tcpSocket, string2);
+}
+
+void NetworkThread::enviroPoll()
+{
+    foreach (Zone *zone, *gZoneMap) {
+        if (zone->hasEnviro) {
+            QJsonObject jsonObject = smah::buildPayload();
+            jsonObject["command"] = "GET";
+            jsonObject["resource"] = "MCP320X";
+            jsonObject["zone"] = zone->id;
+
+            outstanding.insert(jsonObject["requestID"].toString(), "MCP320X");
+            smah::socket_write(jsonObject, tcpSocket);
+        }
+    }
+
+
+
 }

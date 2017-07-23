@@ -23,7 +23,7 @@ class LightControlContainerWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit LightControlContainerWidget(QWidget *parent = 0);
+    explicit LightControlContainerWidget(Zone *zone, QWidget *parent = 0);
     ~LightControlContainerWidget();
     QWidget *topWidget;
     QWidget *colorPalette;
@@ -43,7 +43,7 @@ private:
     Ui::LightControlWidget *ui;
     QGraphicsScene *scene;
     HSLSwatch *hslSwatch;
-
+    Zone *zone;
 };
 
 #endif // LIGHTCONTROLWIDGET_H

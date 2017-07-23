@@ -4,11 +4,11 @@
 #include <QWidget>
 #include <QStackedLayout>
 
-#include "zone.h"
 #include "w_zonechooser.h"
 #include "w_topheader.h"
-#include "w_zonecontainer.h"
 #include "network.h"
+#include "zone.h"
+
 
 class MainWindow : public QWidget
 {
@@ -18,7 +18,6 @@ public:
     void paintEvent(QPaintEvent *pe);
     QWidget *topWidget;
     QStackedLayout *contentLayout;
-    ZoneContainerWidget *zoneContainer;
 
 private:
     TopHeaderWidget *hcheader;
@@ -31,9 +30,12 @@ public slots:
     void showZoneChooser();
     void showSystemLog();
     void showZone(int zone);
+    void addPreset(Preset *preset);
+
 
 private slots:
     void updateEnviroMap(QJsonObject jso, int zone);
+    void addZoneLayout(Zone *zone);
 };
 
 #endif // MAINWINDOW_H

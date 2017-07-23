@@ -10,9 +10,9 @@
 
 #include <QSignalMapper>
 
-extern Zone *gActiveZone;
 extern QMap<int, Zone*> *gZoneMap;
 extern NetworkThread *networkThread;
+extern QList<Preset*> *gPresetList;
 
 Q_DECLARE_METATYPE(Zone)
 
@@ -37,11 +37,10 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     this->contentLayout = new QStackedLayout;
 
     //create node widgets
-    this->zoneContainer = new ZoneContainerWidget(this);
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
 
     contentLayout->addWidget(zoneChooser->topWidget);
-    contentLayout->addWidget(zoneContainer->topWidget);
+    //contentLayout->addWidget(zoneContainer->topWidget);
 
     setLayout(mainLayout);
 
@@ -50,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addLayout(contentLayout);
 
     connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
-    connect(networkThread,SIGNAL(presetArrived(Preset*)),zoneContainer->presetChooserWidget,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
+    connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),this,SLOT(addZoneLayout(Zone*)),Qt::QueuedConnection);
+    connect(networkThread,SIGNAL(presetArrived(Preset*)),this,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(zoneResourceArrived(QJsonObject, int)),this,SLOT(updateEnviroMap(QJsonObject, int)),Qt::QueuedConnection);
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
 }
@@ -73,16 +73,7 @@ void MainWindow::showZone(int zone) {
     /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
     Zone newzone = *gZoneMap->value(zone);
     emit zoneChanged(newzone);
-    contentLayout->setCurrentIndex(1);
-    zoneContainer->btnShowPower->setEnabled(newzone.hasPower);
-    qDebug() << newzone.hasLedRGB;
-    qDebug() << newzone.hasLedWhite;
-    if (newzone.hasLedRGB || newzone.hasLedWhite)
-    {
-        this->zoneContainer->btnShowLights->setEnabled(false);
-    } else {
-        this->zoneContainer->btnShowLights->setEnabled(false);
-    }
+    contentLayout->setCurrentWidget(newzone.zoneFunctionContainer->topWidget);
 }
 
 void MainWindow::showSystemLog() {
@@ -97,4 +88,30 @@ void MainWindow::updateEnviroMap(QJsonObject jso, int zone)
         values.append(value);
     }
     gZoneMap->value(zone)->environmentMap.insert(zone, values);
+}
+
+void MainWindow::addZoneLayout(Zone *zone)
+{
+    contentLayout->addWidget(zone->zoneFunctionContainer->topWidget);
+}
+
+void MainWindow::addPreset(Preset *preset)
+{
+
+    if (gPresetList->size() > 0)
+    {
+        foreach (Preset *old_preset, *gPresetList)
+        {
+            if (old_preset->id == preset->id)
+                return;
+        }
+    }
+    /*
+    QListWidgetItem *item = new QListWidgetItem();
+    QVariant data(preset->id);
+    item->setData(Qt::UserRole, data);
+    item->setText(preset->getName());
+    presetList->addItem(item);
+    */
+    gPresetList->append(preset);
 }

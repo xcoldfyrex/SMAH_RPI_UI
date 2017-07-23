@@ -9,24 +9,25 @@
 
 #include "zone.h"
 
+class Zone;
+
 class ZoneContainerHeaderWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneContainerHeaderWidget(QWidget *parent = 0);
+    explicit ZoneContainerHeaderWidget(Zone *zone, QWidget *parent = 0);
     QWidget *topWidget;
-    void setActiveZone(Zone zone);
-    QLabel *lblZoneName;
 
 private:
     QLabel *lblClock;
     QSpacerItem *spcHeader;
     QHBoxLayout *topWidgetLayout;
     QLabel *lblZoneLightPreset;
+    QLabel *lblZoneName;
+
 signals:
 
 public slots:
-    void switchZone(Zone zone);
     void changePreset(QString preset);
 };
 

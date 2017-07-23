@@ -7,16 +7,15 @@
 #include <QList>
 #include <QDir>
 
+#include "zone.h"
 #include "w_zonechooser.h"
 #include "mainwindow.h"
-#include "zone.h"
 #include "libsmah_preset.h"
 #include "libsmah.h"
 
 
 QMap<int, Zone*> *gZoneMap;
 QList<Preset*> *gPresetList;
-Zone *gActiveZone = new Zone();
 NetworkThread *networkThread;
 
 int main(int argc, char *argv[])

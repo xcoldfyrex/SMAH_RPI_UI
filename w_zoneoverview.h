@@ -8,19 +8,21 @@
 
 #include "zone.h"
 
+class Zone;
+
 class ZoneOverviewWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneOverviewWidget(QWidget *parent = 0);
+    explicit ZoneOverviewWidget(Zone *zone, QWidget *parent = 0);
     QWidget *topWidget;
     QGridLayout *contentLayout;
-    QLabel *lblZoneTemp;
-    QLabel *lblZoneRH;
 
 private:
     float rawVoltage(int reading);
     QTimer *updateTimer;
+    Zone *zone;
+    QLabel *lblReadingsDisplay;
 
 signals:
 

@@ -23,7 +23,6 @@ public:
     QWidget *topWidget;
     MainWindow *myParent;
 
-
 public slots:
     void addZoneButton(Zone *zone, int envZones, int controlZones);
 

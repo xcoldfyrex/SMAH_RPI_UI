@@ -10,9 +10,8 @@
 #include "network.h"
 
 extern NetworkThread *networkThread;
-extern Zone *gActiveZone;
 
-LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
+LightControlContainerWidget::LightControlContainerWidget(Zone *zone, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LightControlWidget)
 {
@@ -20,6 +19,7 @@ LightControlContainerWidget::LightControlContainerWidget(QWidget *parent) :
 
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
+    this->zone = zone;
 
     contentLayout->setContentsMargins(0,0,0,0);
     contentLayout->addWidget(ui->btnSelectPreset,0,0);
@@ -80,7 +80,7 @@ void LightControlContainerWidget::updateFromSwatch(QColor qcol)
 
 void LightControlContainerWidget::sendToNetwork(QString command, QJsonObject jsonPayload) {
     char zoneString[3];
-    sprintf(zoneString, "%d", gActiveZone->id);
-    jsonPayload["zone"] = gActiveZone->id;
+    sprintf(zoneString, "%d", zone->id);
+    jsonPayload["zone"] = zone->id;
     emit(requestingNetworkOut(command,jsonPayload, ""));
 }

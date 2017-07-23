@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     w_zoneenvironment.cpp \
     w_hsvwheel.cpp \
     w_hslswatch.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    w_powercontrol.cpp
 
 HEADERS  += \
     zone.h \
@@ -45,7 +46,8 @@ HEADERS  += \
     w_scheduledactions.h \
     w_zoneenvironment.h \
     w_hslswatch.h \
-    mainwindow.h
+    mainwindow.h \
+    w_powercontrol.h
 
 FORMS    += \
     mainwindow.ui \

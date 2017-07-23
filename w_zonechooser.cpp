@@ -31,7 +31,7 @@ void ZoneChooserWidget::addZoneButton(Zone *zone, int envZones, int controlZones
     if (zone->hasLedRGB || zone->hasLedWhite || zone->hasPower) {
         signalMapper->setMapping(zone->zoneSelector,zone->id);
         //connect(myParent,SIGNAL(zoneChanged(Zone)), myParent->zoneContainer->zoneContainerHeader,SLOT(switchZone(Zone)));
-        connect(myParent,SIGNAL(zoneChanged(Zone)), myParent->zoneContainer->zoneContainerHeader,SLOT(switchZone(Zone)));
+        //connect(myParent,SIGNAL(zoneChanged(Zone)), myParent,SLOT(showZone(Zone)));
         connect(zone->zoneSelector,SIGNAL(clicked()),signalMapper,SLOT(map()));
         connect(signalMapper,SIGNAL(mapped(int)),myParent,SLOT(showZone(int)));
         contentLayout->addWidget(zone->zoneSelector,controlZones  /*gridLoc*/, 1, 1, 1, Qt::AlignVCenter);

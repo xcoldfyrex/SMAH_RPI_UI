@@ -4,6 +4,10 @@
 #include <QPushButton>
 #include <QMap>
 
+#include "w_zonecontainer.h"
+
+class ZoneContainerWidget;
+
 class Zone
 {
 public:
@@ -19,6 +23,7 @@ public:
     static QMap<int, Zone*> *gZoneMap;
     QMap<int, QList<int>> environmentMap;
     QMap<int, QString> powerToggles;
+    ZoneContainerWidget *zoneFunctionContainer;
 
 private:
     int activePreset;

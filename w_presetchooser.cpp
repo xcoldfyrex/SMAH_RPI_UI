@@ -1,14 +1,14 @@
 #include <QPushButton>
 
 #include "w_presetchooser.h"
-#include "zone.h"
+#include "mainwindow.h"
 #include "network.h"
+#include "zone.h"
 
 extern QList<Preset*> *gPresetList;
-extern Zone *gActiveZone;
 extern NetworkThread *networkThread;
 
-PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
+PresetChooser::PresetChooser(Zone *zone, QWidget *parent) : QWidget(parent)
 {
     QPushButton *btnActivate = new QPushButton(this);
     btnActivate->setText("Activate Preset");
@@ -16,12 +16,16 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
     this->topWidget = new QWidget;
     this->contentLayout = new QVBoxLayout(topWidget);
     this->presetList = new QListWidget(this);
+    this->zone = zone;
 
     contentLayout->addWidget(presetList);
     contentLayout->addWidget(btnActivate);
 
     presetList->setObjectName("presetList");
 
+    //MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
+
+    connect(networkThread,SIGNAL(presetArrived(Preset*)), this, SLOT(addPreset(Preset*)));
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
     connect(presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(setPreset()));
@@ -30,7 +34,7 @@ PresetChooser::PresetChooser(QWidget *parent) : QWidget(parent)
 void PresetChooser::setPreset()
 {
     int presetInt = this->presetList->currentItem()->data(Qt::UserRole).toInt();
-    gActiveZone->setActivePreset(presetInt);
+    this->zone->setActivePreset(presetInt);
 
     Preset *targetPreset;
     foreach (Preset *preset, *gPresetList) {
@@ -44,28 +48,17 @@ void PresetChooser::setPreset()
     this->sendToNetwork("ACTIVATE",jsonPayload);
 }
 
+void PresetChooser::sendToNetwork(QString command, QJsonObject jsonPayload)
+{
+    jsonPayload["zone"] = this->zone->id;
+    emit(requestingNetworkOut(command,jsonPayload, ""));
+}
+
 void PresetChooser::addPreset(Preset *preset)
 {
-
-    if (gPresetList->size() > 0)
-    {
-        foreach (Preset *old_preset, *gPresetList)
-        {
-            if (old_preset->id == preset->id)
-                return;
-        }
-    }
     QListWidgetItem *item = new QListWidgetItem();
     QVariant data(preset->id);
     item->setData(Qt::UserRole, data);
     item->setText(preset->getName());
     presetList->addItem(item);
-    gPresetList->append(preset);
-}
-
-
-void PresetChooser::sendToNetwork(QString command, QJsonObject jsonPayload)
-{
-    jsonPayload["zone"] = gActiveZone->id;
-    emit(requestingNetworkOut(command,jsonPayload, ""));
 }

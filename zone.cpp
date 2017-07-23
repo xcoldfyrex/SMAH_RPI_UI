@@ -9,12 +9,12 @@ Zone::Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasPower
     this->hasEnviro = hasEnviro;
     this->hasPower = hasPower;
     zoneSelector = new QPushButton(this->name);
+    zoneFunctionContainer = new ZoneContainerWidget(this);
 }
 
 Zone::Zone()
 {
     this->hasEnviro = false;
-
 }
 
 int Zone::getActivePreset() {

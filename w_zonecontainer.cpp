@@ -2,13 +2,9 @@
     Get here from the zone selector. List of funztions for given zone.
 */
 
-#include <QDebug>
-#include <QStackedWidget>
-#include <QPushButton>
-
 #include "w_zonecontainer.h"
 #include "w_lightcontrolcontainer.h"
-#include "w_mainwindow.h"
+#include "mainwindow.h"
 #include "w_scheduledactions.h"
 
 ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
@@ -70,7 +66,7 @@ ZoneContainerWidget::ZoneContainerWidget(QWidget *parent) : QWidget(parent)
     btnShowLights->setObjectName("btnShowLights");
     btnShowPower->setObjectName("btnShowPower");
     btnShowActions->setObjectName("btnShowActions");
-    btnShowOverview->setObjectName("btnhome");
+    btnShowOverview->setObjectName("btnMainInfo");
 
     zoneFunctions->addWidget(btnShowLights,0);
     zoneFunctions->addWidget(btnShowPower,0);

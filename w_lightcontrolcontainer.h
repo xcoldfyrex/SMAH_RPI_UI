@@ -10,7 +10,8 @@
 
 #include "w_hslswatch.h"
 #include "w_colorpreview.h"
-#include "w_mainwindow.h"
+#include "mainwindow.h"
+#include "zone.h"
 
 
 namespace Ui {

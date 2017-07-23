@@ -3,10 +3,12 @@
 
 #include <QWidget>
 #include <QStackedWidget>
+#include <QPushButton>
 
 #include "w_zoneoverview.h"
 #include "w_presetchooser.h"
 #include "w_zonecontainerheader.h"
+#include "zone.h"
 
 class ZoneContainerWidget : public QWidget
 {
@@ -19,6 +21,9 @@ public:
     QStackedWidget *contentLayout;
     PresetChooser *presetChooserWidget = new PresetChooser(this);
     ZoneContainerHeaderWidget *zoneContainerHeader;
+    QPushButton *btnShowLights = new QPushButton;
+    QPushButton *btnShowPower = new QPushButton;
+    QPushButton *btnShowActions = new QPushButton;
 
 
 private:

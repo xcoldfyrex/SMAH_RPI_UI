@@ -56,7 +56,7 @@ QColor HSLSwatch::posColor(const QPoint &point)
     if( ! square.rect().contains(point) ) return QColor();
 
     // region of the widget
-    int w = qMin(width(), height());
+    //int w = qMin(width(), height());
     QRgb pixel = squareImage.pixel(point.x(), point.y());
     return QColor(pixel);
 }

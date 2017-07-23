@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QLabel>
+#include <QTimer>
 
 #include "zone.h"
 
@@ -17,11 +18,14 @@ public:
     QLabel *lblZoneTemp;
     QLabel *lblZoneRH;
 
+private:
+    float rawVoltage(int reading);
+    QTimer *updateTimer;
+
 signals:
 
-public slots:
-    void changeTemperature(QString temp);
-    void changeRH(QString rh);
+private slots:
+    void updateReadings();
 };
 
 #endif // ZONEOVERVIEWWIDGET_H

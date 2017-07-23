@@ -2,7 +2,7 @@
 #include <QTime>
 
 #include "w_topheader.h"
-#include "w_mainwindow.h"
+#include "mainwindow.h"
 
 TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(parent)
 {

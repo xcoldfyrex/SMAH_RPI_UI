@@ -44,9 +44,10 @@ private slots:
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void zoneArrived(Zone *zone, int envZones, int controlZones);
+    void zoneDiscovered(Zone *zone, int envZones, int controlZones);
     void presetArrived(Preset *preset);
-    void zoneEnvironmentArrived(QJsonObject payload, int zone);
+    void zoneResourceArrived(QJsonObject payload, int zone);
+    void zoneStatusChanged(int id, bool status);
 
 private:
     int socketDescriptor;

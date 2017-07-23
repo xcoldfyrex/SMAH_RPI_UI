@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QGridLayout>
 
-#include "w_mainwindow.h"
+#include "mainwindow.h"
 #include "zone.h"
 
 namespace Ui {

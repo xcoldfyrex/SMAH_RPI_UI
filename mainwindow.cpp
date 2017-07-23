@@ -3,7 +3,7 @@
 
 */
 
-#include "w_mainwindow.h"
+#include "mainwindow.h"
 #include "w_lightcontrolcontainer.h"
 #include "ui_mainwindow.h"
 #include "network.h"
@@ -13,7 +13,6 @@
 extern Zone *gActiveZone;
 extern QMap<int, Zone*> *gZoneMap;
 extern NetworkThread *networkThread;
-extern QMap<int, QList<int>> *gEnvironmentMap;
 
 Q_DECLARE_METATYPE(Zone)
 
@@ -40,11 +39,9 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     //create node widgets
     this->zoneContainer = new ZoneContainerWidget(this);
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
-    systemLogWidget = new SystemLogWidget(this);
 
     contentLayout->addWidget(zoneChooser->topWidget);
     contentLayout->addWidget(zoneContainer->topWidget);
-    contentLayout->addWidget(systemLogWidget);
 
     setLayout(mainLayout);
 
@@ -52,10 +49,9 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
 
-    connect(networkThread,SIGNAL(zoneArrived(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
+    connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(presetArrived(Preset*)),zoneContainer->presetChooserWidget,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
-    connect(networkThread,SIGNAL(zoneEnvironmentArrived(QJsonObject, int)),this,SLOT(updateEnviroMap(QJsonObject, int)),Qt::QueuedConnection);
-
+    connect(networkThread,SIGNAL(zoneResourceArrived(QJsonObject, int)),this,SLOT(updateEnviroMap(QJsonObject, int)),Qt::QueuedConnection);
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
 }
 
@@ -75,9 +71,18 @@ void MainWindow::showZoneChooser() {
 
 void MainWindow::showZone(int zone) {
     /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
-    qDebug() << zone;
-    emit zoneChanged(*gZoneMap->value(zone));
+    Zone newzone = *gZoneMap->value(zone);
+    emit zoneChanged(newzone);
     contentLayout->setCurrentIndex(1);
+    zoneContainer->btnShowPower->setEnabled(newzone.hasPower);
+    qDebug() << newzone.hasLedRGB;
+    qDebug() << newzone.hasLedWhite;
+    if (newzone.hasLedRGB || newzone.hasLedWhite)
+    {
+        this->zoneContainer->btnShowLights->setEnabled(false);
+    } else {
+        this->zoneContainer->btnShowLights->setEnabled(false);
+    }
 }
 
 void MainWindow::showSystemLog() {
@@ -91,28 +96,5 @@ void MainWindow::updateEnviroMap(QJsonObject jso, int zone)
         int value = jsonvalue.toInt();
         values.append(value);
     }
-    gEnvironmentMap->insert(zone, values);
-}
-
-void MainWindow::logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
-{
-    QByteArray localMsg = msg.toLocal8Bit();
-    switch (type) {
-    case QtDebugMsg:
-        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        //systemLogWidget->txtLogger.setText(msg);
-        break;
-    case QtInfoMsg:
-        fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
-    case QtWarningMsg:
-        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
-    case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
-    case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        abort();
-    }
+    gZoneMap->value(zone)->environmentMap.insert(zone, values);
 }

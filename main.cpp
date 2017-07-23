@@ -8,25 +8,21 @@
 #include <QDir>
 
 #include "w_zonechooser.h"
-#include "w_mainwindow.h"
+#include "mainwindow.h"
 #include "zone.h"
 #include "libsmah_preset.h"
 #include "libsmah.h"
 
 
 QMap<int, Zone*> *gZoneMap;
-QMap<int, QList<int>> *gEnvironmentMap;
 QList<Preset*> *gPresetList;
 Zone *gActiveZone = new Zone();
-QTextEdit *txtLogger;
 NetworkThread *networkThread;
 
 int main(int argc, char *argv[])
 {
-
     gZoneMap = new QMap<int, Zone*>();
     gPresetList = new QList<Preset*>();
-    gEnvironmentMap = new QMap<int, QList<int>>;
 
     QApplication a(argc, argv);
     qInstallMessageHandler(systemlogHandler);

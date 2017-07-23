@@ -58,7 +58,7 @@ void NetworkThread::socketRead()
     {
         if( blockSize == 0 )
         {
-            if( tcpSocket->bytesAvailable() < sizeof(quint16) )
+            if( (quint16) tcpSocket->bytesAvailable() < sizeof(quint16) )
                 return;
             in >> blockSize;
         }
@@ -145,24 +145,18 @@ void NetworkThread::processPayload(QByteArray buffer)
                     }
                     bool hasEnviro = obj["hasEnviro"].toString().contains("true");
                     bool hasRGB = obj["hasLedRGB"].toString().contains("true");
+                    bool hasPower = obj["hasPower"].toString().contains("true");
+                    bool hasLedWhite = obj["hasLedWhite"].toString().contains("true");
                     QString zoneName = obj["name"].toString();
-                    Zone *zone = new Zone(obj["id"].toInt(), zoneName, hasRGB, true, hasEnviro);
+                    Zone *zone = new Zone(obj["id"].toInt(), zoneName, hasRGB, hasLedWhite, hasPower, hasEnviro);
                     gZoneMap->insert(zone->id, zone);
-                    emit zoneArrived(zone, envZones, controlZones);
+                    emit zoneDiscovered(zone, envZones, controlZones);
 
                     if (hasEnviro) {
                         envZones++;
-                        // TEST ADD
-                        QJsonObject jsonObject = smah::buildPayload();
-                        jsonObject["command"] = "GET";
-                        jsonObject["resource"] = "MCP320X";
-                        jsonObject["zone"] = zone->id;
-
-                        outstanding.insert(jsonObject["requestID"].toString(), jsonObject["resource"].toString());
-                        smah::socket_write(jsonObject, tcpSocket);
                     }
 
-                    if (hasRGB) {
+                    if (hasRGB || hasLedWhite || hasPower) {
                         controlZones++;
                     }
 
@@ -184,12 +178,30 @@ void NetworkThread::processPayload(QByteArray buffer)
             if (type == "MCP320X")
             {
                 QJsonObject payload = data.value("payload").toObject();
-                emit zoneEnvironmentArrived(payload, zone);
+                emit zoneResourceArrived(payload, zone);
                 //qDebug() << data;
             }
             outstanding.remove(id);
         }
+
     }
+
+    if (command == "ZONE" )
+    {
+        foreach (Zone *zone, *gZoneMap)
+        {
+            if (zone->id == data.value("zone").toInt())
+            {
+                if (data.value("status").toInt() == 1)
+                {
+                    zone->zoneSelector->setEnabled(true);
+                } else {
+                    zone->zoneSelector->setEnabled(false);
+                }
+            }
+        }
+    }
+
 }
 
 

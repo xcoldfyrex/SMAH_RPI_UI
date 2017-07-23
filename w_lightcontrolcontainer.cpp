@@ -6,7 +6,7 @@
 #include "ui_lightcontrolwidget.h"
 #include "w_hsvpalette.h"
 #include "w_zonecontainer.h"
-#include "w_mainwindow.h"
+#include "mainwindow.h"
 #include "network.h"
 
 extern NetworkThread *networkThread;

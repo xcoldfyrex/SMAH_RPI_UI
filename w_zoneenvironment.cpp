@@ -1,7 +1,6 @@
 #include "w_zoneenvironment.h"
 #include "math.h"
-
-extern QMap<int, QList<int>> *gEnvironmentMap;
+#define ZeroPercentVoltage 0.958
 
 ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone *zone) : QWidget(parent)
 {
@@ -34,17 +33,17 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone *zone) : QWidge
     updateTimer->start();
 
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(enviroUpdate()),Qt::DirectConnection);
-
 }
 
 void ZoneEnvironmentPanel::enviroUpdate()
 {
-    QList<int> envData = gEnvironmentMap->value(this->zone->id);
+    QList<int> envData = zone->environmentMap.value(zone->id);
     float temp = ceilf(rawVoltage(envData.value(0) * 100) * 100) / 100;
-    float rh = rawVoltage((envData.value(1) / 5) - 0.16) / 0.0062;
-    float trh = ceilf(rh / (1.093 - 0.0012 * temp) * 100) / 100;
-
-    lblZoneEnvData->setText(QString::number(temp) + " F\n" + QString::number(trh) + " %");
+    float rh_voltage = rawVoltage(envData.value(1));
+    float RH = ceilf((((rh_voltage - .958) / .0307) * 100)) / 100;
+    if (RH < 0)
+        RH = 0;
+    lblZoneEnvData->setText(QString::number(temp) + " F\n" + QString::number(RH) + " %");
 }
 
 float ZoneEnvironmentPanel::rawVoltage(int reading)

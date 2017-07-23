@@ -19,20 +19,21 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 
 void ZoneChooserWidget::addZoneButton(Zone *zone, int envZones, int controlZones)
 {
-    QPushButton *zonelabel = new QPushButton(zone->name);
     QSignalMapper *signalMapper = new QSignalMapper(this);
+    zone->zoneSelector->setEnabled(false);
 
 
     if (zone->hasEnviro) {
-        ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this,zone);
+        ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone);
         zenv->topWidget->setObjectName("zoneEnv");
         contentLayout->addWidget(zenv->topWidget,envZones, 0, 1, 1, Qt::AlignLeft);
     }
-    if (zone->hasLedRGB) {
-        signalMapper->setMapping(zonelabel,zone->id);
+    if (zone->hasLedRGB || zone->hasLedWhite || zone->hasPower) {
+        signalMapper->setMapping(zone->zoneSelector,zone->id);
+        //connect(myParent,SIGNAL(zoneChanged(Zone)), myParent->zoneContainer->zoneContainerHeader,SLOT(switchZone(Zone)));
         connect(myParent,SIGNAL(zoneChanged(Zone)), myParent->zoneContainer->zoneContainerHeader,SLOT(switchZone(Zone)));
-        connect(zonelabel,SIGNAL(clicked()),signalMapper,SLOT(map()));
+        connect(zone->zoneSelector,SIGNAL(clicked()),signalMapper,SLOT(map()));
         connect(signalMapper,SIGNAL(mapped(int)),myParent,SLOT(showZone(int)));
-        contentLayout->addWidget(zonelabel,controlZones  /*gridLoc*/, 1, 1, 1, Qt::AlignVCenter);
+        contentLayout->addWidget(zone->zoneSelector,controlZones  /*gridLoc*/, 1, 1, 1, Qt::AlignVCenter);
     }
 }

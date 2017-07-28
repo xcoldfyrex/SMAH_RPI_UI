@@ -14,7 +14,7 @@ extern QMap<int, Zone*> *gZoneMap;
 extern NetworkThread *networkThread;
 extern QList<Preset*> *gPresetList;
 
-Q_DECLARE_METATYPE(Zone)
+//Q_DECLARE_METATYPE(Zone)
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
@@ -40,8 +40,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
 
     contentLayout->addWidget(zoneChooser->topWidget);
-    //contentLayout->addWidget(zoneContainer->topWidget);
-
     setLayout(mainLayout);
 
     mainLayout->setContentsMargins(0,0,0,0);
@@ -51,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),this,SLOT(addZoneLayout(Zone*)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(presetArrived(Preset*)),this,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
-    connect(networkThread,SIGNAL(zoneResourceArrived(QJsonObject, int)),this,SLOT(updateEnviroMap(QJsonObject, int)),Qt::QueuedConnection);
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
 }
 
@@ -71,23 +68,12 @@ void MainWindow::showZoneChooser() {
 
 void MainWindow::showZone(int zone) {
     /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
-    Zone newzone = *gZoneMap->value(zone);
-    emit zoneChanged(newzone);
-    contentLayout->setCurrentWidget(newzone.zoneFunctionContainer->topWidget);
+    emit zoneChanged(gZoneMap->value(zone));
+    contentLayout->setCurrentWidget(gZoneMap->value(zone)->zoneFunctionContainer->topWidget);
 }
 
 void MainWindow::showSystemLog() {
     contentLayout->setCurrentIndex(2);
-}
-
-void MainWindow::updateEnviroMap(QJsonObject jso, int zone)
-{
-    QList<int> values;
-    foreach (const QJsonValue &jsonvalue, jso) {
-        int value = jsonvalue.toInt();
-        values.append(value);
-    }
-    gZoneMap->value(zone)->environmentMap.insert(zone, values);
 }
 
 void MainWindow::addZoneLayout(Zone *zone)
@@ -97,7 +83,6 @@ void MainWindow::addZoneLayout(Zone *zone)
 
 void MainWindow::addPreset(Preset *preset)
 {
-
     if (gPresetList->size() > 0)
     {
         foreach (Preset *old_preset, *gPresetList)
@@ -106,12 +91,5 @@ void MainWindow::addPreset(Preset *preset)
                 return;
         }
     }
-    /*
-    QListWidgetItem *item = new QListWidgetItem();
-    QVariant data(preset->id);
-    item->setData(Qt::UserRole, data);
-    item->setText(preset->getName());
-    presetList->addItem(item);
-    */
     gPresetList->append(preset);
 }

@@ -3,16 +3,34 @@
 #include <QString>
 #include <QPushButton>
 #include <QMap>
+#include <QLabel>
+#include <QObject>
 
 #include "w_zonecontainer.h"
 
 class ZoneContainerWidget;
 
-class Zone
+class Zone : public QObject
 {
+    Q_OBJECT
 public:
-    Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasPower, bool hasEnviro);
+    Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasPower, bool hasEnviro, QObject *parent);
     Zone();
+    virtual ~Zone() {}
+
+    class PowerFunction
+    {
+    public:
+        PowerFunction(int id, QString name);
+        PowerFunction();
+        bool state = false;
+        QString name;
+        int id;
+    private:
+
+    };
+
+    QMap<int, PowerFunction> powerFunctions;
     int id;
     QString name;
     bool hasLedRGB, hasLedWhite, hasEnviro, hasPower;
@@ -21,12 +39,15 @@ public:
     QPushButton *zoneSelector;
     static Zone gActiveZone;
     static QMap<int, Zone*> *gZoneMap;
-    QMap<int, QList<int>> environmentMap;
-    QMap<int, QString> powerToggles;
+    QMap<int, int> environmentMap;
     ZoneContainerWidget *zoneFunctionContainer;
+    QMap<int, QLabel*> *powerStatusLabels;
 
 private:
     int activePreset;
+
+private slots:
+    void updateGPIOLabels(QJsonObject payload, int zoneId);
 
 };
 

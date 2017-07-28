@@ -21,8 +21,7 @@ NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
     enviroTimer->setInterval(5000);
 
     connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(socketConnect()),Qt::DirectConnection);
-    connect(enviroTimer, SIGNAL(timeout()), this, SLOT(enviroPoll()),Qt::DirectConnection);
-
+    connect(enviroTimer, SIGNAL(timeout()), this, SLOT(GPIOPoll()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(socketRead()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(disconnected()),this,SLOT(socketDisconnect()),Qt::DirectConnection);
@@ -148,18 +147,33 @@ void NetworkThread::processPayload(QByteArray buffer)
                     bool hasPower = obj["hasPower"].toString().contains("true");
                     bool hasLedWhite = obj["hasLedWhite"].toString().contains("true");
                     QString zoneName = obj["name"].toString();
-                    Zone *zone = new Zone(obj["id"].toInt(), zoneName, hasRGB, hasLedWhite, hasPower, hasEnviro);
-                    gZoneMap->insert(zone->id, zone);
+                    Zone *zone = new Zone(obj["id"].toInt(), zoneName, hasRGB, hasLedWhite, hasPower, hasEnviro, this);
                     emit zoneDiscovered(zone, envZones, controlZones);
 
-                    if (hasEnviro) {
+                    if (hasEnviro)
+                    {
                         envZones++;
                     }
 
-                    if (hasRGB || hasLedWhite || hasPower) {
+                    if (hasRGB || hasLedWhite || hasPower)
+                    {
                         controlZones++;
+                        if (hasPower)
+                        {
+                            QJsonObject powerFunctions = obj["power"].toObject();
+                            int x = 0;
+                            foreach (const QJsonValue &jsonvalue, powerFunctions) {
+                                QString key = powerFunctions.keys().at(x);
+                                Zone::PowerFunction pt;
+                                pt.id = key.toInt();
+                                pt.name = jsonvalue.toString();
+                                zone->powerFunctions.insert(key.toInt(), pt);
+                                x++;
+                            }
+                            emit powerFunctionsArrived();
+                        }
                     }
-
+                    gZoneMap->insert(zone->id, zone);
                 }
             }
 
@@ -175,11 +189,10 @@ void NetworkThread::processPayload(QByteArray buffer)
                 }
             }
 
-            if (type == "MCP320X")
+            if (type == "GPIO")
             {
                 QJsonObject payload = data.value("payload").toObject();
-                emit zoneResourceArrived(payload, zone);
-                //qDebug() << data;
+                emit zoneGPIOArrived(payload, zone);
             }
             outstanding.remove(id);
         }
@@ -246,7 +259,18 @@ void NetworkThread::enviroPoll()
             smah::socket_write(jsonObject, tcpSocket);
         }
     }
+}
 
+void NetworkThread::GPIOPoll()
+{
+    foreach (Zone *zone, *gZoneMap) {
+            QJsonObject jsonObject = smah::buildPayload();
+            jsonObject["command"] = "GET";
+            jsonObject["resource"] = "GPIO";
+            jsonObject["zone"] = zone->id;
 
+            outstanding.insert(jsonObject["requestID"].toString(), "GPIO");
+            smah::socket_write(jsonObject, tcpSocket);
+        }
 
 }

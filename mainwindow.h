@@ -23,7 +23,7 @@ private:
     TopHeaderWidget *hcheader;
 
 signals:
-    void zoneChanged(Zone zone);
+    void zoneChanged(Zone *zone);
     void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
@@ -34,7 +34,6 @@ public slots:
 
 
 private slots:
-    void updateEnviroMap(QJsonObject jso, int zone);
     void addZoneLayout(Zone *zone);
 };
 

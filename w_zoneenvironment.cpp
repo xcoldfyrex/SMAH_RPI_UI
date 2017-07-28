@@ -37,9 +37,8 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone *zone) : QWidge
 
 void ZoneEnvironmentPanel::enviroUpdate()
 {
-    QList<int> envData = zone->environmentMap.value(zone->id);
-    float temp = ceilf(rawVoltage(envData.value(0) * 100) * 100) / 100;
-    float rh_voltage = rawVoltage(envData.value(1));
+    float temp = ceilf(rawVoltage(zone->environmentMap.value(0) * 100) * 100) / 100;
+    float rh_voltage = rawVoltage(zone->environmentMap.value(1));
     float RH = ceilf((((rh_voltage - .958) / .0307) * 100)) / 100;
     if (RH < 0)
         RH = 0;

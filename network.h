@@ -30,6 +30,7 @@ public:
 
 public slots:
     void prepareToSendWrapper(QString, QJsonObject, QString string2);
+    void GPIOPoll();
 
 private slots:
     void processPayload(QByteArray buffer);
@@ -46,8 +47,9 @@ signals:
     void error(QTcpSocket::SocketError socketError);
     void zoneDiscovered(Zone *zone, int envZones, int controlZones);
     void presetArrived(Preset *preset);
-    void zoneResourceArrived(QJsonObject payload, int zone);
+    void zoneGPIOArrived(QJsonObject payload, int zone);
     void zoneStatusChanged(int id, bool status);
+    void powerFunctionsArrived();
 
 private:
     int socketDescriptor;
@@ -60,8 +62,6 @@ private:
 
     QMap<QString,QString>outstanding;
     quint16 blockSize;
-
-
 };
 
 #endif // NETWORK_H

@@ -23,8 +23,6 @@ PresetChooser::PresetChooser(Zone *zone, QWidget *parent) : QWidget(parent)
 
     presetList->setObjectName("presetList");
 
-    //MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
-
     connect(networkThread,SIGNAL(presetArrived(Preset*)), this, SLOT(addPreset(Preset*)));
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);

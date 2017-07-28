@@ -1,6 +1,9 @@
 #ifndef POWERCONTROLWIDGET_H
 #define POWERCONTROLWIDGET_H
 
+#include <QTableWidgetItem>
+#include <QTableWidget>
+
 #include "zone.h"
 
 class Zone;
@@ -19,6 +22,8 @@ private:
 signals:
 
 public slots:
+private slots:
+    void addPowerFunctions();
 };
 
 #endif // POWERCONTROLWIDGET_H

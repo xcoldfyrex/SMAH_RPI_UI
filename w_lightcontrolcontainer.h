@@ -31,13 +31,12 @@ public:
     QGridLayout *contentLayout;
     QPicture *hsvSwatch;
     QColor rgb;
-signals:
-    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
+//signals:
+//    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
     void updateFromWheel(QColor qcol);
     void updateFromSwatch(QColor qcol);
-    void sendToNetwork(QString command, QJsonObject jsonPayload);
 
 private:
     Ui::LightControlWidget *ui;

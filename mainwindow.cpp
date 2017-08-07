@@ -8,13 +8,9 @@
 #include "ui_mainwindow.h"
 #include "network.h"
 
-#include <QSignalMapper>
-
 extern QMap<int, Zone*> *gZoneMap;
 extern NetworkThread *networkThread;
 extern QList<Preset*> *gPresetList;
-
-//Q_DECLARE_METATYPE(Zone)
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {

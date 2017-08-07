@@ -5,7 +5,7 @@ ZoneContainerHeaderWidget::ZoneContainerHeaderWidget(Zone *zone, QWidget *parent
     this->topWidget = new QWidget;
     this->topWidgetLayout = new QHBoxLayout(topWidget);
 
-    lblZoneName = new QLabel("Selected zone: " + zone->name);
+    lblZoneName = new QLabel("Selected zone: " + zone->getName());
     lblZoneLightPreset = new QLabel("Preset: N/A");
     topWidgetLayout->addWidget(lblZoneName);
     topWidgetLayout->addWidget(lblZoneLightPreset);

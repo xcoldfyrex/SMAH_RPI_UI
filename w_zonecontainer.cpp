@@ -68,9 +68,9 @@ ZoneContainerWidget::ZoneContainerWidget(Zone *zone)
     btnShowPower->setObjectName("btnShowPower");
     btnShowActions->setObjectName("btnShowActions");
     btnShowOverview->setObjectName("btnMainInfo");
-    btnShowPower->setEnabled(zone->hasPower);
+    btnShowPower->setEnabled(zone->getPowerCapability());
 
-    if (!(zone->hasLedRGB || zone->hasLedWhite))
+    if (!(zone->getLedColorCapability() || zone->getLedColorCapability()))
     {
         btnShowLights->setEnabled(false);
     }

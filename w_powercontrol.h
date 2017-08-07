@@ -20,10 +20,13 @@ private:
     QGridLayout *contentLayout;
 
 signals:
+    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
+
 private slots:
     void addPowerFunctions();
+    void togglePower(int id);
 };
 
 #endif // POWERCONTROLWIDGET_H

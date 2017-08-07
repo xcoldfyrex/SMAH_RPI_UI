@@ -23,13 +23,13 @@ void ZoneChooserWidget::addZoneButton(Zone *zone, int envZones, int controlZones
     zone->zoneSelector->setEnabled(false);
 
 
-    if (zone->hasEnviro) {
+    if (zone->getEnvironmentCapability()) {
         ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone);
         zenv->topWidget->setObjectName("zoneEnv");
         contentLayout->addWidget(zenv->topWidget,envZones, 0, 1, 1, Qt::AlignLeft);
     }
-    if (zone->hasLedRGB || zone->hasLedWhite || zone->hasPower) {
-        signalMapper->setMapping(zone->zoneSelector,zone->id);
+    if (zone->getLedColorCapability() || zone->getLedWhiteCapability() || zone->getPowerCapability()) {
+        signalMapper->setMapping(zone->zoneSelector,zone->getId());
         connect(zone->zoneSelector,SIGNAL(clicked()),signalMapper,SLOT(map()));
         connect(signalMapper,SIGNAL(mapped(int)),myParent,SLOT(showZone(int)));
         contentLayout->addWidget(zone->zoneSelector,controlZones  /*gridLoc*/, 1, 1, 1, Qt::AlignVCenter);

@@ -8,8 +8,6 @@
 
 #include "zone.h"
 
-class Zone;
-
 class ZoneOverviewWidget : public QWidget
 {
     Q_OBJECT

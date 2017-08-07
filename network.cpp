@@ -1,7 +1,6 @@
 #include "network.h"
 #include "libsmah_network.h"
 
-
 extern QMap<int, Zone*> *gZoneMap;
 
 QByteArray socketBuffer;
@@ -18,7 +17,7 @@ NetworkThread::NetworkThread(QString address, quint16 port, QObject *parent)
     reconnectTimer->setInterval(5000);
 
     enviroTimer = new QTimer();
-    enviroTimer->setInterval(5000);
+    enviroTimer->setInterval(1000);
 
     connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(socketConnect()),Qt::DirectConnection);
     connect(enviroTimer, SIGNAL(timeout()), this, SLOT(GPIOPoll()),Qt::DirectConnection);
@@ -138,7 +137,7 @@ void NetworkThread::processPayload(QByteArray buffer)
                     {
                         foreach (Zone *zone, *gZoneMap)
                         {
-                            if (zone->id == obj["id"].toInt())
+                            if (zone->getId() == obj["id"].toInt())
                                 return;
                         }
                     }
@@ -164,16 +163,15 @@ void NetworkThread::processPayload(QByteArray buffer)
                             int x = 0;
                             foreach (const QJsonValue &jsonvalue, powerFunctions) {
                                 QString key = powerFunctions.keys().at(x);
-                                Zone::PowerFunction pt;
-                                pt.id = key.toInt();
-                                pt.name = jsonvalue.toString();
-                                zone->powerFunctions.insert(key.toInt(), pt);
+                                int id = key.toInt();
+                                Zone::PowerFunction pt(id, jsonvalue.toString());
+                                zone->powerFunctions.insert(id, pt);
                                 x++;
                             }
                             emit powerFunctionsArrived();
                         }
                     }
-                    gZoneMap->insert(zone->id, zone);
+                    gZoneMap->insert(zone->getId(), zone);
                 }
             }
 
@@ -203,7 +201,7 @@ void NetworkThread::processPayload(QByteArray buffer)
     {
         foreach (Zone *zone, *gZoneMap)
         {
-            if (zone->id == data.value("zone").toInt())
+            if (zone->getId() == data.value("zone").toInt())
             {
                 if (data.value("status").toInt() == 1)
                 {
@@ -249,11 +247,11 @@ void NetworkThread::prepareToSendWrapper(QString string1, QJsonObject jso1, QStr
 void NetworkThread::enviroPoll()
 {
     foreach (Zone *zone, *gZoneMap) {
-        if (zone->hasEnviro) {
+        if (zone->getEnvironmentCapability()) {
             QJsonObject jsonObject = smah::buildPayload();
             jsonObject["command"] = "GET";
             jsonObject["resource"] = "MCP320X";
-            jsonObject["zone"] = zone->id;
+            jsonObject["zone"] = zone->getId();
 
             outstanding.insert(jsonObject["requestID"].toString(), "MCP320X");
             smah::socket_write(jsonObject, tcpSocket);
@@ -267,7 +265,7 @@ void NetworkThread::GPIOPoll()
             QJsonObject jsonObject = smah::buildPayload();
             jsonObject["command"] = "GET";
             jsonObject["resource"] = "GPIO";
-            jsonObject["zone"] = zone->id;
+            jsonObject["zone"] = zone->getId();
 
             outstanding.insert(jsonObject["requestID"].toString(), "GPIO");
             smah::socket_write(jsonObject, tcpSocket);

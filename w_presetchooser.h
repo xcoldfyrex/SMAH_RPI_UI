@@ -22,12 +22,8 @@ public:
 private:
     Zone *zone;
 
-signals:
-    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
-
 public slots:
     void setPreset();
-    void sendToNetwork(QString command, QJsonObject jsonPayload);
 
 private slots:
     void addPreset(Preset *preset);

@@ -16,7 +16,7 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone *zone) : QWidge
     lblZoneEnvIcon->setPixmap(QPixmap::fromImage(*imgZoneEnvIcon));
     lblZoneEnvIcon->resize(32,32);
 
-    lblZoneEnvHeader = new QLabel(zone->name);
+    lblZoneEnvHeader = new QLabel(zone->getName());
     lblZoneEnvData = new QLabel();
 
     lblZoneEnvHeader->setObjectName("lblZoneEnvHeader");

@@ -25,8 +25,8 @@ PresetChooser::PresetChooser(Zone *zone, QWidget *parent) : QWidget(parent)
 
     connect(networkThread,SIGNAL(presetArrived(Preset*)), this, SLOT(addPreset(Preset*)));
     connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));
-    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
-    connect(presetList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(setPreset()));
+    connect(this->zone,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
+    connect(presetList,SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(setPreset()));
 }
 
 void PresetChooser::setPreset()
@@ -43,13 +43,7 @@ void PresetChooser::setPreset()
     QJsonObject jsonPayload;
     jsonPayload["resource"] = "PRESET";
     jsonPayload["id"] = targetPreset->id;
-    this->sendToNetwork("ACTIVATE",jsonPayload);
-}
-
-void PresetChooser::sendToNetwork(QString command, QJsonObject jsonPayload)
-{
-    jsonPayload["zone"] = this->zone->id;
-    emit(requestingNetworkOut(command,jsonPayload, ""));
+    this->zone->sendToNetwork("ACTIVATE",jsonPayload);
 }
 
 void PresetChooser::addPreset(Preset *preset)

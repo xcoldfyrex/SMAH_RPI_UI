@@ -20,30 +20,10 @@ Zone::Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasPower
     connect(networkThread,SIGNAL(zoneGPIOArrived(QJsonObject,int)), this, SLOT(updateGPIOLabels(QJsonObject,int)));
 }
 
-Zone::Zone()
-{
-    this->hasEnviro = false;
-}
-
-int Zone::getActivePreset()
-{
-    return this->activePreset;
-}
-
-void Zone::setActivePreset(int preset)
-{
-    this->activePreset = preset;
-}
-
 Zone::PowerFunction::PowerFunction(int id, QString name)
 {
     this->id = id;
     this->name = name;
-}
-
-Zone::PowerFunction::PowerFunction()
-{
-
 }
 
 void Zone::updateGPIOLabels(QJsonObject payload, int zoneId)
@@ -56,9 +36,9 @@ void Zone::updateGPIOLabels(QJsonObject payload, int zoneId)
     for (int x=0; x < this->powerStatusLabels->size(); x++)
     {
         int val = power[QString::number(x)].toInt();
-        QString status = "ON";
+        QString status = "OFF";
         if (val == 0)
-            status = "OFF";
+            status = "ON";
         this->powerStatusLabels->value(x)->setText(status);
     }
     int x = 0;
@@ -67,13 +47,10 @@ void Zone::updateGPIOLabels(QJsonObject payload, int zoneId)
         this->environmentMap.insert(x, value);
         x++;
     }
+}
 
-
-/*
-    qDebug() << lights["R"].toInt();
-    qDebug() << lights["G"].toInt();
-    qDebug() << lights["B"].toInt();
-    qDebug() << lights["W"].toInt();
-    */
-
+void Zone::sendToNetwork(QString command, QJsonObject jsonPayload)
+{
+    jsonPayload["zone"] = this->getId();
+    emit(requestingNetworkOut(command,jsonPayload, ""));
 }

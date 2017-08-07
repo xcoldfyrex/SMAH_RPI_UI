@@ -37,7 +37,7 @@ LightControlContainerWidget::LightControlContainerWidget(Zone *zone, QWidget *pa
 
     contentLayout->addWidget(preview,0,1,1,1);
 
-    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
+    connect(this->zone,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
     connect(hsvWheel,SIGNAL(colorChange(QColor)),this,SLOT(updateFromWheel(QColor)));
     connect(hslSwatch,SIGNAL(colorChange(QColor)),this,SLOT(updateFromSwatch(QColor)));
 
@@ -62,7 +62,7 @@ void LightControlContainerWidget::updateFromWheel(QColor qcol)
     QJsonObject jsonPayload;
     jsonPayload["type"] = 01;
     jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
-    sendToNetwork("SET",jsonPayload);
+    zone->sendToNetwork("SET",jsonPayload);
 }
 
 void LightControlContainerWidget::updateFromSwatch(QColor qcol)
@@ -74,13 +74,5 @@ void LightControlContainerWidget::updateFromSwatch(QColor qcol)
     QJsonObject jsonPayload;
     jsonPayload["type"] = 01;
     jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
-    sendToNetwork("SET",jsonPayload);
-}
-
-
-void LightControlContainerWidget::sendToNetwork(QString command, QJsonObject jsonPayload) {
-    char zoneString[3];
-    sprintf(zoneString, "%d", zone->id);
-    jsonPayload["zone"] = zone->id;
-    emit(requestingNetworkOut(command,jsonPayload, ""));
+    zone->sendToNetwork("SET",jsonPayload);
 }

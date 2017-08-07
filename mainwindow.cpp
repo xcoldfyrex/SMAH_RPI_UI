@@ -10,7 +10,7 @@
 
 extern QMap<int, Zone*> *gZoneMap;
 extern NetworkThread *networkThread;
-extern QList<Preset*> *gPresetList;
+extern QList<Preset> gPresetList;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 
     connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
     connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),this,SLOT(addZoneLayout(Zone*)),Qt::QueuedConnection);
-    connect(networkThread,SIGNAL(presetArrived(Preset*)),this,SLOT(addPreset(Preset*)),Qt::QueuedConnection);
+    connect(networkThread,SIGNAL(presetArrived(Preset)),this,SLOT(addPreset(Preset)));
     connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
 }
 
@@ -77,15 +77,15 @@ void MainWindow::addZoneLayout(Zone *zone)
     contentLayout->addWidget(zone->zoneFunctionContainer->topWidget);
 }
 
-void MainWindow::addPreset(Preset *preset)
+void MainWindow::addPreset(Preset preset)
 {
-    if (gPresetList->size() > 0)
+    if (gPresetList.size() > 0)
     {
-        foreach (Preset *old_preset, *gPresetList)
+        foreach (Preset old_preset, gPresetList)
         {
-            if (old_preset->id == preset->id)
+            if (old_preset.id == preset.id)
                 return;
         }
     }
-    gPresetList->append(preset);
+    gPresetList.append(preset);
 }

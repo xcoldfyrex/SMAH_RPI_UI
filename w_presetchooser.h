@@ -26,7 +26,7 @@ public slots:
     void setPreset();
 
 private slots:
-    void addPreset(Preset *preset);
+    void addPreset(Preset preset);
 };
 
 #endif // W_PRESETCHOOSER_H

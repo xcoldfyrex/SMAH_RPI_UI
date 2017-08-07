@@ -15,13 +15,13 @@
 
 
 QMap<int, Zone*> *gZoneMap;
-QList<Preset*> *gPresetList;
+QList<Preset> gPresetList;
 NetworkThread *networkThread;
 
 int main(int argc, char *argv[])
 {
     gZoneMap = new QMap<int, Zone*>();
-    gPresetList = new QList<Preset*>();
+    //gPresetList = new QList<Preset>();
 
     QApplication a(argc, argv);
     qInstallMessageHandler(systemlogHandler);

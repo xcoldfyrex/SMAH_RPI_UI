@@ -46,7 +46,7 @@ private slots:
 signals:
     void error(QTcpSocket::SocketError socketError);
     void zoneDiscovered(Zone *zone, int envZones, int controlZones);
-    void presetArrived(Preset *preset);
+    void presetArrived(Preset preset);
     void zoneGPIOArrived(QJsonObject payload, int zone);
     void zoneStatusChanged(int id, bool status);
     void powerFunctionsArrived();

@@ -182,7 +182,7 @@ void NetworkThread::processPayload(QByteArray buffer)
                 {
                     QJsonObject obj = value.toObject();
                     int presetID = obj["id"].toInt();
-                    Preset *preset = new Preset(obj["name"].toString(),presetID);
+                    Preset preset(obj["name"].toString(),presetID);
                     emit presetArrived(preset);
                 }
             }
@@ -191,6 +191,20 @@ void NetworkThread::processPayload(QByteArray buffer)
             {
                 QJsonObject payload = data.value("payload").toObject();
                 emit zoneGPIOArrived(payload, zone);
+            }
+
+            if (type == "ACTIONS")
+            {
+                /*
+                QJsonArray array = data.value("payload").toArray();
+                foreach (const QJsonValue & value, array)
+                {
+                    QJsonObject obj = value.toObject();
+                    int id = obj["id"].toInt();
+                    ScheduledAction action = new Preset(obj["name"].toString(),presetID);
+                    emit presetArrived(preset);
+                }
+                */
             }
             outstanding.remove(id);
         }

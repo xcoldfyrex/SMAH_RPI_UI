@@ -22,7 +22,6 @@ class ZoneContainerHeaderWidget;
 
 class Zone;
 
-
 class ZoneContainerWidget : public QWidget
 {
     Q_OBJECT

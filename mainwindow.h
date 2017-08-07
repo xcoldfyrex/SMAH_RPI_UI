@@ -30,7 +30,7 @@ public slots:
     void showZoneChooser();
     void showSystemLog();
     void showZone(int zone);
-    void addPreset(Preset *preset);
+    void addPreset(Preset preset);
 
 
 private slots:

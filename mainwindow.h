@@ -6,6 +6,7 @@
 
 #include "w_zonechooser.h"
 #include "w_topheader.h"
+#include "w_systemsettings.h"
 #include "network.h"
 #include "zone.h"
 
@@ -21,6 +22,7 @@ public:
 
 private:
     TopHeaderWidget *hcheader;
+    SystemSettings systemSettingsWidget;
 
 signals:
     void zoneChanged(Zone *zone);
@@ -28,7 +30,7 @@ signals:
 
 public slots:
     void showZoneChooser();
-    void showSystemLog();
+    void showSystemWidget();
     void showZone(int zone);
     void addPreset(Preset preset);
 

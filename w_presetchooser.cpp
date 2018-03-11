@@ -19,7 +19,7 @@ PresetChooser::PresetChooser(Zone *zone, QWidget *parent) : QWidget(parent)
     this->zone = zone;
 
     contentLayout->addWidget(presetList);
-    contentLayout->addWidget(btnActivate);
+    //contentLayout->addWidget(btnActivate);
 
     presetList->setObjectName("presetList");
 

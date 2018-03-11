@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     qApp->setStyleSheet(StyleSheet);
 
     QFontDatabase::addApplicationFont("Crescent-Regular.ttf");
-    QFontDatabase::addApplicationFont("sui-generis-free.ttf");
+    QFontDatabase::addApplicationFont("DigitaldreamFat.ttf");
 
     MainWindow mainWindow;
     mainWindow.show();

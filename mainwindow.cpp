@@ -34,8 +34,10 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 
     //create node widgets
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
+    SystemSettings *systemSettingsWidget = new SystemSettings(this);
 
     contentLayout->addWidget(zoneChooser->topWidget);
+    contentLayout->addWidget(systemSettingsWidget->topWidget);
     setLayout(mainLayout);
 
     mainLayout->setContentsMargins(0,0,0,0);
@@ -68,8 +70,9 @@ void MainWindow::showZone(int zone) {
     contentLayout->setCurrentWidget(gZoneMap->value(zone)->zoneFunctionContainer->topWidget);
 }
 
-void MainWindow::showSystemLog() {
-    contentLayout->setCurrentIndex(2);
+void MainWindow::showSystemWidget() {
+    contentLayout->setCurrentIndex(1);
+    //contentLayout->setCurrentWidget(this->systemSettingsWidget.topLevelWidget());
 }
 
 void MainWindow::addZoneLayout(Zone *zone)

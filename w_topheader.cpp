@@ -28,7 +28,7 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
 
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
     connect(btnHome,SIGNAL(clicked(bool)),myParent,SLOT(showZoneChooser()));
-    connect(btnInfo,SIGNAL(clicked(bool)),myParent,SLOT(showSystemLog()));
+    connect(btnInfo,SIGNAL(clicked(bool)),myParent,SLOT(showSystemWidget()));
 
     //timer for clock
     QTimer *timer = new QTimer(this);

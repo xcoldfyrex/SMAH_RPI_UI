@@ -14,38 +14,39 @@
 #include <QMap>
 #include <QTimer>
 #include <QDataStream>
+#include <QNetworkAddressEntry>
 
-#include "zone.h"
-#include "libsmah_preset.h"
+#include "zone2.h"
+#include "preset.h"
 
 
-class NetworkThread: public QObject
+class TCPConnection: public QObject
 {
     Q_OBJECT
 
 public:
-    NetworkThread(QString address, quint16 port, QObject *parent);
-    NetworkThread();
+    TCPConnection(QObject *parent = NULL);
+    TCPConnection();
     bool isConnected();
+    QString getIp_addr();
+    void start(QHostAddress address);
 
 public slots:
-    void prepareToSendWrapper(QString, QJsonObject, QString string2);
     void GPIOPoll();
 
 private slots:
-    void processPayload(QByteArray buffer);
-    void socketConnect();
+    void processPayload(QByteArray &buffer, QDataStream &payload);
+    void socketConnect(QHostAddress addr);
     void socketError();
     void socketRead();
     void socketDisconnect();
-    void get_zones();
-    void get_presets();
     void enviroPoll();
+    QJsonObject makeJsonObject(QByteArray buffer);
 
 
 signals:
     void error(QTcpSocket::SocketError socketError);
-    void zoneDiscovered(Zone *zone, int envZones, int controlZones);
+    void zoneDiscovered(Zone zone);
     void presetArrived(Preset preset);
     void zoneGPIOArrived(QJsonObject payload, int zone);
     void zoneStatusChanged(int id, bool status);

@@ -1,0 +1,15 @@
+#ifndef GPIO_DEFS_H
+#define GPIO_DEFS_H
+
+#endif // GPIO_DEFS_H
+
+#define GPIO_TOGGLE_PORT 17
+#define GPIO_PIN_WHITE 19
+#define GPIO_PIN_RED 21
+#define GPIO_PIN_GREEN 26
+#define GPIO_PIN_BLUE 20
+#define GPIO_RELAY_PORT_0 22
+#define GPIO_RELAY_PORT_1 2
+#define GPIO_RELAY_PORT_2 3
+#define GPIO_RELAY_PORT_3 4
+

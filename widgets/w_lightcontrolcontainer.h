@@ -7,11 +7,13 @@
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QPicture>
+#include <QListWidgetItem>
+#include <QPushButton>
 
 #include "w_hslswatch.h"
 #include "w_colorpreview.h"
-#include "mainwindow.h"
-#include "zone.h"
+#include "light.h"
+#include "zone2.h"
 
 
 namespace Ui {
@@ -23,7 +25,8 @@ class LightControlContainerWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit LightControlContainerWidget(Zone *zone, QWidget *parent = 0);
+    explicit LightControlContainerWidget(Zone zone, Light *light, QWidget *parent = 0);
+    LightControlContainerWidget() {}
     ~LightControlContainerWidget();
     QWidget *topWidget;
     QWidget *colorPalette;
@@ -31,8 +34,7 @@ public:
     QGridLayout *contentLayout;
     QPicture *hsvSwatch;
     QColor rgb;
-//signals:
-//    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
+    QPushButton *btnShowPreset;
 
 public slots:
     void updateFromWheel(QColor qcol);
@@ -42,7 +44,8 @@ private:
     Ui::LightControlWidget *ui;
     QGraphicsScene *scene;
     HSLSwatch *hslSwatch;
-    Zone *zone;
+    Zone zone;
+    Light *light;
 };
 
 #endif // LIGHTCONTROLWIDGET_H

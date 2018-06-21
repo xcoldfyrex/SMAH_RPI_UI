@@ -1,11 +1,11 @@
 #include <QSignalMapper>
 
-#include "network.h"
+#include "tcpconnection.h"
 #include "w_powercontrol.h"
 
-extern NetworkThread *networkThread;
+extern TCPConnection *networkThread;
 
-PowerControlWidget::PowerControlWidget(Zone *zone, QWidget *parent) : QWidget(parent)
+PowerControlWidget::PowerControlWidget(Zone zone, QWidget *parent) : QWidget(parent)
 {
     this->zone = zone;
     this->topWidget = new QWidget;
@@ -16,14 +16,15 @@ PowerControlWidget::PowerControlWidget(Zone *zone, QWidget *parent) : QWidget(pa
     this->contentLayout->addWidget(stateHeader,0,1);
     this->contentLayout->addWidget(new QLabel("Action"),0,2);
 
-    connect(networkThread,SIGNAL(powerFunctionsArrived()), this, SLOT(addPowerFunctions()));
-    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
+    //connect(networkThread,SIGNAL(powerFunctionsArrived()), this, SLOT(addPowerFunctions()));
+    //connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
 }
 
 void PowerControlWidget::addPowerFunctions()
 {
+    /*
     int x = 1;
-    foreach (Zone::PowerFunction pf, zone->powerFunctions)
+    foreach (smah::zone::PowerFunction pf, zone->powerFunctions)
     {
         QLabel *state = new QLabel("N/A");
         QLabel *toggleName = new QLabel(pf.getName());
@@ -39,6 +40,7 @@ void PowerControlWidget::addPowerFunctions()
         x++;
     }
     networkThread->GPIOPoll();
+    */
 
 }
 
@@ -46,6 +48,6 @@ void PowerControlWidget::togglePower(int id) {
     QJsonObject jsonPayload;
     jsonPayload["type"] = 03;
     jsonPayload["value"] = QString::number(id);
-    jsonPayload["zone"] = zone->getId();
+    jsonPayload["zone"] = zone.getId();
     emit(requestingNetworkOut("SET", jsonPayload, ""));
 }

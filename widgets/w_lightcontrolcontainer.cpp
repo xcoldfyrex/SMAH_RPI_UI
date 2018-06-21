@@ -7,19 +7,21 @@
 #include "w_hsvpalette.h"
 #include "w_zonecontainer.h"
 #include "mainwindow.h"
-#include "network.h"
+#include "tcpconnection.h"
 
-extern NetworkThread *networkThread;
+extern TCPConnection *networkThread;
 
-LightControlContainerWidget::LightControlContainerWidget(Zone *zone, QWidget *parent) :
+LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LightControlWidget)
+
 {
     ui->setupUi(this);
 
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
     this->zone = zone;
+    this->light = light;
 
     contentLayout->setContentsMargins(0,0,0,0);
     contentLayout->addWidget(ui->btnSelectPreset,0,0);
@@ -27,7 +29,7 @@ LightControlContainerWidget::LightControlContainerWidget(Zone *zone, QWidget *pa
     HSVWheel *hsvWheel = new HSVWheel(this);
     hslSwatch = new HSLSwatch(this);
 
-    ZoneContainerWidget* myParent = dynamic_cast<ZoneContainerWidget*>(parent);
+//    ZoneLightsWidget* myParent = dynamic_cast<ZoneLightsWidget*>(parent);
 
     preview = new ColorPreview(this);
     preview->color.setRgb(255,255,255);
@@ -37,13 +39,9 @@ LightControlContainerWidget::LightControlContainerWidget(Zone *zone, QWidget *pa
 
     contentLayout->addWidget(preview,0,1,1,1);
 
-    connect(this->zone,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
     connect(hsvWheel,SIGNAL(colorChange(QColor)),this,SLOT(updateFromWheel(QColor)));
     connect(hslSwatch,SIGNAL(colorChange(QColor)),this,SLOT(updateFromSwatch(QColor)));
-
-    connect(ui->btnSelectPreset,SIGNAL(clicked(bool)),myParent,SLOT(showPresetChooser()));
-
-
+    this->btnShowPreset = new QPushButton(ui->btnSelectPreset);
 }
 
 LightControlContainerWidget::~LightControlContainerWidget()
@@ -58,11 +56,7 @@ void LightControlContainerWidget::updateFromWheel(QColor qcol)
     hslSwatch->repaint();
     preview->color.setHsv(rgb.hue(),rgb.saturation(),rgb.value());
     preview->repaint();
-
-    QJsonObject jsonPayload;
-    jsonPayload["type"] = 01;
-    jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
-    zone->sendToNetwork("SET",jsonPayload);
+    light->setColor(rgb.name().toUpper().replace("#","") + "FF");
 }
 
 void LightControlContainerWidget::updateFromSwatch(QColor qcol)
@@ -70,9 +64,5 @@ void LightControlContainerWidget::updateFromSwatch(QColor qcol)
     rgb.setHsv(rgb.hue(), qcol.saturation(), qcol.value());
     preview->color.setHsv(rgb.hue(),rgb.saturation(),rgb.value());
     preview->repaint();
-
-    QJsonObject jsonPayload;
-    jsonPayload["type"] = 01;
-    jsonPayload["value"] = rgb.name().toUpper().replace("#","") + "FF";
-    zone->sendToNetwork("SET",jsonPayload);
+    light->setColor(rgb.name().toUpper().replace("#","") + "FF");
 }

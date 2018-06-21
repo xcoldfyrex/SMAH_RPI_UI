@@ -4,20 +4,16 @@
 */
 
 #include "mainwindow.h"
-#include "w_lightcontrolcontainer.h"
+//#include "widgets/w_lightcontrolcontainer.h"
 #include "ui_mainwindow.h"
-#include "network.h"
+#include "tcpconnection.h"
 
-extern QMap<int, Zone*> *gZoneMap;
-extern NetworkThread *networkThread;
-extern QList<Preset> gPresetList;
+extern QMap<QString, Zone> gZoneMap;
+extern TCPConnection *networkThread;
+extern QList<Preset> gColorPresetMap;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
-
-    //setup networking
-    networkThread = new NetworkThread("10.1.10.110", 9002, this);
-
     this->setObjectName("MainWindow");
     this->setStyle(QApplication::style());
     this->setAutoFillBackground(true);
@@ -26,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     this->resize(800,480);
     this->update();
     this->repaint();
+
+    this->zoneContainerMap = new QMap<QString, ZoneContainerWidget*>;
 
     //create header template
     TopHeaderWidget *hcheader = new TopHeaderWidget(this,"Main Menu");
@@ -44,10 +42,20 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
 
-    connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),zoneChooser,SLOT(addZoneButton(Zone*, int, int)),Qt::QueuedConnection);
-    connect(networkThread,SIGNAL(zoneDiscovered(Zone*, int, int)),this,SLOT(addZoneLayout(Zone*)),Qt::QueuedConnection);
-    connect(networkThread,SIGNAL(presetArrived(Preset)),this,SLOT(addPreset(Preset)));
-    connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
+    foreach (Zone zone, gZoneMap) {
+        ZoneContainerWidget *zcw = new ZoneContainerWidget(zone);
+        this->zoneContainerMap->insert(zone.getName(),zcw);
+        contentLayout->addWidget(zcw->topWidget);
+    }
+
+    contentLayout->setCurrentIndex(0);
+
+    //qRegisterMetaType<smah::Zone>("smah::Zone");
+
+    //connect(networkThread,SIGNAL(zoneDiscovered(smah::Zone)),zoneChooser,SLOT(addZoneButton(smah::Zone)),Qt::QueuedConnection);
+    //connect(networkThread,SIGNAL(zoneDiscovered(smah::Zone)),this,SLOT(createZoneElements(smah::Zone)),Qt::QueuedConnection);
+    //connect(networkThread,SIGNAL(presetArrived(Preset)),this,SLOT(addPreset(Preset)));
+    //connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
 }
 
 void MainWindow::paintEvent(QPaintEvent *pe)
@@ -64,10 +72,10 @@ void MainWindow::showZoneChooser() {
     contentLayout->setCurrentIndex(0);
 }
 
-void MainWindow::showZone(int zone) {
+void MainWindow::showZone(QString zone) {
     /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
-    emit zoneChanged(gZoneMap->value(zone));
-    contentLayout->setCurrentWidget(gZoneMap->value(zone)->zoneFunctionContainer->topWidget);
+    //emit zoneChanged(zone);
+    contentLayout->setCurrentWidget(this->getZoneContainer(zone)->topWidget);
 }
 
 void MainWindow::showSystemWidget() {
@@ -75,20 +83,23 @@ void MainWindow::showSystemWidget() {
     //contentLayout->setCurrentWidget(this->systemSettingsWidget.topLevelWidget());
 }
 
-void MainWindow::addZoneLayout(Zone *zone)
+void MainWindow::createZoneElements(Zone zone)
 {
-    contentLayout->addWidget(zone->zoneFunctionContainer->topWidget);
+    /* TODO
+     * create the UI elements
+     */
+    //contentLayout->addWidget(zone->zoneFunctionContainer->topWidget);
 }
 
 void MainWindow::addPreset(Preset preset)
 {
-    if (gPresetList.size() > 0)
+    if (gColorPresetMap.size() > 0)
     {
-        foreach (Preset old_preset, gPresetList)
+        foreach (Preset old_preset, gColorPresetMap)
         {
             if (old_preset.id == preset.id)
                 return;
         }
     }
-    gPresetList.append(preset);
+    gColorPresetMap.append(preset);
 }

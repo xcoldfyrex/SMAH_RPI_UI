@@ -1,32 +1,28 @@
-#include "network.h"
-#include "zone.h"
+#include "rpidevice.h"
 
 #include <QDebug>
 
-extern NetworkThread *networkThread;
-
-Zone::Zone(int id, QString name, bool hasLedRGB, bool hasLedWhite, bool hasPower, bool hasEnviro, QObject *parent)
-    : QObject(parent)
+RPIDevice::RPIDevice(int id, QString name, QString hwAddress)
 {
     this->id = id;
     this->name = name;
-    this->hasLedRGB = hasLedRGB;
-    this->hasLedWhite = hasLedWhite;
-    this->hasEnviro = hasEnviro;
-    this->hasPower = hasPower;
-    zoneSelector = new QPushButton(this->name);
-    zoneFunctionContainer = new ZoneContainerWidget(this);
-    powerStatusLabels = new QMap<int, QLabel*>();
-    connect(networkThread,SIGNAL(zoneGPIOArrived(QJsonObject,int)), this, SLOT(updateGPIOLabels(QJsonObject,int)));
+    this->hwAddress = hwAddress;
 }
 
-Zone::PowerFunction::PowerFunction(int id, QString name)
+RPIDevice::RPIDevice()
+{
+
+}
+
+RPIDevice::PowerFunction::PowerFunction(QString name, int id, short type)
 {
     this->id = id;
     this->name = name;
+    this->type = type;
 }
 
-void Zone::updateGPIOLabels(QJsonObject payload, int zoneId)
+/*
+void RPIDevice::updateGPIOLabels(QJsonObject payload, int zoneId)
 {
     if (zoneId != this->id)
         return;
@@ -49,8 +45,9 @@ void Zone::updateGPIOLabels(QJsonObject payload, int zoneId)
     }
 }
 
-void Zone::sendToNetwork(QString command, QJsonObject jsonPayload)
+void RPIDevice::sendToNetwork(QString command, QJsonObject jsonPayload)
 {
     jsonPayload["zone"] = this->getId();
     emit(requestingNetworkOut(command,jsonPayload, ""));
 }
+*/

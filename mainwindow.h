@@ -3,13 +3,16 @@
 
 #include <QWidget>
 #include <QStackedLayout>
+#include <QMap>
+#include <QPainter>
 
-#include "w_zonechooser.h"
-#include "w_topheader.h"
-#include "w_systemsettings.h"
-#include "network.h"
-#include "zone.h"
+#include "zone2.h"
+#include "tcpconnection.h"
 
+#include "widgets/w_zonechooser.h"
+#include "widgets/w_topheader.h"
+#include "widgets/w_systemsettings.h"
+#include "widgets/w_zonecontainer.h"
 
 class MainWindow : public QWidget
 {
@@ -22,21 +25,23 @@ public:
 
 private:
     TopHeaderWidget *hcheader;
-    SystemSettings systemSettingsWidget;
+    QMap<QString, ZoneContainerWidget*> *zoneContainerMap;
+    ZoneContainerWidget *getZoneContainer(QString zone) { return zoneContainerMap->value(zone); }
+
 
 signals:
-    void zoneChanged(Zone *zone);
+    void zoneChanged(Zone);
     void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
     void showZoneChooser();
     void showSystemWidget();
-    void showZone(int zone);
+    void showZone(QString zone);
     void addPreset(Preset preset);
 
 
 private slots:
-    void addZoneLayout(Zone *zone);
+    void createZoneElements(Zone zone);
 };
 
 #endif // MAINWINDOW_H

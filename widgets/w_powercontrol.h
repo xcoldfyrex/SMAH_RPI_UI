@@ -3,20 +3,23 @@
 
 #include <QTableWidgetItem>
 #include <QTableWidget>
+#include <QGridLayout>
+#include <QLabel>
+#include <QJsonObject>
 
-#include "zone.h"
+#include "zone2.h"
 
-class Zone;
+//class Zone;
 
 class PowerControlWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PowerControlWidget(Zone *zone, QWidget *parent = 0);
+    explicit PowerControlWidget(Zone zone, QWidget *parent = 0);
     QWidget *topWidget;
 
 private:
-    Zone *zone;
+    Zone zone;
     QGridLayout *contentLayout;
 
 signals:

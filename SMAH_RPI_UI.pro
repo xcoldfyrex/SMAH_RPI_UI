@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui network widgets xml
-# CONFIG += console
+CONFIG += console
 
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
@@ -14,42 +14,66 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    zone.cpp \
-    w_colorpreview.cpp \
-    w_topheader.cpp \
-    w_zoneoverview.cpp \
-    w_zonechooser.cpp \
-    w_zonecontainer.cpp \
-    w_lightcontrolcontainer.cpp \
-    network.cpp \
-    w_presetchooser.cpp \
-    w_zonecontainerheader.cpp \
-    w_scheduledactions.cpp \
-    w_zoneenvironment.cpp \
-    w_hsvwheel.cpp \
-    w_hslswatch.cpp \
     mainwindow.cpp \
-    w_powercontrol.cpp \
-    w_systemsettings.cpp
+    zone2.cpp \
+    rpidevice.cpp \
+    widgets/w_colorpreview.cpp \
+    widgets/w_hslswatch.cpp \
+    widgets/w_hsvwheel.cpp \
+    widgets/w_lightcontrolcontainer.cpp \
+    widgets/w_powercontrol.cpp \
+    widgets/w_presetchooser.cpp \
+    widgets/w_scheduledactions.cpp \
+    widgets/w_systemsettings.cpp \
+    widgets/w_topheader.cpp \
+    widgets/w_zonechooser.cpp \
+    widgets/w_zonecontainer.cpp \
+    widgets/w_zoneenvironment.cpp \
+    widgets/w_zoneoverview.cpp \
+    logger.cpp \
+    preset.cpp \
+    datagramhandler.cpp \
+    widgets/w_zone_lights.cpp \
+    light.cpp \
+    zwavemanager.cpp \
+    tcpserver.cpp \
+    tcpconnection.cpp \
+    tcpsocket.cpp \
+    commandrouter.cpp \
+    presettask.cpp
+
 
 HEADERS  += \
-    zone.h \
-    w_zoneoverview.h \
-    w_zonecontainer.h \
-    w_lightcontrolcontainer.h \
-    w_hsvpalette.h \
-    w_colorpreview.h \
-    w_topheader.h \
-    w_zonechooser.h \
-    network.h \
-    w_presetchooser.h \
-    w_zonecontainerheader.h \
-    w_scheduledactions.h \
-    w_zoneenvironment.h \
-    w_hslswatch.h \
     mainwindow.h \
-    w_powercontrol.h \
-    w_systemsettings.h
+    zone2.h \
+    rpidevice.h \
+    widgets/w_colorpreview.h \
+    widgets/w_hslswatch.h \
+    widgets/w_hsvpalette.h \
+    widgets/w_lightcontrolcontainer.h \
+    widgets/w_powercontrol.h \
+    widgets/w_presetchooser.h \
+    widgets/w_scheduledactions.h \
+    widgets/w_systemsettings.h \
+    widgets/w_topheader.h \
+    widgets/w_zonechooser.h \
+    widgets/w_zonecontainer.h \
+    widgets/w_zoneenvironment.h \
+    widgets/w_zoneoverview.h \
+    build_number.h \
+    logger.h \
+    preset.h \
+    datagramhandler.h \
+    widgets/w_zone_lights.h \
+    light.h \
+    zwavemanager.h \
+    gpio_defs.h \
+    tcpserver.h \
+    tcpconnection.h \
+    tcpsocket.h \
+    commandrouter.h \
+    presettask.h
+
 
 FORMS    += \
     mainwindow.ui \
@@ -57,11 +81,33 @@ FORMS    += \
 
 DEFINES += QT_MESSAGELOGCONTEXT
 
+
 INCLUDEPATH += $$PWD/../_lib
 DEPENDPATH += $$PWD/../_lib
 
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/arm/ -lSMAH
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/x86_64/ -lSMAH
+#unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/arm/ -lSMAH
+#unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/x86_64/ -lSMAH
 
-INCLUDEPATH += $$PWD/../../libSMAH/src
-DEPENDPATH += $$PWD/../../libSMAH/src
+#INCLUDEPATH += $$PWD/../../libSMAH/src
+#DEPENDPATH += $$PWD/../../libSMAH/src
+
+build_nr.commands = ../build_number.sh
+build_nr.depends = FORCE
+QMAKE_EXTRA_TARGETS += build_nr
+PRE_TARGETDEPS += build_nr
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/arm/ -lopenzwave
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib64/ -lopenzwave
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/arm/ -lpigpio
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib64/ -lpigpio
+
+
+INCLUDEPATH += $$PWD/../../../../../usr/local/include/openzwave
+DEPENDPATH += $$PWD/../../../../../usr/local/include/openzwave
+
+INCLUDEPATH += $$PWD/../../../../../usr/local/include
+DEPENDPATH += $$PWD/../../../../../usr/local/include
+
+DISTFILES += \
+    ../../../../../usr/local/include/openzwave/aes/aes.txt

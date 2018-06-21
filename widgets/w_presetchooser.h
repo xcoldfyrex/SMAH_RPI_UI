@@ -5,28 +5,29 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QJsonObject>
+#include <QListWidgetItem>
 
-#include "libsmah_preset.h"
-#include "zone.h"
-
-class Zone;
+#include "preset.h"
+#include "zone2.h"
+#include "light.h"
 
 class PresetChooser : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PresetChooser(Zone *zone, QWidget *parent = 0);
+    PresetChooser(Zone zone, Light *light, QWidget *parent = 0);
     QWidget *topWidget;
     QListWidget *presetList;
     QVBoxLayout *contentLayout;
 private:
-    Zone *zone;
+    Zone zone;
+    Light *light;
 
 public slots:
     void setPreset();
 
-private slots:
-    void addPreset(Preset preset);
+signals:
+    void presetActivation(Preset preset);
 };
 
 #endif // W_PRESETCHOOSER_H

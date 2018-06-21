@@ -3,38 +3,37 @@
 
 #include <QWidget>
 #include <QStackedWidget>
+#include <QStackedLayout>
 #include <QPushButton>
 
 #include "w_presetchooser.h"
 #include "w_powercontrol.h"
 #include "w_zoneoverview.h"
-#include "w_zonecontainerheader.h"
-#include "zone.h"
-
-
-class PowerControlWidget;
+#include "w_zone_lights.h"
+#include "zone2.h"
 
 class PresetChooser;
 
 class ZoneOverviewWidget;
 
-class ZoneContainerHeaderWidget;
+//class ZoneLightsWidget;
 
-class Zone;
+//class Zone;
 
 class ZoneContainerWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    ZoneContainerWidget(Zone *zone);
+    explicit ZoneContainerWidget(Zone zone);
+    ZoneContainerWidget() {}
     QWidget *topWidget;
     QStackedWidget *contentLayout;
 
 private:
+    ZoneLightsWidget *zoneLightsWidget;
     ZoneOverviewWidget *zoneOverViewWidget;
     PresetChooser *presetChooserWidget;
-    ZoneContainerHeaderWidget *zoneContainerHeader;
     PowerControlWidget *powerControlWidget;
     QPushButton *btnShowLights = new QPushButton;
     QPushButton *btnShowPower = new QPushButton;
@@ -44,7 +43,6 @@ private slots:
     void showLightContainer();
     void showPowerControl();
     void showOverview();
-    void showPresetChooser();
     void showActions();
 };
 

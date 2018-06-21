@@ -6,20 +6,20 @@
 #include <QLabel>
 #include <QTimer>
 
-#include "zone.h"
+#include "zone2.h"
 
 class ZoneOverviewWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneOverviewWidget(Zone *zone, QWidget *parent = 0);
+    explicit ZoneOverviewWidget(Zone zone, QWidget *parent = 0);
     QWidget *topWidget;
     QGridLayout *contentLayout;
 
 private:
     float rawVoltage(int reading);
     QTimer *updateTimer;
-    Zone *zone;
+    Zone zone;
     QLabel *lblReadingsDisplay;
 
 signals:

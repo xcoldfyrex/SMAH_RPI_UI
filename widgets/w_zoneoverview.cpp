@@ -1,7 +1,7 @@
 #include "math.h"
 #include "w_zoneoverview.h"
 
-ZoneOverviewWidget::ZoneOverviewWidget(Zone *zone, QWidget *parent) : QWidget(parent)
+ZoneOverviewWidget::ZoneOverviewWidget(Zone zone, QWidget *parent) : QWidget(parent)
 {
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
@@ -25,6 +25,7 @@ ZoneOverviewWidget::ZoneOverviewWidget(Zone *zone, QWidget *parent) : QWidget(pa
 
 void ZoneOverviewWidget::updateReadings()
 {
+    /*
     float temp = ceilf(rawVoltage(zone->environmentMap.value(0) * 100) * 100) / 100;
     float rh_voltage = rawVoltage(zone->environmentMap.value(1));
     float RH = ceilf((((rh_voltage - .958) / .0307) * 100)) / 100;
@@ -34,6 +35,7 @@ void ZoneOverviewWidget::updateReadings()
                 "Temperature: " + QString::number(temp) + "F\n" +
                 "Humidity: " + QString::number(RH) + "%\n"
                 );
+                */
 }
 
 float ZoneOverviewWidget::rawVoltage(int reading)

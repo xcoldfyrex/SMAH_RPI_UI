@@ -5,7 +5,7 @@
 #include "w_zonechooser.h"
 #include "w_zoneenvironment.h"
 
-extern QList<Zone> *gZoneList;
+extern QMap<QString, Zone> gZoneMap;
 extern QString *activeZone;
 
 ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
@@ -15,14 +15,16 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
     this->myParent = dynamic_cast<MainWindow*>(parent);
-}
+    foreach (Zone zone, gZoneMap) {
+        QSignalMapper *signalMapper = new QSignalMapper(this);
+        QPushButton *btn = new QPushButton(zone.getName());
+        signalMapper->setMapping(btn,zone.getName());
+        connect(btn,SIGNAL(clicked()),signalMapper,SLOT(map()));
+        connect(signalMapper,SIGNAL(mapped(QString)),myParent,SLOT(showZone(QString)));
+        contentLayout->addWidget(btn, this->offset  /*gridLoc*/, 1, 1, 1, Qt::AlignVCenter);
+        offset++;
 
-void ZoneChooserWidget::addZoneButton(Zone *zone, int envZones, int controlZones)
-{
-    QSignalMapper *signalMapper = new QSignalMapper(this);
-    zone->zoneSelector->setEnabled(false);
-
-
+        /*
     if (zone->getEnvironmentCapability()) {
         ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone);
         zenv->topWidget->setObjectName("zoneEnv");
@@ -32,6 +34,11 @@ void ZoneChooserWidget::addZoneButton(Zone *zone, int envZones, int controlZones
         signalMapper->setMapping(zone->zoneSelector,zone->getId());
         connect(zone->zoneSelector,SIGNAL(clicked()),signalMapper,SLOT(map()));
         connect(signalMapper,SIGNAL(mapped(int)),myParent,SLOT(showZone(int)));
-        contentLayout->addWidget(zone->zoneSelector,controlZones  /*gridLoc*/, 1, 1, 1, Qt::AlignVCenter);
+        contentLayout->addWidget(zone->zoneSelector,controlZones  /*gridLoc, 1, 1, 1, Qt::AlignVCenter);
     }
+    */
+
+    }
+
 }
+

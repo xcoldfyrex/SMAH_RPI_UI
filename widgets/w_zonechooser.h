@@ -3,9 +3,11 @@
 
 #include <QWidget>
 #include <QGridLayout>
+#include <QPushButton>
+#include <QMap>
 
 #include "mainwindow.h"
-#include "zone.h"
+#include "zone2.h"
 
 namespace Ui {
 class MenuWindow;
@@ -24,9 +26,10 @@ public:
     MainWindow *myParent;
 
 public slots:
-    void addZoneButton(Zone *zone, int envZones, int controlZones);
 
 private:
+    QMap<Zone,QPushButton> zoneSelectorMap;
+    int offset = 0;
 };
 
 #endif // MENUWINDOW_H

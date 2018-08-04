@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QStandardPaths>
 #include <QLabel>
+#include <QListWidget>
 
 #include "w_systemsettings.h"
 #include "tcpconnection.h"
@@ -11,28 +12,47 @@ extern TCPConnection networkThread;
 SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
 {
 
-    QPushButton *btnReloadStyles = new QPushButton("Reload Stylesheets");
-    QPushButton *btnRefresh = new QPushButton("Refresh Objects");
+    //QPushButton *btnReloadStyles = new QPushButton("Reload Stylesheets");
+    //QPushButton *btnRefresh = new QPushButton("Refresh Objects");
     //QSpacerItem *spacer2 = new QSpacerItem(1,1);
-    QPushButton *btnViewClient = new QPushButton("Connected Devices");
-    QPushButton *btnPresets = new QPushButton("Known presets");
+    //QPushButton *btnViewClient = new QPushButton("Connected Devices");
+    //QPushButton *btnPresets = new QPushButton("Known presets");
+    QListWidget *statusList = new QListWidget(this);
+    QListWidget *buttonList = new QListWidget(this);
 
-    const QString str_ip = "IP Address: " + networkThread.getIp_addr();
-    QLabel *lblIP = new QLabel(str_ip);
-    QLabel *lblBuild = new QLabel("Build number: " + QString::number(BUILD));
+    statusList->setObjectName("labelList");
+    statusList->setEnabled(false);
+
+    const QString str_ip = "IP Address: " + networkThread.getIp_addr();    
+    QString mac = "MAC Address: " + networkThread.getMAC_addr();
 
 
-    //btnReloadStyles.setText("dsfsd");
+    QListWidgetItem *lblBuild = new QListWidgetItem("Build number: " + QString::number(BUILD));
+    QListWidgetItem *lblBuildDate = new QListWidgetItem("Build date: " + QString(DATE));
+    QListWidgetItem *lblIP = new QListWidgetItem(str_ip);
+    QListWidgetItem *lblMAC = new QListWidgetItem(mac);
+    statusList->addItem(lblBuild);
+    statusList->addItem(lblBuildDate);
+    statusList->addItem(lblIP);
+    statusList->addItem(lblMAC);
+
+    QListWidgetItem *itemReloadStyles = new QListWidgetItem("Reload Stylesheets");
+    buttonList->addItem(itemReloadStyles);
+    QListWidgetItem *itemConnectedDevices = new QListWidgetItem("Connected Devices");
+    buttonList->addItem(itemConnectedDevices);
+    QListWidgetItem *itemViewPresets = new QListWidgetItem("View Presets");
+    buttonList->addItem(itemViewPresets);
+
     topWidget = new QWidget;
     contentLayout = new QGridLayout(topWidget);
-    contentLayout->addWidget(lblBuild,0,0);
-    contentLayout->addWidget(lblIP,1,0);
-    contentLayout->addWidget(btnReloadStyles,0,1);
-    contentLayout->addWidget(btnRefresh,1,1);
-    contentLayout->addWidget(btnViewClient,2,1);
-    contentLayout->addWidget(btnPresets,3,1);
+    contentLayout->addWidget(statusList,0,0);
+    contentLayout->addWidget(buttonList,0,1);
+    //contentLayout->addWidget(btnReloadStyles,0,1);
+    //contentLayout->addWidget(btnRefresh,1,1);
+    //contentLayout->addWidget(btnViewClient,2,1);
+    //contentLayout->addWidget(btnPresets,3,1);
 
-    connect(btnReloadStyles,SIGNAL(clicked(bool)),this,SLOT(reloadStyles()));
+    //connect(btnReloadStyles,SIGNAL(clicked(bool)),this,SLOT(reloadStyles()));
 
 }
 

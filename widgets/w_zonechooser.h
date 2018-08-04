@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QMap>
+#include <QListWidget>
 
 #include "mainwindow.h"
 #include "zone2.h"
@@ -21,15 +22,18 @@ class ZoneChooserWidget : public QWidget
 
 public:
     explicit ZoneChooserWidget(QWidget *parent = 0);
-    QGridLayout *contentLayout;
+    QHBoxLayout *contentLayout;
     QWidget *topWidget;
     MainWindow *myParent;
 
 public slots:
+    void getZoneFromSelected();
 
 private:
     QMap<Zone,QPushButton> zoneSelectorMap;
     int offset = 0;
+    QListWidget *zoneList;
+
 };
 
 #endif // MENUWINDOW_H

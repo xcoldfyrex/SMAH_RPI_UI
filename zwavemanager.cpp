@@ -302,9 +302,9 @@ bool getZWaveState(int nodeid)
                 if (v.GetIndex() == 0)
                 {
                     //vIndex1 = v;
-                    uint8 val2 = 0;
+                    uint8 val2 = 50;
                     Manager::Get()->SetValue(v, val2);
-                    qDebug() << "setting value";
+                    qDebug() << "setting value" << val2;
                     qDebug() << "CC" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
 
                 }

@@ -9,9 +9,10 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     this->topWidget = new QWidget;
     this->topWidgetLayout = new QHBoxLayout(topWidget);
     this->lblClock = new QLabel("");
+    this->lblDate = new QLabel("");
     this->lblPath = new QLabel(name);
-    this->btnHome = new QPushButton("Zones");
-    this->btnInfo = new QPushButton("System");
+    this->btnHome = new QPushButton("");
+    this->btnInfo = new QPushButton("");
     this->spcHeader = new QSpacerItem(1,1);
     this->topWidgetLayout->addWidget(lblClock);
     this->topWidgetLayout->addStretch(1);
@@ -19,7 +20,7 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     topWidgetLayout->addWidget(btnInfo);
     topWidgetLayout->addWidget(btnHome);
 
-    topWidget->setFixedHeight(50);
+    topWidget->setFixedHeight(75);
     btnHome->setObjectName("btnTopZones");
     btnInfo->setObjectName("btnTopSystem");
     topWidget->setObjectName("header");
@@ -38,5 +39,6 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
 
 void TopHeaderWidget::showTime()
 {
-    this->lblClock->setText(QTime::currentTime().toString("hh:mm:ss "));
+    QString datetime = QTime::currentTime().toString("hh:mm:ss") + "\n" + QDate::currentDate().toString("ddd, MMMM dd yyyy");
+    this->lblClock->setText(datetime);
 }

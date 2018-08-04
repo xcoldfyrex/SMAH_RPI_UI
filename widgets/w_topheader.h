@@ -16,6 +16,7 @@ public:
 
 private:
     QLabel *lblClock;
+    QLabel *lblDate;
     QPushButton *btnHome;
     QPushButton *btnInfo;
     QSpacerItem *spcHeader;

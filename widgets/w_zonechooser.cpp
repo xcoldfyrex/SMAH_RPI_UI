@@ -13,15 +13,19 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 
 {
     this->topWidget = new QWidget;
-    this->contentLayout = new QGridLayout(topWidget);
+    zoneList = new QListWidget(this);
+    QSpacerItem *verticalSpacer = new QSpacerItem(0,2000,QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    this->contentLayout = new QHBoxLayout(topWidget);
+    contentLayout->addItem(verticalSpacer);
+    contentLayout->addWidget(zoneList);
     this->myParent = dynamic_cast<MainWindow*>(parent);
     foreach (Zone zone, gZoneMap) {
-        QSignalMapper *signalMapper = new QSignalMapper(this);
-        QPushButton *btn = new QPushButton(zone.getName());
-        signalMapper->setMapping(btn,zone.getName());
-        connect(btn,SIGNAL(clicked()),signalMapper,SLOT(map()));
-        connect(signalMapper,SIGNAL(mapped(QString)),myParent,SLOT(showZone(QString)));
-        contentLayout->addWidget(btn, this->offset  /*gridLoc*/, 1, 1, 1, Qt::AlignVCenter);
+        QListWidgetItem *item = new QListWidgetItem();
+        QVariant data(zone.getName());
+        item->setData(Qt::UserRole, data);
+        item->setText(zone.getName());
+        zoneList->addItem(item);
         offset++;
 
         /*
@@ -39,6 +43,11 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
     */
 
     }
+    connect(zoneList,SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(getZoneFromSelected()));
+}
 
+void ZoneChooserWidget::getZoneFromSelected()
+{
+    myParent->showZone(this->zoneList->currentItem()->data(Qt::UserRole).toString());
 }
 

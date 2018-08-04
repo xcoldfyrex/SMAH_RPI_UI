@@ -29,6 +29,7 @@ public:
     TCPConnection();
     bool isConnected();
     QString getIp_addr();
+    QString getMAC_addr();
     void start(QHostAddress address);
 
 public slots:

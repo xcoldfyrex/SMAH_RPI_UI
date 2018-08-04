@@ -215,3 +215,19 @@ QString TCPConnection::getIp_addr()
             return list[nIter].toString();
       }
 }
+
+QString TCPConnection::getMAC_addr()
+{
+    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
+    {
+        if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack))
+            foreach (QNetworkAddressEntry entry, interface.addressEntries())
+            {
+                if (interface.name() == "wlp36s0" || interface.name() == "wlan0")
+                {
+                    return interface.hardwareAddress();
+
+                }
+            }
+    }
+}

@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QSignalMapper>
 #include <QMetaType>
+#include <QSizePolicy>
 
 #include "w_zonechooser.h"
 #include "w_zoneenvironment.h"
@@ -14,11 +15,7 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 {
     this->topWidget = new QWidget;
     zoneList = new QListWidget(this);
-    QSpacerItem *verticalSpacer = new QSpacerItem(0,2000,QSizePolicy::Expanding, QSizePolicy::Expanding);
-
     this->contentLayout = new QHBoxLayout(topWidget);
-    contentLayout->addItem(verticalSpacer);
-    contentLayout->addWidget(zoneList);
     this->myParent = dynamic_cast<MainWindow*>(parent);
     foreach (Zone zone, gZoneMap) {
         QListWidgetItem *item = new QListWidgetItem();
@@ -43,6 +40,10 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
     */
 
     }
+
+    contentLayout->addWidget(zoneList,1, Qt::AlignRight);
+    zoneList->setMinimumWidth(zoneList->sizeHintForColumn(0) + 20);
+    zoneList->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(zoneList,SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(getZoneFromSelected()));
 }
 

@@ -16,13 +16,13 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     QBoxLayout *vboxContainer = new QBoxLayout(QBoxLayout::TopToBottom);
     QWidget *bottomPanelWidget = new QWidget;
     QWidget *zonePanelWidget = new QWidget;
-    QWidget *devicePanelWidget = new QWidget;
+    //QWidget *devicePanelWidget = new QWidget;
     QWidget *zoneMainWidget = new QWidget;
     QHBoxLayout *bottomLayout = new QHBoxLayout(bottomPanelWidget);
     QVBoxLayout *zoneMainLayout = new QVBoxLayout(zoneMainWidget);
 
     QHBoxLayout *zoneFunctionLayout = new QHBoxLayout(zonePanelWidget);
-    QHBoxLayout *devicePanelLayout = new QHBoxLayout(devicePanelWidget);
+    //QHBoxLayout *devicePanelLayout = new QHBoxLayout(devicePanelWidget);
     QPushButton *btnShowLights = new QPushButton;
     QPushButton *btnShowPower = new QPushButton;
     QPushButton *btnShowActions = new QPushButton;
@@ -43,13 +43,12 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     */
     contentLayout->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     mainLayout->addWidget(contentLayout);
-    mainLayout->setStretchFactor(contentLayout,0);
+    //mainLayout->setStretchFactor(contentLayout,0);
 
     /*
      * device/function combined layout
      */
     zoneMainLayout->addWidget(zonePanelWidget);
-    zoneMainLayout->addWidget(devicePanelWidget);
 
     /*
      * panel container widgets(pages)
@@ -76,18 +75,36 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     /*
      * zone functions bar
     */
+
+    zoneButtons = new QListWidget(this);
+    QSpacerItem *verticalSpacer = new QSpacerItem(0,500,QSizePolicy::Expanding, QSizePolicy::Expanding);
+    zoneFunctionLayout->addItem(verticalSpacer);
+    QListWidgetItem *itemLights = new QListWidgetItem("Light Controls");
+    QListWidgetItem *itemPower = new QListWidgetItem("Power Controls");
+    QListWidgetItem *itemEvents = new QListWidgetItem("Scheduled Events");
+    itemLights->setData(Qt::UserRole,1);
+    itemPower->setData(Qt::UserRole,2);
+    itemEvents->setData(Qt::UserRole,3);
+    zoneButtons->addItem(itemLights);
+    zoneButtons->addItem(itemPower);
+    zoneButtons->addItem(itemEvents);
+
+    connect(zoneButtons,SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(buttonListClicked()));
+    //zoneButtons->setItemWidget(itemLights,btnShowLights);
+
     zonePanelWidget->setObjectName("zoneFunctionsWidget");
     btnShowLights->setObjectName("btnShowLights");
     btnShowPower->setObjectName("btnShowPower");
     btnShowActions->setObjectName("btnShowActions");
+    zoneFunctionLayout->addWidget(zoneButtons);
 
-    zoneFunctionLayout->addWidget(btnShowLights,0);
-    zoneFunctionLayout->addWidget(btnShowPower,0);
-    zoneFunctionLayout->addWidget(btnShowActions,0);
+    //zoneFunctionLayout->addWidget(btnShowLights,0);
+    //zoneFunctionLayout->addWidget(btnShowPower,0);
+    //zoneFunctionLayout->addWidget(btnShowActions,0);
 
     zoneFunctionLayout->setContentsMargins(10,10,10,10);
     zoneFunctionLayout->setAlignment(Qt::AlignTop);
-    zoneFunctionLayout->addStretch(1);
+    //zoneFunctionLayout->addStretch(1);
 
     connect(btnShowLights,SIGNAL(clicked()),this,SLOT(showLightContainer()));
     connect(btnShowActions,SIGNAL(clicked()),this,SLOT(showActions()));
@@ -96,16 +113,16 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     /*
      * device functions bar
     */
-    devicePanelWidget->setObjectName("devicePanelWidget");
+    //devicePanelWidget->setObjectName("devicePanelWidget");
     //btnShowActions->setObjectName("btnShowActions");
-    foreach (RPIDevice device, zone.getDeviceList())
-    {
-        QPushButton *btnDevice = new QPushButton(device.getName());
-        devicePanelLayout->addWidget(btnDevice,0);
-    }
-    devicePanelLayout->setContentsMargins(10,10,10,10);
-    devicePanelLayout->setAlignment(Qt::AlignTop);
-    devicePanelLayout->addStretch(1);
+    //foreach (RPIDevice device, zone.getDeviceList())
+    //{
+    //    QPushButton *btnDevice = new QPushButton(device.getName());
+    //    devicePanelLayout->addWidget(btnDevice,0);
+    //}/
+    //devicePanelLayout->setContentsMargins(10,10,10,10);
+    //devicePanelLayout->setAlignment(Qt::AlignTop);
+    //devicePanelLayout->addStretch(1);
 
     /*
      * bottom status bar
@@ -139,4 +156,9 @@ void ZoneContainerWidget::showActions()
 void ZoneContainerWidget::showPowerControl()
 {
     contentLayout->setCurrentWidget(this->powerControlWidget->topWidget);
+}
+
+void ZoneContainerWidget::buttonListClicked()
+{
+    contentLayout->setCurrentIndex(zoneButtons->currentItem()->data(Qt::UserRole).toInt());
 }

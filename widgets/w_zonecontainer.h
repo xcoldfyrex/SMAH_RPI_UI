@@ -38,12 +38,14 @@ private:
     QPushButton *btnShowLights = new QPushButton;
     QPushButton *btnShowPower = new QPushButton;
     QPushButton *btnShowActions = new QPushButton;
+    QListWidget *zoneButtons = new QListWidget(this);
 
 private slots:
     void showLightContainer();
     void showPowerControl();
     void showOverview();
     void showActions();
+    void buttonListClicked();
 };
 
 #endif // ZONECONTAINERWIDGET_H

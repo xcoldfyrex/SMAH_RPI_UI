@@ -1,6 +1,6 @@
 #include "tcpconnection.h"
 //#include "libsmah_network.h"
-#include "zone2.h"
+#include "zone.h"
 
 //extern QMap<QString, smah::Zone> gZoneMap;
 //QMap<int, Zone*> *gZoneMapDELETEME;
@@ -214,6 +214,7 @@ QString TCPConnection::getIp_addr()
               if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol )
             return list[nIter].toString();
       }
+     return "N/A";
 }
 
 QString TCPConnection::getMAC_addr()
@@ -230,4 +231,5 @@ QString TCPConnection::getMAC_addr()
                 }
             }
     }
+    return "N/A";
 }

@@ -79,9 +79,9 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     zoneButtons = new QListWidget(this);
     QSpacerItem *verticalSpacer = new QSpacerItem(0,500,QSizePolicy::Expanding, QSizePolicy::Expanding);
     zoneFunctionLayout->addItem(verticalSpacer);
-    QListWidgetItem *itemLights = new QListWidgetItem("Light Controls");
-    QListWidgetItem *itemPower = new QListWidgetItem("Power Controls");
-    QListWidgetItem *itemEvents = new QListWidgetItem("Scheduled Events");
+    QListWidgetItem *itemLights = new QListWidgetItem("> Light Controls");
+    QListWidgetItem *itemPower = new QListWidgetItem("> Power Controls");
+    QListWidgetItem *itemEvents = new QListWidgetItem("> Scheduled Events");
     itemLights->setData(Qt::UserRole,1);
     itemPower->setData(Qt::UserRole,2);
     itemEvents->setData(Qt::UserRole,3);

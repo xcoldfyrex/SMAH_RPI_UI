@@ -29,11 +29,12 @@ void ZoneLightsWidget::addToggleFunctions()
     int x = 1;
     foreach (Light *light, this->zone.getLightList())
     {
-        light->initState();
+        //light->initState();
 
         QLabel *toggleName = new QLabel(light->getName());
         QSignalMapper *signalMapper = new QSignalMapper(this);
         QPushButton *toggle;
+        QSlider *slider;
         // Determine what type of light it is
         if (light->getType() == LIGHT_RGB_LED ||
                 light->getType() == LIGHT_RGBW_LED ||
@@ -49,33 +50,40 @@ void ZoneLightsWidget::addToggleFunctions()
             connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
             connect(signalMapper,SIGNAL(mapped(QWidget*)),this,SLOT(showCustomLights(QWidget*)),Qt::QueuedConnection);
 
-            PresetChooser *presetChooserWidget = new PresetChooser(zone, light, this);
-
+            PresetChooser *presetChooserWidget = new PresetChooser(zone, light, this);            
             QSignalMapper *presetSignalMapper = new QSignalMapper(this);
-            presetSignalMapper->setMapping(colorLightControlWidget->btnShowPreset,presetChooserWidget->topWidget);
-            connect(colorLightControlWidget->btnShowPreset,SIGNAL(clicked()),presetSignalMapper,SLOT(map()));
+            presetSignalMapper->setMapping(colorLightControlWidget->zoneButtons,presetChooserWidget->topWidget);
+            connect(colorLightControlWidget->zoneButtons,SIGNAL(itemClicked(QListWidgetItem*)),presetSignalMapper,SLOT(map()));
             connect(presetSignalMapper,SIGNAL(mapped(QWidget*)),this,SLOT(showPresetChooser(QWidget*)),Qt::QueuedConnection);
             this->topWidget->addWidget(presetChooserWidget->topWidget);
+            this->contentLayout->addWidget(toggle,x,2);
 
             //connect(colorLightControlWidget->btnShowPreset,SIGNAL(clicked(bool)),this,SLOT(showPresetChooser()));
+        } else if (light->getType() == 994) {
+            slider = new QSlider(Qt::Horizontal);
+            slider->setMaximum(100);
+            slider->setMinimum(1);
+            this->contentLayout->addWidget(slider,x,2);
+            slider->setMaximumWidth(800);
         } else {
             // Just on and off
             toggle = new QPushButton("Toggle");
             signalMapper->setMapping(toggle,light->getId());
             connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
             connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(togglePower(int)));
+            this->contentLayout->addWidget(toggle,x,2);
+
         }
 
         this->contentLayout->addWidget(toggleName,x,0);
         this->contentLayout->addWidget(light->statusLabel,x,1);
-        this->contentLayout->addWidget(toggle,x,2);
         //zone->powerStatusLabels->insert(x-1, state);
         x++;
     }
     QPushButton *allOn = new QPushButton("All On");
     QPushButton *allOff = new QPushButton("All Off");
-    this->contentLayout->addWidget(allOn,0,3);
-    this->contentLayout->addWidget(allOff,1,3);
+    this->contentLayout->addWidget(allOn,x+2,0);
+    this->contentLayout->addWidget(allOff,x+2,1);
 
     //networkThread->GPIOPoll();
 

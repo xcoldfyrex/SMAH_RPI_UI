@@ -6,6 +6,7 @@
 #include <QDebug>
 extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
+extern int MY_DEVICE_ID;
 
 Light::Light(QObject *parent) : QObject(parent)
 {
@@ -19,39 +20,28 @@ Light::Light(int id, QString name, int type, int deviceid)
     this->type = type;
     this->statusLabel = new QLabel("N/A");
     this->deviceid = deviceid;
-    for (RPIDevice device : g_deviceList)
-    {
-        if (device.getHwAddress() == MY_HW_ADDR)
-        {
-            this->local = true;
-        }
-    }
     this->taskList = new QList<PresetTask*>();
-}
-
-//adjust levels(probably just dimmers)
-void Light::setLevel(int level)
-{
-    if (this->isLocal())
-    {
-
-    } else {
-        //do shit to send to network
-    }
 }
 
 //toggle a binary device
 void Light::toggleState()
 {
-    if (!this->isLocal())
+    if (this->isLocal())
     {
         // updates are done via the callback from the zwave driver
         bool state = getZWaveState(this->id);
         bool newstate;
         (state == false) ? (newstate = true) : (newstate = false);
         setZWaveToggle(newstate, this->id);
+        qDebug() << "TOGGLE LOCAL";
     } else {
         //do shit to send to network
+        ClientSocket *sock = determineZone(this);
+        if (!sock)
+            return;
+        QJsonObject jsonPayload;
+        jsonPayload["id"] = this->id;
+        sock->prepareToSend("TOGGLE", jsonPayload);
     }
 
 }
@@ -62,6 +52,7 @@ void Light::setColor(QString color)
     if (this->isLocal())
     {
         setColorInPWM(color);
+        qDebug() << "Local?";
     } else {
         //do shit to send to network
         ClientSocket *sock = determineZone(this);
@@ -75,11 +66,32 @@ void Light::setColor(QString color)
 }
 
 // callback for when something happened
-void Light::updateState(bool state)
+void Light::updateLevel(int level)
 {
-    this->state = state;
-    this->statusLabel->setText(QString::number(state));
-    emit stateChanged(this);
+    this->level = level;
+    QString text = "OFF";
+    if (this->type == LIGHT_ZWAVE)
+    {
+        if (level == 1)
+            text = "ON";
+        this->statusLabel->setText(text);
+    }
+
+    if (this->type == LIGHT_ZWAVE_DIMMABLE)
+    {
+        text = QString::number(level) + "%";
+        this->statusLabel->setText(text);
+    }
+
+    if (this->localUpdate)
+        sendUpdate();
+}
+
+void Light::sendUpdate()
+{
+    this->statusLabel->setText(QString::number(this->level));
+    broadcastMessage(this->id, this->level);
+    emit levelChanged(this);
 }
 
 // from an active preset - next color

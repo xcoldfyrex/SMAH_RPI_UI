@@ -3,10 +3,13 @@
 
 */
 
+#include <QFileInfo>
+
 #include "mainwindow.h"
-//#include "widgets/w_lightcontrolcontainer.h"
 #include "ui_mainwindow.h"
 #include "tcpconnection.h"
+#include "zwavemanager.h"
+
 
 extern QMap<QString, Zone> gZoneMap;
 extern TCPConnection *networkThread;
@@ -19,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     this->setAutoFillBackground(true);
     this->style()->unpolish(this);
     this->style()->polish(this);
-    this->resize(800,480);
+    this->resize(1280,800);
     this->update();
     this->repaint();
 
@@ -56,6 +59,14 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     //connect(networkThread,SIGNAL(zoneDiscovered(smah::Zone)),this,SLOT(createZoneElements(smah::Zone)),Qt::QueuedConnection);
     //connect(networkThread,SIGNAL(presetArrived(Preset)),this,SLOT(addPreset(Preset)));
     //connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
+
+    if (QFileInfo::exists("/dev/ttyACM0"))
+    {
+        qInfo() << "INIT ZWave";
+        init_zwave();
+    } else {
+        qInfo() << "ZWave device not found. Skipping.";
+    }
 }
 
 void MainWindow::paintEvent(QPaintEvent *pe)

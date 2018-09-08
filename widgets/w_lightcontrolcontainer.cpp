@@ -19,29 +19,40 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     ui->setupUi(this);
 
     this->topWidget = new QWidget;
-    this->contentLayout = new QGridLayout(topWidget);
+    this->contentLayout = new QHBoxLayout(topWidget);
+    QVBoxLayout *rightItems = new QVBoxLayout();
+
     this->zone = zone;
     this->light = light;
 
+    zoneButtons = new QListWidget(this);
+    QListWidgetItem *itemSetPreset = new QListWidgetItem("> Choose Preset");
+    QListWidgetItem *itemSetOff = new QListWidgetItem("> Turn Off");
+    QListWidgetItem *itemBack = new QListWidgetItem("> Back");
+
+    itemSetPreset->setData(Qt::UserRole,1);
+    itemSetOff->setData(Qt::UserRole,2);
+    itemBack->setData(Qt::UserRole,3);
+    zoneButtons->addItem(itemSetPreset);
+    zoneButtons->addItem(itemSetOff);
+    zoneButtons->addItem(itemBack);
+
+    //btnSelectPreset = new QPushButton("Select Preset");
     contentLayout->setContentsMargins(0,0,0,0);
-    contentLayout->addWidget(ui->btnSelectPreset,0,0);
+    //contentLayout->addWidget(btnSelectPreset,1,1);
 
-    HSVWheel *hsvWheel = new HSVWheel(this);
-    hslSwatch = new HSLSwatch(this);
-
-//    ZoneLightsWidget* myParent = dynamic_cast<ZoneLightsWidget*>(parent);
+    HSVWheel *colorPalette = new HSVWheel(this);
 
     preview = new ColorPreview(this);
     preview->color.setRgb(255,255,255);
     rgb.setHsv(0,255,255);
-    contentLayout->addWidget(hsvWheel,1,0,1,1);
-    contentLayout->addWidget(hslSwatch,1,1,1,1);
 
-    contentLayout->addWidget(preview,0,1,1,1);
-
-    connect(hsvWheel,SIGNAL(colorChange(QColor)),this,SLOT(updateFromWheel(QColor)));
-    connect(hslSwatch,SIGNAL(colorChange(QColor)),this,SLOT(updateFromSwatch(QColor)));
-    this->btnShowPreset = new QPushButton(ui->btnSelectPreset);
+    contentLayout->addWidget(preview);
+    contentLayout->addWidget(colorPalette);
+    contentLayout->addLayout(rightItems);
+    rightItems->addWidget(zoneButtons,1, Qt::AlignRight);
+    zoneButtons->setMinimumWidth(zoneButtons->sizeHintForColumn(0) + 20);
+    connect(colorPalette,SIGNAL(colorChange(QColor)),this,SLOT(updateFromWheel(QColor)));
 }
 
 LightControlContainerWidget::~LightControlContainerWidget()
@@ -51,18 +62,9 @@ LightControlContainerWidget::~LightControlContainerWidget()
 
 void LightControlContainerWidget::updateFromWheel(QColor qcol)
 {
-    rgb.setHsv(qcol.hue(),rgb.saturation(),rgb.value());
-    hslSwatch->updateHue(qcol);
-    hslSwatch->repaint();
-    preview->color.setHsv(rgb.hue(),rgb.saturation(),rgb.value());
+    preview->color.setHsv(qcol.hue(),qcol.saturation(),qcol.value());
     preview->repaint();
-    light->setColor(rgb.name().toUpper().replace("#","") + "FF");
+    light->setColor(qcol.name().toUpper().replace("#","") + "FF");
 }
 
-void LightControlContainerWidget::updateFromSwatch(QColor qcol)
-{
-    rgb.setHsv(rgb.hue(), qcol.saturation(), qcol.value());
-    preview->color.setHsv(rgb.hue(),rgb.saturation(),rgb.value());
-    preview->repaint();
-    light->setColor(rgb.name().toUpper().replace("#","") + "FF");
-}
+

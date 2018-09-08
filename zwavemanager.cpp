@@ -1,4 +1,5 @@
 #include "zwavemanager.h"
+#include "commandrouter.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -14,11 +15,13 @@
 #include "value_classes/ValueBool.h"
 #include "platform/Log.h"
 #include "Defs.h"
-#include "zone2.h"
+#include "zone.h"
 
 #include <QDebug>
 
 extern QMap<QString, Zone> gZoneMap;
+extern QMap <int, int> g_nodeValues;
+
 
 using namespace OpenZWave;
 
@@ -122,11 +125,15 @@ void OnNotification
                     bool value;
                     Manager::Get()->GetValueAsBool(v, &value);
                     pthread_mutex_unlock( &g_criticalSection );
-                    qDebug() << nodeInfo->m_nodeId << value;
+                    g_nodeValues.insert(nodeInfo->m_nodeId, (int) value);
+                    qDebug() << "Node state changed:" << nodeInfo->m_nodeId << value;
                     for (Zone zone : gZoneMap.values())
                     {
                         if (zone.getLightById(nodeInfo->m_nodeId) != NULL)
-                            zone.getLightById(nodeInfo->m_nodeId)->updateState(value);
+                        {
+                            zone.getLightById(nodeInfo->m_nodeId)->updateLevel(value);
+                            zone.getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
+                        }
                     }
 
                     //    return value;
@@ -139,7 +146,7 @@ void OnNotification
                     {
                         bool value;
                         Manager::Get()->GetValueAsBool(v, &value);
-                        qDebug() << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        //qDebug() << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                         break;
                     }
 
@@ -147,23 +154,40 @@ void OnNotification
                     {
                         uint8 value;
                         Manager::Get()->GetValueAsByte(v, &value);
-                        qDebug() << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        if (v.GetIndex() == 0) {
+                            g_nodeValues.insert(nodeInfo->m_nodeId, (int) value);
+                            for (Zone zone : gZoneMap.values())
+                            {
+                                if (zone.getLightById(nodeInfo->m_nodeId) != NULL)
+                                {
+                                    zone.getLightById(nodeInfo->m_nodeId)->updateLevel(value);
+                                    zone.getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
+                                }
+                            }
+                            qDebug() << nodeInfo->m_nodeId << value << v.GetIndex() << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        }
                         break;
                     }
 
                     default: {
-                        qDebug() << nodeInfo->m_nodeId << "UNKNOWN" << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        // qDebug() << nodeInfo->m_nodeId << "UNKNOWN" << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                     }
                     }
 
                     pthread_mutex_unlock( &g_criticalSection );
-                    for (Zone zone : gZoneMap.values())
-                    {
-                        //if (zone.getLightById(nodeInfo->m_nodeId) != NULL)
-                        //    zone.getLightById(nodeInfo->m_nodeId)->updateState(value);
-                    }
+                    //for (Zone zone : gZoneMap.values())
+                    //{
+                    //if (zone.getLightById(nodeInfo->m_nodeId) != NULL)
+                    //    zone.getLightById(nodeInfo->m_nodeId)->updateState(value);
+                    //}
 
                     //    return value;
+                }
+
+                if( v.GetCommandClassId() == 0x27)
+                {
+
+                    //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                 }
             }
         }
@@ -302,20 +326,20 @@ bool getZWaveState(int nodeid)
                 if (v.GetIndex() == 0)
                 {
                     //vIndex1 = v;
-                    uint8 val2 = 50;
-                    Manager::Get()->SetValue(v, val2);
-                    qDebug() << "setting value" << val2;
-                    qDebug() << "CC" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    //uint8 val2 = 50;
+                    //Manager::Get()->SetValue(v, val2);
+                    //qDebug() << "setting value" << val2;
+                    //qDebug() << "CC" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
 
                 }
 
                 if (v.GetIndex() == 2)
                 {
                     //vIndex2 = v;
-                    bool val2 = true;
-                    Manager::Get()->SetValue(v, val2);
-                    qDebug() << "applying value";
-                    qDebug() << "CC" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    //bool val2 = true;
+                    //Manager::Get()->SetValue(v, val2);
+                    //qDebug() << "applying value";
+                    //qDebug() << "CC" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                 }
             }
         }
@@ -340,6 +364,16 @@ void setZWaveToggle(bool value, int nodeid)
                 Manager::Get()->SetValue(v, value);
                 break;
             }
+            if( v.GetCommandClassId() == 0x26)
+            {
+                qDebug() << "DIMMER" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+
+                uint8 val2 = 0;
+                if (value == true)
+                    val2 = 100;
+                Manager::Get()->SetValue(v, val2);
+                break;
+            }
         }
     }
     pthread_mutex_unlock( &g_criticalSection );
@@ -360,7 +394,7 @@ void init_zwave()
     // The first argument is the path to the config files (where the manufacturer_specific.xml file is located
     // The second argument is the path for saved Z-Wave network state and the log file.  If you leave it NULL
     // the log file will appear in the program's working directory.
-    Options::Create( "../../../config/", "/tmp/", "" );
+    Options::Create( "/usr/local/etc/openzwave/", "/tmp/", "" );
     Options::Get()->AddOptionInt( "SaveLogLevel", LogLevel_Detail );
     Options::Get()->AddOptionInt( "QueueLogLevel", LogLevel_Debug );
     Options::Get()->AddOptionInt( "DumpTrigger", LogLevel_Error );
@@ -368,6 +402,7 @@ void init_zwave()
     Options::Get()->AddOptionInt( "PollInterval", 100 );
     //Options::Get()->AddOptionInt( "RetryTimeout", 30 );
     Options::Get()->AddOptionBool( "IntervalBetweenPolls", true );
+    Options::Get()->AddOptionBool( "AssumeAwake", true );
     Options::Get()->AddOptionBool("ValidateValueChanges", true);
     Options::Get()->Lock();
 

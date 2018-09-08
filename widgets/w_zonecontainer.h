@@ -10,7 +10,7 @@
 #include "w_powercontrol.h"
 #include "w_zoneoverview.h"
 #include "w_zone_lights.h"
-#include "zone2.h"
+#include "zone.h"
 
 class PresetChooser;
 

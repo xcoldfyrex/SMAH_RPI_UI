@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QPainter>
 
-#include "zone2.h"
+#include "zone.h"
 #include "tcpconnection.h"
 
 #include "widgets/w_zonechooser.h"

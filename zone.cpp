@@ -1,4 +1,4 @@
-#include "zone2.h"
+#include "zone.h"
 
 Zone::Zone(int id, QString name)
 {

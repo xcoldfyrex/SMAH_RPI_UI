@@ -6,7 +6,7 @@
 #include <QLabel>
 #include <QTimer>
 
-#include "zone2.h"
+#include "zone.h"
 
 class ZoneOverviewWidget : public QWidget
 {

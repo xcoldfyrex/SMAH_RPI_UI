@@ -21,7 +21,7 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
         QListWidgetItem *item = new QListWidgetItem();
         QVariant data(zone.getName());
         item->setData(Qt::UserRole, data);
-        item->setText(zone.getName());
+        item->setText("> " + zone.getName());
         zoneList->addItem(item);
         offset++;
 

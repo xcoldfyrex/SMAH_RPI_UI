@@ -15,10 +15,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    zone2.cpp \
     rpidevice.cpp \
     widgets/w_colorpreview.cpp \
-    widgets/w_hslswatch.cpp \
     widgets/w_hsvwheel.cpp \
     widgets/w_lightcontrolcontainer.cpp \
     widgets/w_powercontrol.cpp \
@@ -40,15 +38,14 @@ SOURCES += main.cpp\
     tcpconnection.cpp \
     tcpsocket.cpp \
     commandrouter.cpp \
-    presettask.cpp
+    presettask.cpp \
+    zone.cpp
 
 
 HEADERS  += \
     mainwindow.h \
-    zone2.h \
     rpidevice.h \
     widgets/w_colorpreview.h \
-    widgets/w_hslswatch.h \
     widgets/w_hsvpalette.h \
     widgets/w_lightcontrolcontainer.h \
     widgets/w_powercontrol.h \
@@ -72,7 +69,8 @@ HEADERS  += \
     tcpconnection.h \
     tcpsocket.h \
     commandrouter.h \
-    presettask.h
+    presettask.h \
+    zone.h
 
 
 FORMS    += \

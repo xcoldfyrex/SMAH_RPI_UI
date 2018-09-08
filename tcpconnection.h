@@ -16,7 +16,7 @@
 #include <QDataStream>
 #include <QNetworkAddressEntry>
 
-#include "zone2.h"
+#include "zone.h"
 #include "preset.h"
 
 

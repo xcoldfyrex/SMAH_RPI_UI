@@ -17,6 +17,8 @@ const int LIGHT_RGB_INVIDIDUAL_ADDRESS = 12;
 const int LIGHT_RGBW_INVIDIDUAL_ADDRESS = 13;
 const int LIGHT_MACICLIGHT = 100;
 
+extern int MY_DEVICE_ID;
+
 class Light : public QObject
 {
     Q_OBJECT
@@ -28,23 +30,39 @@ public:
     QString getColor() { return this->color; }
     int getId() { return this->id; }
     int getGetDeviceId() { return this->deviceid; }
-    bool getState() { return this->state; }
-    bool isLocal() { return this->local; }
+    bool getState() { return this->level; }
+    bool isLocal() {
+        if (this->deviceid == MY_DEVICE_ID)
+            return true;
+        return false;
+    }
+
+    bool wasLastUpdateLocal()
+    {
+        return this->localUpdate;
+    }
+
+    void setLastUpdateLocal(bool wasit)
+    {
+        this->localUpdate = wasit;
+    }
+
     QLabel *statusLabel;
     void initState()
     {
         bool checkstate = getZWaveState(this->id);
-        updateState(checkstate);
+        updateLevel(checkstate);
     }
     QString getColorFromPWM();
     void setColorInPWM(QString color);
-    void updateState(bool state);
+    void updateLevel(int level);
+    void sendUpdate();
+
 
 signals:
-    bool stateChanged(Light *light);
+    bool levelChanged(Light *light);
 
 public slots:
-    void setLevel(int level);
     void setColor(QString color);
     void toggleState();
     void setActivePreset(Preset preset);
@@ -59,7 +77,7 @@ private:
     bool state = 0;
     int level = 0;
     QString color;
-    bool local = false;
+    bool localUpdate = false;
 };
 
 #endif // LIGHT_H

@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QList>
 
-#include "zone2.h"
+#include "zone.h"
 
 class ZoneEnvironmentPanel : public QWidget
 {

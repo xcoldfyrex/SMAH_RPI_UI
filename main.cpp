@@ -1,5 +1,4 @@
 #include <QApplication>
-#include <QFile>
 #include <QtGui>
 #include <QFontDatabase>
 #include <QDebug>
@@ -7,14 +6,13 @@
 #include <QList>
 #include <QDir>
 
-#include "zone2.h"
+#include "zone.h"
 #include "light.h"
 //#include "widgets/w_zonechooser.h"
 #include "mainwindow.h"
 #include "preset.h"
 #include "logger.h"
 #include "datagramhandler.h"
-#include "zwavemanager.h"
 #include "pigpio.h"
 #include "gpio_defs.h"
 #include "tcpserver.h"
@@ -25,7 +23,9 @@ TCPConnection networkThread(nullptr);
 QList<ClientSocket*> g_clientMap;
 QMap <QString, RPIDevice> g_deviceList;
 QMap <int, Light*> g_lightMap;
+QMap <int, int> g_nodeValues;
 QString MY_HW_ADDR;
+int MY_DEVICE_ID;
 
 void loadZones()
 {
@@ -64,6 +64,8 @@ void loadZones()
                                 );
                     zone.addDevice(rpidevice);
                     g_deviceList.insert(powerElement.attribute("hw"),rpidevice);
+                    if (rpidevice.getHwAddress() == MY_HW_ADDR)
+                        MY_DEVICE_ID = rpidevice.getId();
                     //zone->powerControls.insert(powerElement.attribute("id").toInt(), powerElement.attribute("name"));
                 }
             }
@@ -214,13 +216,6 @@ int main(int argc, char *argv[])
     QDir::setCurrent(homeLocation + "/.smah/");
     loadZones();
     loadPresets();
-    if (QFileInfo::exists("/dev/ttyACM0"))
-    {
-        qInfo() << "INIT ZWave";
-        init_zwave();
-    } else {
-        qInfo() << "ZWave device not found. Skipping.";
-    }
 
     QDir::setCurrent(homeLocation + "/.smah/assets");
 
@@ -237,7 +232,6 @@ int main(int argc, char *argv[])
 
     MainWindow mainWindow;
     mainWindow.show();
-
-
     return a.exec();
+
 }

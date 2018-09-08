@@ -8,7 +8,7 @@
 #include <QListWidgetItem>
 
 #include "preset.h"
-#include "zone2.h"
+#include "zone.h"
 #include "light.h"
 
 class PresetChooser : public QWidget

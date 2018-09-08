@@ -25,6 +25,7 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     btnInfo->setObjectName("btnTopSystem");
     topWidget->setObjectName("header");
     lblClock->setObjectName("clock");
+
     topWidget->setAutoFillBackground(true);
 
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);

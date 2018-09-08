@@ -10,10 +10,9 @@
 #include <QListWidgetItem>
 #include <QPushButton>
 
-#include "w_hslswatch.h"
 #include "w_colorpreview.h"
 #include "light.h"
-#include "zone2.h"
+#include "zone.h"
 
 
 namespace Ui {
@@ -31,19 +30,18 @@ public:
     QWidget *topWidget;
     QWidget *colorPalette;
     ColorPreview *preview;
-    QGridLayout *contentLayout;
+    QHBoxLayout *contentLayout;
     QPicture *hsvSwatch;
     QColor rgb;
-    QPushButton *btnShowPreset;
+    QPushButton *btnSelectPreset;
+    QListWidget *zoneButtons;
 
 public slots:
     void updateFromWheel(QColor qcol);
-    void updateFromSwatch(QColor qcol);
 
 private:
     Ui::LightControlWidget *ui;
     QGraphicsScene *scene;
-    HSLSwatch *hslSwatch;
     Zone zone;
     Light *light;
 };

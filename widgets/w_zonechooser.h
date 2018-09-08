@@ -8,7 +8,7 @@
 #include <QListWidget>
 
 #include "mainwindow.h"
-#include "zone2.h"
+#include "zone.h"
 
 namespace Ui {
 class MenuWindow;

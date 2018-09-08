@@ -8,7 +8,7 @@
 #include <QStackedWidget>
 
 #include "w_lightcontrolcontainer.h"
-#include "zone2.h"
+#include "zone.h"
 #include "preset.h"
 
 class ZoneLightsWidget : public QWidget

@@ -7,7 +7,7 @@
 #include <QLabel>
 #include <QJsonObject>
 
-#include "zone2.h"
+#include "zone.h"
 
 //class Zone;
 

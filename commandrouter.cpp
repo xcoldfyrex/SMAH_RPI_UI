@@ -4,7 +4,6 @@
 
 extern QList<ClientSocket*> g_clientMap;
 
-
 ClientSocket *determineZone(Light *light)
 {
     for (ClientSocket *sock : g_clientMap)
@@ -15,4 +14,15 @@ ClientSocket *determineZone(Light *light)
         }
     }
     return NULL;
+}
+
+void broadcastMessage(int srcDevice, int value)
+{
+    for (ClientSocket *sock : g_clientMap)
+    {
+        QJsonObject jsonPayload;
+        jsonPayload["value"] = value;
+        jsonPayload["id"] = srcDevice;
+        sock->prepareToSend("UPDATE", jsonPayload);
+    }
 }

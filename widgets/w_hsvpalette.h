@@ -42,13 +42,10 @@ private:
     QColor current;
     bool inWheel;
     bool inSquare;
-    QColor posColor(const QPoint &point);
-    void drawWheelImage(const QSize &newSize);
-    void drawIndicator(const int &hue);
-    void drawPicker(const QColor &color);
-    void composeWheel();
+    void drawPalette(const QSize &newSize);
+    void composePalette();
 private slots:
-    void hueChanged(const int &hue);
+    void colorChanged(QColor color);
 };
 
 #endif // HSVPALETTE_H

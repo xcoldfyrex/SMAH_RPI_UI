@@ -1,5 +1,5 @@
 #include "tcpsocket.h"
-#include "zone2.h"
+#include "zone.h"
 #include <QNetworkInterface>
 
 extern QList<ClientSocket*> g_clientMap;
@@ -67,7 +67,6 @@ void ClientSocket::sendData(QJsonObject data)
         out << ba;
         out.device()->seek(0);
         out << (quint16)(block.size() - sizeof(quint16));
-        //qDebug() << data;
         tcpSocket->write(block);
         tcpSocket->flush();
     }
@@ -200,6 +199,14 @@ void ClientSocket::processPayload(QByteArray buffer)
         } else {
             qWarning() << "Unknown device connected: " << devid;
         }
+        /* send values of local lights */
+        for (Light *light : g_lightMap.values())
+        {
+            if (light->wasLastUpdateLocal())
+            {
+                light->sendUpdate();
+            }
+        }
     }
 
     /* light color change (gpio) */
@@ -214,6 +221,16 @@ void ClientSocket::processPayload(QByteArray buffer)
         }
     }
 
+    /* flip zwave state */
+    if (command == "TOGGLE" )
+    {
+        int id = incomingPayload["id"].toInt();
+        if (g_lightMap.contains(id))
+        {
+            g_lightMap.value(id)->toggleState();
+        }
+    }
+
     /* preset toggle */
     if (command == "PRESET" )
     {
@@ -224,6 +241,19 @@ void ClientSocket::processPayload(QByteArray buffer)
         {
             if (gColorPresetMap.contains(value))
                 g_lightMap.value(id)->setActivePreset(gColorPresetMap.value(value));
+        }
+    }
+
+    /* preset toggle */
+    if (command == "UPDATE" )
+    {
+        int value = incomingPayload["value"].toInt();
+        int id = incomingPayload["id"].toInt();
+
+        if (g_lightMap.contains(id))
+        {
+                g_lightMap.value(id)->setLastUpdateLocal(false);
+                g_lightMap.value(id)->updateLevel(value);
         }
     }
 }

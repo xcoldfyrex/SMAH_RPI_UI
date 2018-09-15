@@ -7,7 +7,6 @@
 #include <QPainter>
 
 #include "zone.h"
-#include "tcpconnection.h"
 
 #include "widgets/w_zonechooser.h"
 #include "widgets/w_topheader.h"
@@ -38,10 +37,6 @@ public slots:
     void showSystemWidget();
     void showZone(QString zone);
     void addPreset(Preset preset);
-
-
-private slots:
-    void createZoneElements(Zone zone);
 };
 
 #endif // MAINWINDOW_H

@@ -9,6 +9,7 @@
 ZoneContainerWidget::ZoneContainerWidget(Zone zone)
 {
 
+    this->zone = zone;
     topWidget = new QWidget;
     contentLayout = new QStackedWidget;
     //QBoxLayout *zoneFunctions = new QBoxLayout(QBoxLayout::LeftToRight);
@@ -77,6 +78,7 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     */
 
     zoneButtons = new QListWidget(this);
+    zoneButtons->setObjectName("zoneButtons");
     QSpacerItem *verticalSpacer = new QSpacerItem(0,500,QSizePolicy::Expanding, QSizePolicy::Expanding);
     zoneFunctionLayout->addItem(verticalSpacer);
     QListWidgetItem *itemLights = new QListWidgetItem("> Light Controls");
@@ -90,17 +92,9 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     zoneButtons->addItem(itemEvents);
 
     connect(zoneButtons,SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(buttonListClicked()));
-    //zoneButtons->setItemWidget(itemLights,btnShowLights);
 
     zonePanelWidget->setObjectName("zoneFunctionsWidget");
-    btnShowLights->setObjectName("btnShowLights");
-    btnShowPower->setObjectName("btnShowPower");
-    btnShowActions->setObjectName("btnShowActions");
     zoneFunctionLayout->addWidget(zoneButtons);
-
-    //zoneFunctionLayout->addWidget(btnShowLights,0);
-    //zoneFunctionLayout->addWidget(btnShowPower,0);
-    //zoneFunctionLayout->addWidget(btnShowActions,0);
 
     zoneFunctionLayout->setContentsMargins(10,10,10,10);
     zoneFunctionLayout->setAlignment(Qt::AlignTop);
@@ -135,30 +129,39 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     bottomPanelWidget->setFixedHeight(50);
     bottomPanelWidget->setObjectName("bottomPanelWidget");
     connect(btnShowOverview,SIGNAL(clicked()),this,SLOT(showOverview()));
+    this->zone.pageStack.insert(0, zoneMainWidget);
 }
 
 void ZoneContainerWidget::showOverview()
 {
-    contentLayout->setCurrentIndex(0);
+    if (this->zone.pageStack.size() == 1)
+        return;
+    int offset = this->zone.pageStack.size() - 2;
+    contentLayout->setCurrentWidget(this->zone.pageStack.value(offset));
+    this->zone.pageStack.removeLast();
 }
 
 void ZoneContainerWidget::showLightContainer()
 {
-    contentLayout->setCurrentIndex(1);
+    contentLayout->setCurrentWidget(zoneLightsWidget->topWidget);
+    this->zone.pageStack.append(contentLayout->currentWidget());
 }
 
 
 void ZoneContainerWidget::showActions()
 {
     contentLayout->setCurrentIndex(3);
+    this->zone.pageStack.append(contentLayout->currentWidget());
 }
 
 void ZoneContainerWidget::showPowerControl()
 {
     contentLayout->setCurrentWidget(this->powerControlWidget->topWidget);
+    this->zone.pageStack.append(contentLayout->currentWidget());
 }
 
 void ZoneContainerWidget::buttonListClicked()
 {
     contentLayout->setCurrentIndex(zoneButtons->currentItem()->data(Qt::UserRole).toInt());
+    this->zone.pageStack.append(contentLayout->currentWidget());
 }

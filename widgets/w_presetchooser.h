@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QJsonObject>
 #include <QListWidgetItem>
+#include <QPushButton>
 
 #include "preset.h"
 #include "zone.h"
@@ -18,6 +19,8 @@ public:
     PresetChooser(Zone zone, Light *light, QWidget *parent = 0);
     QWidget *topWidget;
     QListWidget *presetList;
+    QListWidget *presetButtons;
+    QPushButton *btnBack;
     QVBoxLayout *contentLayout;
 private:
     Zone zone;

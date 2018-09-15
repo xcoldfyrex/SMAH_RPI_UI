@@ -5,10 +5,10 @@
 #include <QtXml/QDomDocument>
 #include <QList>
 #include <QDir>
+#include <QNetworkInterface>
 
 #include "zone.h"
 #include "light.h"
-//#include "widgets/w_zonechooser.h"
 #include "mainwindow.h"
 #include "preset.h"
 #include "logger.h"
@@ -19,7 +19,6 @@
 
 QMap<QString, Zone> gZoneMap;
 QMap<int, Preset> gColorPresetMap;
-TCPConnection networkThread(nullptr);
 QList<ClientSocket*> g_clientMap;
 QMap <QString, RPIDevice> g_deviceList;
 QMap <int, Light*> g_lightMap;

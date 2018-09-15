@@ -1,10 +1,13 @@
 #include <QSignalMapper>
 #include <QPen>
-#include "tcpconnection.h"
 #include "light.h"
 #include "w_zone_lights.h"
 #include "zwavemanager.h"
-#include "w_presetchooser.h".h"
+#include "w_presetchooser.h"
+
+#include <QDebug>
+
+extern QMap <int, Light*> g_lightMap;
 
 ZoneLightsWidget::ZoneLightsWidget(Zone zone, QWidget *parent) : QWidget(parent)
 {
@@ -50,15 +53,21 @@ void ZoneLightsWidget::addToggleFunctions()
             connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
             connect(signalMapper,SIGNAL(mapped(QWidget*)),this,SLOT(showCustomLights(QWidget*)),Qt::QueuedConnection);
 
-            PresetChooser *presetChooserWidget = new PresetChooser(zone, light, this);            
+            PresetChooser *presetChooserWidget = new PresetChooser(zone, light, this);
+            light->lcwWidget = colorLightControlWidget;
+
             QSignalMapper *presetSignalMapper = new QSignalMapper(this);
-            presetSignalMapper->setMapping(colorLightControlWidget->zoneButtons,presetChooserWidget->topWidget);
-            connect(colorLightControlWidget->zoneButtons,SIGNAL(itemClicked(QListWidgetItem*)),presetSignalMapper,SLOT(map()));
+            presetSignalMapper->setMapping(colorLightControlWidget->btnSetPreset,presetChooserWidget->topWidget);
+            connect(colorLightControlWidget->btnSetPreset,SIGNAL(clicked(bool)),presetSignalMapper,SLOT(map()));
             connect(presetSignalMapper,SIGNAL(mapped(QWidget*)),this,SLOT(showPresetChooser(QWidget*)),Qt::QueuedConnection);
             this->topWidget->addWidget(presetChooserWidget->topWidget);
-            this->contentLayout->addWidget(toggle,x,2);
 
-            //connect(colorLightControlWidget->btnShowPreset,SIGNAL(clicked(bool)),this,SLOT(showPresetChooser()));
+            connect(presetChooserWidget->btnBack,SIGNAL(clicked(bool)),this, SLOT(hidePresetChooser()));
+            connect(colorLightControlWidget->btnBack,SIGNAL(clicked(bool)),this, SLOT(hidePresetChooser()));
+
+
+            this->topWidget->addWidget(presetChooserWidget->topWidget);
+            this->contentLayout->addWidget(toggle,x,2);
         } else if (light->getType() == 994) {
             slider = new QSlider(Qt::Horizontal);
             slider->setMaximum(100);
@@ -84,14 +93,12 @@ void ZoneLightsWidget::addToggleFunctions()
     QPushButton *allOff = new QPushButton("All Off");
     this->contentLayout->addWidget(allOn,x+2,0);
     this->contentLayout->addWidget(allOff,x+2,1);
-
-    //networkThread->GPIOPoll();
-
-
 }
 
 void ZoneLightsWidget::showCustomLights(QWidget *widget)
 {
+    this->zone.pageStack.append(widget);
+    // THIS NEEDS TO GO TO THE ZONE FUNCTIONS STACK
     this->topWidget->setCurrentWidget(widget);
 }
 
@@ -107,10 +114,49 @@ void ZoneLightsWidget::togglePower(int id) {
 
 void ZoneLightsWidget::updateState(Light *light)
 {
-//light->statusLabel
+
 }
 
 void ZoneLightsWidget::showPresetChooser(QWidget *widget)
 {
     this->topWidget->setCurrentWidget(widget);
+}
+
+void ZoneLightsWidget::hidePresetChooser()
+{
+    this->topWidget->setCurrentIndex(0);
+}
+
+
+void ZoneLightsWidget::buttonListClicked(int id)
+{
+
+    Light *light;
+    //LightControlContainerWidget *lcw;
+    for (Light *l : g_lightMap.values())
+    {
+        if (l->getId() == id)
+            light = l;
+    }
+
+    qDebug() << light->getId();
+
+    QListWidget *widget = qobject_cast<QListWidget*>(sender());
+    //    LightControlContainerWidget *widget = qobject_cast<LightControlContainerWidget*>(light->lcwWidget);
+
+    int index = widget->currentItem()->data((Qt::UserRole)).toInt();
+    qDebug() << index;
+    if (index == 3)
+        topWidget->setCurrentIndex(0);
+
+
+
+    if (index == 1)
+    {
+
+        //this->topWidget->setCurrentWidget(parent->getLight()->presetWidget);
+    }
+
+    //contentLayout->setCurrentIndex(zoneButtons->currentItem()->data(Qt::UserRole).toInt());
+    //this->zone.pageStack.append(contentLayout->currentWidget());
 }

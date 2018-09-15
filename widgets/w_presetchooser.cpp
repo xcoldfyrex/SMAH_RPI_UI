@@ -3,15 +3,20 @@
 
 #include "w_presetchooser.h"
 #include "mainwindow.h"
-#include "tcpconnection.h"
 
 extern QMap<int, Preset> gColorPresetMap;
-extern TCPConnection *networkThread;
 
 PresetChooser::PresetChooser(Zone zone, Light *light, QWidget *parent) : QWidget(parent)
 {
-    QPushButton *btnActivate = new QPushButton(this);
-    btnActivate->setText("Activate Preset");
+
+    presetButtons = new QListWidget(this);
+    presetButtons->setObjectName("presetButtons");
+    QListWidgetItem *itemBack = new QListWidgetItem("> Back");
+    itemBack->setData(Qt::UserRole,1);
+    presetButtons->addItem(itemBack);
+
+    btnBack = new QPushButton("> BACK");
+    btnBack->setObjectName("btnBack");
 
     this->topWidget = new QWidget;
     this->contentLayout = new QVBoxLayout(topWidget);
@@ -31,11 +36,9 @@ PresetChooser::PresetChooser(Zone zone, Light *light, QWidget *parent) : QWidget
         presetList->addItem(item);
     }
     contentLayout->addWidget(presetList);
-    contentLayout->addWidget(btnActivate);
+    contentLayout->addWidget(btnBack,1, Qt::AlignRight);
 
-    presetList->setObjectName("presetList");
-    connect(btnActivate,SIGNAL(clicked(bool)), this, SLOT(setPreset()));
-    //connect(this->zone,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
+    presetList->setObjectName("presetList");    
     connect(presetList,SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(setPreset()));
 }
 
@@ -48,5 +51,4 @@ void PresetChooser::setPreset()
             light->setActivePreset(preset);
     }
 }
-
 

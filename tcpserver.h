@@ -5,7 +5,6 @@
 #include <QMap>
 #include <QHostAddress>
 
-#include "tcpconnection.h"
 #include "tcpsocket.h"
 
 class TCPServer : public QTcpServer

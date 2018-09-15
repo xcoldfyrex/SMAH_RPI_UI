@@ -5,9 +5,8 @@
 #include <QListWidget>
 
 #include "w_systemsettings.h"
-#include "tcpconnection.h"
 #include "build_number.h"
-extern TCPConnection networkThread;
+
 
 SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
 {
@@ -23,8 +22,8 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     statusList->setObjectName("labelList");
     statusList->setEnabled(false);
 
-    const QString str_ip = "IP Address: " + networkThread.getIp_addr();    
-    QString mac = "MAC Address: " + networkThread.getMAC_addr();
+    const QString str_ip = "IP Address: " ; //+ networkThread.getIp_addr();
+    QString mac = "MAC Address: " ;//+ networkThread.getMAC_addr();
 
 
     QListWidgetItem *lblBuild = new QListWidgetItem("Build number: " + QString::number(BUILD));

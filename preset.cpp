@@ -89,7 +89,7 @@ QImage Preset::drawPreview()
             QImage image(256, 100, QImage::Format_RGB888);
             QPainter painter(&image);
             painter.fillRect(image.rect(),fade);
-            canvasPainter.drawImage(256, 0, image);
+            canvasPainter.drawImage(currentStep*256, 0, image);
         }
         return canvas;
     } else {

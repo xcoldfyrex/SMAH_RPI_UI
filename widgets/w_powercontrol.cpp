@@ -1,9 +1,6 @@
 #include <QSignalMapper>
 
-#include "tcpconnection.h"
 #include "w_powercontrol.h"
-
-extern TCPConnection *networkThread;
 
 PowerControlWidget::PowerControlWidget(Zone zone, QWidget *parent) : QWidget(parent)
 {

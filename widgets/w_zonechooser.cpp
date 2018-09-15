@@ -15,6 +15,7 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 {
     this->topWidget = new QWidget;
     zoneList = new QListWidget(this);
+    zoneList->setObjectName("zoneList");
     this->contentLayout = new QHBoxLayout(topWidget);
     this->myParent = dynamic_cast<MainWindow*>(parent);
     foreach (Zone zone, gZoneMap) {

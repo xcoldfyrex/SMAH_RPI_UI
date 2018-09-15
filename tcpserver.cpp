@@ -22,9 +22,10 @@ void TCPServer::incomingConnection(qintptr socketDescriptor)
 
 void TCPServer::cleanSocket(ClientSocket *socket)
 {
-    int i = 0;
-    foreach (ClientSocket *sock, g_clientMap)
-    {
+    //clientMap
+    //int i = 0;
+    //foreach (ClientSocket *sock, g_clientMap)
+    //{
         //if (sock->clientID == socket->clientID)
         //{
             //if (!sock->isHID)
@@ -33,7 +34,7 @@ void TCPServer::cleanSocket(ClientSocket *socket)
             //return;
         //}
         //i++;
-    }
+    //}
 
 }
 

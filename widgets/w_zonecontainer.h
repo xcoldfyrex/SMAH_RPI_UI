@@ -16,6 +16,8 @@ class PresetChooser;
 
 class ZoneOverviewWidget;
 
+class ZoneLightsWidget;
+
 //class ZoneLightsWidget;
 
 //class Zone;
@@ -39,6 +41,7 @@ private:
     QPushButton *btnShowPower = new QPushButton;
     QPushButton *btnShowActions = new QPushButton;
     QListWidget *zoneButtons = new QListWidget(this);
+    Zone zone;
 
 private slots:
     void showLightContainer();

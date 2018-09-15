@@ -122,7 +122,7 @@ QJsonObject ClientSocket::buildPayload()
 }
 
 /* prepares the entire payload and sends to socket */
-void ClientSocket::prepareToSend(QString command, QJsonObject jsonPayload, QTcpSocket *tcpSocket, QString responseTo)
+void ClientSocket::prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo)
 {
     QJsonObject jsonObject = buildPayload();
     jsonObject["command"] = command;
@@ -163,7 +163,7 @@ void ClientSocket::send_id(QTcpSocket *tcpSocket, QJsonObject data)
     }
     QJsonObject jsonPayload;
     jsonPayload["clientid"] = mac;
-    prepareToSend("ID", jsonPayload, tcpSocket, data.value("requestID").toString());
+    prepareToSend("ID", jsonPayload, data.value("requestID").toString());
 }
 
 void ClientSocket::processPayload(QByteArray buffer)

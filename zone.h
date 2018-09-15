@@ -6,6 +6,7 @@
 #include <QList>
 #include <QDataStream>
 #include <QObject>
+#include <QWidget>
 
 #include "rpidevice.h"
 #include "light.h"
@@ -30,7 +31,7 @@ public:
     QMap<QString, RPIDevice> getDeviceList() const { return this->deviceList; }
     QMap <QString, Light*> getLightList() const { return this->zoneLightList; }
     Light *getLightById(int id);
-
+    QList<QWidget*> pageStack;
     void addDevice(RPIDevice device);
 
 private:

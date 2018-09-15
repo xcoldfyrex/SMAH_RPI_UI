@@ -21,7 +21,7 @@ public:
     ClientSocket(QHostAddress address, QObject *parent);
     QHostAddress getPeerAddress() { return this->remoteAddress; }
     RPIDevice getDevice() { return this->rpidevice; }
-    void prepareToSend(QString command, QJsonObject jsonPayload, QTcpSocket *tcpSocket, QString responseTo);
+    void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
     void prepareToSend(QString command, QJsonObject jsonPayload);
 
 

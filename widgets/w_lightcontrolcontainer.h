@@ -33,8 +33,12 @@ public:
     QHBoxLayout *contentLayout;
     QPicture *hsvSwatch;
     QColor rgb;
-    QPushButton *btnSelectPreset;
     QListWidget *zoneButtons;
+    Light *getLight() { return this->light; }
+
+    QPushButton *btnSetPreset;
+    QPushButton *btnSetOff;
+    QPushButton *btnBack;
 
 public slots:
     void updateFromWheel(QColor qcol);
@@ -44,6 +48,7 @@ private:
     QGraphicsScene *scene;
     Zone zone;
     Light *light;
+
 };
 
 #endif // LIGHTCONTROLWIDGET_H

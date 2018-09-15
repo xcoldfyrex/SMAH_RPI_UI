@@ -35,7 +35,6 @@ SOURCES += main.cpp\
     light.cpp \
     zwavemanager.cpp \
     tcpserver.cpp \
-    tcpconnection.cpp \
     tcpsocket.cpp \
     commandrouter.cpp \
     presettask.cpp \
@@ -66,7 +65,6 @@ HEADERS  += \
     zwavemanager.h \
     gpio_defs.h \
     tcpserver.h \
-    tcpconnection.h \
     tcpsocket.h \
     commandrouter.h \
     presettask.h \

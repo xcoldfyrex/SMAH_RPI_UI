@@ -57,6 +57,7 @@ public:
     void setColorInPWM(QString color);
     void updateLevel(int level);
     void sendUpdate();
+    QWidget *lcwWidget;
 
 
 signals:

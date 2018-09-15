@@ -5,6 +5,7 @@ Zone::Zone(int id, QString name)
     this->id = id;
     this->name = name;
     qRegisterMetaType<Zone>("Zone");
+    QList<QWidget*> *pageStack = new QList<QWidget*>();
 }
 
 Zone::Zone()

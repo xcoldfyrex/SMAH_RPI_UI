@@ -7,12 +7,12 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "tcpconnection.h"
 #include "zwavemanager.h"
+
+#include <QDebug>
 
 
 extern QMap<QString, Zone> gZoneMap;
-extern TCPConnection *networkThread;
 extern QList<Preset> gColorPresetMap;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
@@ -92,14 +92,6 @@ void MainWindow::showZone(QString zone) {
 void MainWindow::showSystemWidget() {
     contentLayout->setCurrentIndex(1);
     //contentLayout->setCurrentWidget(this->systemSettingsWidget.topLevelWidget());
-}
-
-void MainWindow::createZoneElements(Zone zone)
-{
-    /* TODO
-     * create the UI elements
-     */
-    //contentLayout->addWidget(zone->zoneFunctionContainer->topWidget);
 }
 
 void MainWindow::addPreset(Preset preset)

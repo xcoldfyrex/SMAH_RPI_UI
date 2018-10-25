@@ -1,8 +1,16 @@
 #include <QScreen>
 #include <QMatrix>
 #include <QtCore/qmath.h>
-
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
+#include <QDir>
 #include "w_hsvpalette.h"
+
+
+#include <QDebug>
+
+extern QString homeLocation;
 
 HSVWheel::HSVWheel(QWidget *parent) :
     QWidget(parent),
@@ -16,6 +24,12 @@ HSVWheel::HSVWheel(QWidget *parent) :
 {
     current = current.toHsv();
     setCursor(Qt::CrossCursor);
+    //QGraphicsScene scene;
+    //QGraphicsView view(&scene);
+    //QGraphicsPixmapItem item(QPixmap("/home/lenny/.smah/palette.png"));
+    //scene.addItem(&item);
+    //view.show();
+
 }
 
 QColor HSVWheel::color()
@@ -46,9 +60,11 @@ QSize HSVWheel::minimumSizeHint () const
 
 void HSVWheel::mousePressEvent(QMouseEvent *event)
 {
-    QPixmap pm = this->grab();
-    if (((event->x() < 0) || (event->x() > pm.width())) || ((event->y() < 0) || event->y() > pm.height())) return;
-    QColor color = pm.toImage().pixel(event->x(),event->y());
+    QPixmap pm = this->grab(QRect(event->x(),event->y(),2,2));
+    if (((event->y() < 0) || (event->x() < 0))) return;
+
+    //if (((event->x() < 0) || (event->x() > pm.width())) || ((event->y() < 0) || event->y() > pm.height())) return;
+    QColor color = pm.toImage().pixel(1,1);
     colorChanged(color);
     mouseDown = true;
 }
@@ -57,9 +73,10 @@ void HSVWheel::mouseMoveEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     if( !mouseDown ) return;
-    QPixmap pm = this->grab();
-    if (((event->x() < 0) || (event->x() > pm.width())) || ((event->y() < 0) || event->y() > pm.height())) return;
-    QColor color = pm.toImage().pixel(event->x(),event->y());
+    QPixmap pm = this->grab(QRect(event->x(),event->y(),2,2));
+    if (((event->y() < 0) || (event->x() < 0))) return;
+    //if (((event->x() < 0) || (event->x() > pm.width())) || ((event->y() < 0) || event->y() > pm.height())) return;
+    QColor color = pm.toImage().pixel(1,1);
     colorChanged(color);
 }
 
@@ -80,21 +97,29 @@ void HSVWheel::resizeEvent(QResizeEvent *event)
 void HSVWheel::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    QStyleOption opt;
-    opt.initFrom(this);
-    composePalette();
-    painter.drawPixmap(0,0,wheel);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
+    QDir::setCurrent(homeLocation + "/.smah/assets");
+    QPixmap item("palette.png");
+    painter.drawPixmap(0,0,item);
+
+    //QStyleOption opt;
+    //opt.initFrom(this);
+    //composePalette();
+    //painter.drawPixmap(0,0,wheel);
+    //painter.a
+    //style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 }
 
 void HSVWheel::drawPalette(const QSize &newSize)
 {
-    QStyleOption option;
-    option.initFrom(this);
-    QBrush background = option.palette.window();
-    wheelImage = QImage(newSize, QImage::Format_ARGB32_Premultiplied);
-    wheelImage.fill(background.color());
-    QPainter painter(&wheelImage);
+
+    //QStyleOption option;
+    //option.initFrom(this);
+    //QBrush background = option.palette.window();
+    //wheelImage = QImage(newSize, QImage::Format_ARGB32_Premultiplied);
+    //wheelImage.fill(background.color());
+    //QPainter painter(&wheelImage);
+    //painter.
+    /*
     float step = ((float) this->width() / (float) 360);
     float offset = 1;
 
@@ -116,10 +141,12 @@ void HSVWheel::drawPalette(const QSize &newSize)
         }
         offset = offset + step;
     }
+    */
 }
 
 void HSVWheel::composePalette()
 {
+    /*
     QPainter composePainter(&wheel);
 
     QColor color;
@@ -132,6 +159,7 @@ void HSVWheel::composePalette()
     composePainter.setBrush(brush2);
     composePainter.drawRect(0, 0, 600, 600);
     composePainter.drawImage(0, 0, wheelImage);
+    */
 }
 
 void HSVWheel::colorChanged(QColor color)

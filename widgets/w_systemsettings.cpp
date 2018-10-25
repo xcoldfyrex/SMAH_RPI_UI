@@ -7,6 +7,8 @@
 #include "w_systemsettings.h"
 #include "build_number.h"
 
+extern QString MY_HW_ADDR;
+extern QString MY_IP_ADDR;
 
 SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
 {
@@ -22,8 +24,8 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     statusList->setObjectName("labelList");
     statusList->setEnabled(false);
 
-    const QString str_ip = "IP Address: " ; //+ networkThread.getIp_addr();
-    QString mac = "MAC Address: " ;//+ networkThread.getMAC_addr();
+    const QString str_ip = "IP Address: " + MY_IP_ADDR;
+    QString mac = "MAC Address: " + MY_HW_ADDR;
 
 
     QListWidgetItem *lblBuild = new QListWidgetItem("Build number: " + QString::number(BUILD));

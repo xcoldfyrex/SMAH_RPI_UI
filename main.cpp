@@ -16,6 +16,8 @@
 #include "pigpio.h"
 #include "gpio_defs.h"
 #include "tcpserver.h"
+#include "pca9685.h"
+#include "i2c/i2c.h"
 
 QMap<QString, Zone> gZoneMap;
 QMap<int, Preset> gColorPresetMap;
@@ -24,7 +26,10 @@ QMap <QString, RPIDevice> g_deviceList;
 QMap <int, Light*> g_lightMap;
 QMap <int, int> g_nodeValues;
 QString MY_HW_ADDR;
+QString MY_IP_ADDR;
 int MY_DEVICE_ID;
+smah_i2c bus;
+QString homeLocation;
 
 void loadZones()
 {
@@ -77,7 +82,8 @@ void loadZones()
                     Light *light = new Light(lightElement.attribute("id").toInt(),
                                              lightElement.attribute("name"),
                                              lightElement.attribute("type").toInt(),
-                                             lightElement.attribute("device").toInt()
+                                             lightElement.attribute("device").toInt(),
+                                             lightElement.attribute("bank").toInt()
                                              );
                     zone.addLight(light);
                     g_lightMap.insert(lightElement.attribute("id").toInt(), light);
@@ -195,8 +201,27 @@ int main(int argc, char *argv[])
         gpioPWM(GPIO_PIN_GREEN, 0);
         gpioPWM(GPIO_PIN_BLUE, 0);
         gpioPWM(GPIO_PIN_WHITE, 0);
+        qInfo() << "GPIO ports reset";
+
     }
 
+    bus = smah_i2c_open("/dev/i2c-1");
+    if (bus == 0)
+    {
+        qWarning() << "Failed to open i2c bus";
+    } else {
+        PCA9685_setFreq(bus, 1000);
+        PCA9685_init(bus);
+        PCA9685_setDutyCycle(bus,0, 0);
+        PCA9685_setDutyCycle(bus,1, 0);
+        PCA9685_setDutyCycle(bus,2, 0);
+        PCA9685_setDutyCycle(bus,3, 0);
+        qInfo() << "i2c bus opened";
+    }
+
+
+
+    // determine our MAC addy
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
         if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack))
@@ -210,7 +235,16 @@ int main(int argc, char *argv[])
             }
     }
 
-    QString homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
+    // determine our IP addy
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+    for(int nIter=0; nIter<list.count(); nIter++)
+    {
+        if(!list[nIter].isLoopback())
+            if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol )
+                MY_IP_ADDR = list[nIter].toString();
+    }
+
+    homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
 
     QDir::setCurrent(homeLocation + "/.smah/");
     loadZones();

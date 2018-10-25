@@ -4,7 +4,7 @@
 #endif // GPIO_DEFS_H
 
 #define GPIO_TOGGLE_PORT 17
-#define GPIO_PIN_WHITE 19
+#define GPIO_PIN_WHITE 16
 #define GPIO_PIN_RED 21
 #define GPIO_PIN_GREEN 26
 #define GPIO_PIN_BLUE 20

@@ -217,7 +217,7 @@ void ClientSocket::processPayload(QByteArray buffer)
 
         if (g_lightMap.contains(id))
         {
-            g_lightMap.value(id)->setColorInPWM(value);
+            g_lightMap.value(id)->setColorInPWM(value, false);
         }
     }
 

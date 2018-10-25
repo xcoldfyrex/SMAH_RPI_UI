@@ -1,6 +1,6 @@
 #include <QPushButton>
 #include <QPixmap>
-
+#include <QScrollBar>
 #include "w_presetchooser.h"
 #include "mainwindow.h"
 
@@ -24,6 +24,10 @@ PresetChooser::PresetChooser(Zone zone, Light *light, QWidget *parent) : QWidget
     this->zone = zone;
     this->light = light;
     presetList->setIconSize(QSize(512,32));
+    QScrollBar *sb = new QScrollBar();
+    sb->setPageStep(10);
+    presetList->setVerticalScrollBar(sb);
+    presetList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     for (Preset preset : gColorPresetMap)
     {
         QListWidgetItem *item = new QListWidgetItem();

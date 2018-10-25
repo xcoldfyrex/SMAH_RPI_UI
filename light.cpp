@@ -2,18 +2,20 @@
 #include "pigpio.h"
 #include "gpio_defs.h"
 #include "commandrouter.h"
+#include "pca9685.h"
 
 #include <QDebug>
 extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
+extern smah_i2c bus;
 
 Light::Light(QObject *parent) : QObject(parent)
 {
     this->statusLabel = new QLabel("N/A");
 }
 
-Light::Light(int id, QString name, int type, int deviceid)
+Light::Light(int id, QString name, int type, int deviceid, short bank)
 {
     this->id = id;
     this->name = name;
@@ -21,6 +23,7 @@ Light::Light(int id, QString name, int type, int deviceid)
     this->statusLabel = new QLabel("N/A");
     this->deviceid = deviceid;
     this->taskList = new QList<PresetTask*>();
+    this->pwmbank = bank;
 }
 
 //toggle a binary device
@@ -47,12 +50,11 @@ void Light::toggleState()
 }
 
 //set an RGBW device
-void Light::setColor(QString color)
+void Light::setColor(QString color, bool keepActive = false)
 {
     if (this->isLocal())
     {
-        setColorInPWM(color);
-        qDebug() << "Local?";
+        setColorInPWM(color, keepActive);
     } else {
         //do shit to send to network
         ClientSocket *sock = determineZone(this);
@@ -97,21 +99,42 @@ void Light::sendUpdate()
 // from an active preset - next color
 void Light::colorStepAction(QColor color)
 {
-    setColor(color.name().toUpper().replace("#",""));
+    setColor(color.name().toUpper().replace("#",""), true);
 }
 
 //toggle single rgb(w) strip
-void Light::setColorInPWM(QString color)
+void Light::setColorInPWM(QString color, bool keepActive = true)
 {
+    if (!keepActive)
+    {
+        if (this->taskList->length() > 0){
+            PresetTask *toTerm;
+            foreach (toTerm, *this->taskList) {
+                toTerm->abortFlag = true;
+            }
+        }
+        this->taskList->clear();
+    }
     bool ok;
     int r = color.mid(0,2).toInt(&ok, 16);
     int g = color.mid(2,2).toInt(&ok, 16);
     int b = color.mid(4,2).toInt(&ok, 16);
-    int w = color.mid(8,2).toInt(&ok, 16);
-    gpioPWM(GPIO_PIN_RED, r);
-    gpioPWM(GPIO_PIN_GREEN, g);
-    gpioPWM(GPIO_PIN_BLUE, b);
-    gpioPWM(GPIO_PIN_WHITE, w);
+    int w = color.mid(6,2).toInt(&ok, 16);
+
+    if (this->pwmbank == 0) {
+        // devices not on i2c device
+        gpioPWM(GPIO_PIN_RED, r);
+        gpioPWM(GPIO_PIN_GREEN, g);
+        gpioPWM(GPIO_PIN_BLUE, b);
+        gpioPWM(GPIO_PIN_WHITE, w);
+    } else {
+        // well, it's on a fucking i2c bus.
+
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 0, r);
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 1, g);
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 2, b);
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 3, w);
+    }
 }
 
 //read the pwm values for led strip

@@ -24,6 +24,8 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     btnSetPreset->setObjectName("btnSetPreset");
     btnSetOff->setObjectName("btnSetOff");
     btnBack->setObjectName("btnBack");
+    chkWhiteEnabled = new QCheckBox("White LED On");
+
 
     this->zone = zone;
     this->light = light;
@@ -43,6 +45,7 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     rightItems->addWidget(btnSetOff,1, Qt::AlignLeft);
     rightItems->addWidget(btnBack,1, Qt::AlignLeft);
     rightItems->addStretch(1);
+    rightItems->addWidget(chkWhiteEnabled);
     connect(colorPalette,SIGNAL(colorChange(QColor)),this,SLOT(updateFromWheel(QColor)));
 
     //btnBack->setMinimumWidth(btnSetPreset->width());
@@ -57,7 +60,10 @@ LightControlContainerWidget::~LightControlContainerWidget()
 
 void LightControlContainerWidget::updateFromWheel(QColor qcol)
 {
+    QString white = "00";
+    if (this->chkWhiteEnabled->isChecked())
+        white = "FF";
     preview->color.setHsv(qcol.hue(),qcol.saturation(),qcol.value());
     preview->repaint();
-    light->setColor(qcol.name().toUpper().replace("#","") + "FF");
+    light->setColor(qcol.name().toUpper().replace("#","") + white, false);
 }

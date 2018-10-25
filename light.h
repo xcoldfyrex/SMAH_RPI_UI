@@ -24,7 +24,7 @@ class Light : public QObject
     Q_OBJECT
 public:
     explicit Light(QObject *parent = nullptr);
-    Light(int id, QString name, int type, int deviceid);
+    Light(int id, QString name, int type, int deviceid, short bank);
     QString getName() const { return this->name; }
     int getType() const { return this->type ;}
     QString getColor() { return this->color; }
@@ -54,7 +54,7 @@ public:
         updateLevel(checkstate);
     }
     QString getColorFromPWM();
-    void setColorInPWM(QString color);
+    void setColorInPWM(QString color, bool keepActive);
     void updateLevel(int level);
     void sendUpdate();
     QWidget *lcwWidget;
@@ -64,7 +64,7 @@ signals:
     bool levelChanged(Light *light);
 
 public slots:
-    void setColor(QString color);
+    void setColor(QString color, bool keepActive);
     void toggleState();
     void setActivePreset(Preset preset);
 
@@ -77,6 +77,7 @@ private:
     QString name;
     bool state = 0;
     int level = 0;
+    short pwmbank = -1;
     QString color;
     bool localUpdate = false;
 };

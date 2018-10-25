@@ -11,8 +11,14 @@ class ColorPreview : public QWidget
     Q_OBJECT
 public:
     explicit ColorPreview(QWidget *parent = 0);
-    void paintEvent(QPaintEvent *pe);
     QColor color;
+
+private:
+    QBrush background;
+    QPainter painter;
+
+protected:
+    void paintEvent(QPaintEvent *);
 
 signals:
 

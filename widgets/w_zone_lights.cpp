@@ -35,6 +35,7 @@ void ZoneLightsWidget::addToggleFunctions()
         //light->initState();
 
         QLabel *toggleName = new QLabel(light->getName());
+        toggleName->setObjectName("lblToggleName");
         QSignalMapper *signalMapper = new QSignalMapper(this);
         QPushButton *toggle;
         QSlider *slider;
@@ -47,7 +48,8 @@ void ZoneLightsWidget::addToggleFunctions()
         {
             // Can color and shit
             LightControlContainerWidget *colorLightControlWidget = new LightControlContainerWidget(zone, light, this);
-            toggle = new QPushButton("Set");
+            toggle = new QPushButton("> Set");
+            toggle->setObjectName("btnShowLightControl");
             this->topWidget->addWidget(colorLightControlWidget->topWidget);
             signalMapper->setMapping(toggle,colorLightControlWidget->topWidget);
             connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
@@ -76,7 +78,8 @@ void ZoneLightsWidget::addToggleFunctions()
             slider->setMaximumWidth(800);
         } else {
             // Just on and off
-            toggle = new QPushButton("Toggle");
+            toggle = new QPushButton("> Toggle");
+            toggle->setObjectName("btnShowLightControl");
             signalMapper->setMapping(toggle,light->getId());
             connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
             connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(togglePower(int)));

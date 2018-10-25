@@ -9,6 +9,7 @@
 #include <QPicture>
 #include <QListWidgetItem>
 #include <QPushButton>
+#include <QCheckBox>
 
 #include "w_colorpreview.h"
 #include "light.h"
@@ -48,6 +49,7 @@ private:
     QGraphicsScene *scene;
     Zone zone;
     Light *light;
+    QCheckBox *chkWhiteEnabled;
 
 };
 

@@ -33,12 +33,15 @@ SOURCES += main.cpp\
     datagramhandler.cpp \
     widgets/w_zone_lights.cpp \
     light.cpp \
-    zwavemanager.cpp \
     tcpserver.cpp \
     tcpsocket.cpp \
-    commandrouter.cpp \
     presettask.cpp \
-    zone.cpp
+    zone.cpp \
+    pca9685.cpp \
+    i2c/i2c.cpp \
+    commandrouter.cpp \
+    zwavemanager.cpp
+
 
 
 HEADERS  += \
@@ -62,13 +65,21 @@ HEADERS  += \
     datagramhandler.h \
     widgets/w_zone_lights.h \
     light.h \
-    zwavemanager.h \
     gpio_defs.h \
+    zone.h \
+    pca9685.h \
+    i2c/i2c.h \
+    build_number.h \
+    logger.h \
+    pca9685.h \
+    preset.h \
+    presettask.h \
+    rpidevice.h \
     tcpserver.h \
     tcpsocket.h \
-    commandrouter.h \
-    presettask.h \
-    zone.h
+    ui_menuwindow.h \
+    zone.h \
+    zwavemanager.h
 
 
 FORMS    += \

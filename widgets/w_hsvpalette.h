@@ -44,6 +44,7 @@ private:
     bool inSquare;
     void drawPalette(const QSize &newSize);
     void composePalette();
+    bool needsDraw = true;
 private slots:
     void colorChanged(QColor color);
 };

@@ -11,12 +11,14 @@ class TopHeaderWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit TopHeaderWidget(QWidget *parent = 0, const char *name = 0 );
+    explicit TopHeaderWidget(QWidget *parent = nullptr, const char *name = nullptr);
     QWidget *topWidget;
 
 private:
     QLabel *lblClock;
     QLabel *lblDate;
+    QLabel *lblSunrise;
+    QLabel *lblSunset;
     QPushButton *btnHome;
     QPushButton *btnInfo;
     QSpacerItem *spcHeader;

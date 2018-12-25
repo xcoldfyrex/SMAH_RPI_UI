@@ -18,6 +18,7 @@
 #include "tcpserver.h"
 #include "pca9685.h"
 #include "i2c/i2c.h"
+#include "eventfilter.h"
 
 QMap<QString, Zone> gZoneMap;
 QMap<int, Preset> gColorPresetMap;
@@ -30,6 +31,8 @@ QString MY_IP_ADDR;
 int MY_DEVICE_ID;
 smah_i2c bus;
 QString homeLocation;
+
+
 
 void loadZones()
 {
@@ -83,7 +86,7 @@ void loadZones()
                                              lightElement.attribute("name"),
                                              lightElement.attribute("type").toInt(),
                                              lightElement.attribute("device").toInt(),
-                                             lightElement.attribute("bank").toInt()
+                                             lightElement.attribute("bank").toShort()
                                              );
                     zone.addLight(light);
                     g_lightMap.insert(lightElement.attribute("id").toInt(), light);
@@ -115,7 +118,7 @@ void loadPresets()
 
     zoneXMLFile.close();
 
-    int presetID = 0;
+    short presetID = 0;
     QDomElement root = zoneXMLDocument.firstChildElement();
 
     QDomNodeList staticItems = root.elementsByTagName("static");
@@ -190,6 +193,7 @@ void loadPresets()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    EventFilter filter;
     qInstallMessageHandler(systemlogHandler);
 
     if (gpioInitialise() < 0)
@@ -202,21 +206,25 @@ int main(int argc, char *argv[])
         gpioPWM(GPIO_PIN_BLUE, 0);
         gpioPWM(GPIO_PIN_WHITE, 0);
         qInfo() << "GPIO ports reset";
-
     }
 
     bus = smah_i2c_open("/dev/i2c-1");
-    if (bus == 0)
+    if (bus == nullptr)
     {
         qWarning() << "Failed to open i2c bus";
     } else {
-        PCA9685_setFreq(bus, 1000);
-        PCA9685_init(bus);
-        PCA9685_setDutyCycle(bus,0, 0);
-        PCA9685_setDutyCycle(bus,1, 0);
-        PCA9685_setDutyCycle(bus,2, 0);
-        PCA9685_setDutyCycle(bus,3, 0);
         qInfo() << "i2c bus opened";
+        if (PCA9685_setFreq(bus, 1000) == 0)
+        {
+            PCA9685_init(bus);
+            qInfo() << "PCA init";
+            PCA9685_setDutyCycle(bus,0, 0);
+            PCA9685_setDutyCycle(bus,1, 0);
+            PCA9685_setDutyCycle(bus,2, 0);
+            PCA9685_setDutyCycle(bus,3, 0);
+        } else {
+            qWarning() << "PCA init failed";
+        }
     }
 
 
@@ -265,6 +273,8 @@ int main(int argc, char *argv[])
 
     MainWindow mainWindow;
     mainWindow.show();
+    a.installEventFilter(&filter);
+    QObject::connect(&filter,SIGNAL(userActivity()), &mainWindow,SLOT(resetIdle()));
     return a.exec();
 
 }

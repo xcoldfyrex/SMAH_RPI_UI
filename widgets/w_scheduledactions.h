@@ -9,7 +9,7 @@ class ScheduledActionsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ScheduledActionsWidget(QWidget *parent = 0);
+    explicit ScheduledActionsWidget(QWidget *parent = nullptr);
     QWidget *topWidget;
     QListWidget *actiontList;
     QVBoxLayout *contentLayout;

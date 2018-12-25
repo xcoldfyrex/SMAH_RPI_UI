@@ -21,7 +21,7 @@ class ZoneChooserWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit ZoneChooserWidget(QWidget *parent = 0);
+    explicit ZoneChooserWidget(QWidget *parent = nullptr);
     QHBoxLayout *contentLayout;
     QWidget *topWidget;
     MainWindow *myParent;

@@ -65,6 +65,7 @@ signals:
 
 public slots:
     void setColor(QString color, bool keepActive);
+    QString getWhiteLevel() { return this->whiteLevel; }
     void toggleState();
     void setActivePreset(Preset preset);
 
@@ -78,7 +79,8 @@ private:
     bool state = 0;
     int level = 0;
     short pwmbank = -1;
-    QString color;
+    QString color = "000000";
+    QString whiteLevel = "00";
     bool localUpdate = false;
 };
 

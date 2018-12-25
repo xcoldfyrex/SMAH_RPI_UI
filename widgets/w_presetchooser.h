@@ -16,7 +16,7 @@ class PresetChooser : public QWidget
 {
     Q_OBJECT
 public:
-    PresetChooser(Zone zone, Light *light, QWidget *parent = 0);
+    PresetChooser(Zone zone, Light *light, QWidget *parent = nullptr);
     QWidget *topWidget;
     QListWidget *presetList;
     QListWidget *presetButtons;

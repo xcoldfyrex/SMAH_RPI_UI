@@ -40,7 +40,9 @@ SOURCES += main.cpp\
     pca9685.cpp \
     i2c/i2c.cpp \
     commandrouter.cpp \
-    zwavemanager.cpp
+    zwavemanager.cpp \
+    sunriseset.cpp \
+    widgets/w_screensaver.cpp
 
 
 
@@ -79,7 +81,10 @@ HEADERS  += \
     tcpsocket.h \
     ui_menuwindow.h \
     zone.h \
-    zwavemanager.h
+    zwavemanager.h \
+    sunriseset.h \
+    widgets/w_screensaver.h \
+    eventfilter.h
 
 
 FORMS    += \

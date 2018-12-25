@@ -70,7 +70,7 @@ void ZoneLightsWidget::addToggleFunctions()
 
             this->topWidget->addWidget(presetChooserWidget->topWidget);
             this->contentLayout->addWidget(toggle,x,2);
-        } else if (light->getType() == 994) {
+        } else if (light->getType() == 1) {
             slider = new QSlider(Qt::Horizontal);
             slider->setMaximum(100);
             slider->setMinimum(1);

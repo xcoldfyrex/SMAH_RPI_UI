@@ -15,7 +15,7 @@ class ZoneLightsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneLightsWidget(Zone zone, QWidget *parent = 0);
+    explicit ZoneLightsWidget(Zone zone, QWidget *parent = nullptr);
     ZoneLightsWidget() {}
     QStackedWidget *topWidget;
 

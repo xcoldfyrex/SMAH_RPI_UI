@@ -52,6 +52,9 @@ void Light::toggleState()
 //set an RGBW device
 void Light::setColor(QString color, bool keepActive = false)
 {
+    this->color = color.mid(0,6);
+    this->whiteLevel = color.mid(6,2);
+
     if (this->isLocal())
     {
         setColorInPWM(color, keepActive);
@@ -120,7 +123,7 @@ void Light::setColorInPWM(QString color, bool keepActive = true)
     int g = color.mid(2,2).toInt(&ok, 16);
     int b = color.mid(4,2).toInt(&ok, 16);
     int w = color.mid(6,2).toInt(&ok, 16);
-
+    qDebug() << color;
     if (this->pwmbank == 0) {
         // devices not on i2c device
         gpioPWM(GPIO_PIN_RED, r);
@@ -129,11 +132,10 @@ void Light::setColorInPWM(QString color, bool keepActive = true)
         gpioPWM(GPIO_PIN_WHITE, w);
     } else {
         // well, it's on a fucking i2c bus.
-
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 0, r);
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 1, g);
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 2, b);
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 3, w);
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 0, r );
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 1, g );
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 2, b );
+        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 3, w );
     }
 }
 

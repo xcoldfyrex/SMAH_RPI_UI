@@ -24,7 +24,14 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     btnSetPreset->setObjectName("btnSetPreset");
     btnSetOff->setObjectName("btnSetOff");
     btnBack->setObjectName("btnBack");
-    chkWhiteEnabled = new QCheckBox("White LED On");
+    sl_whitelevel = new QSlider(Qt::Horizontal);
+    sl_whitelevel->setMaximum(255);
+    sl_whitelevel->setMinimum(0);
+    sl_whitelevel->setMaximumWidth(256);
+
+
+
+    //chkWhiteEnabled = new QCheckBox("White LED On");
 
 
     this->zone = zone;
@@ -45,8 +52,12 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     rightItems->addWidget(btnSetOff,1, Qt::AlignLeft);
     rightItems->addWidget(btnBack,1, Qt::AlignLeft);
     rightItems->addStretch(1);
-    rightItems->addWidget(chkWhiteEnabled);
+    //rightItems->addWidget(chkWhiteEnabled);
+    rightItems->addWidget(new QLabel("White Intesnity"));
+    rightItems->addWidget(sl_whitelevel);
+
     connect(colorPalette,SIGNAL(colorChange(QColor)),this,SLOT(updateFromWheel(QColor)));
+    connect(sl_whitelevel,SIGNAL(valueChanged(int)),this, SLOT(sliderChanged(int)));
 
     //btnBack->setMinimumWidth(btnSetPreset->width());
     //zoneButtons->setMinimumWidth(zoneButtons->sizeHintForColumn(0) + 20);
@@ -60,10 +71,15 @@ LightControlContainerWidget::~LightControlContainerWidget()
 
 void LightControlContainerWidget::updateFromWheel(QColor qcol)
 {
-    QString white = "00";
-    if (this->chkWhiteEnabled->isChecked())
-        white = "FF";
+    QString white = QString::number(this->sl_whitelevel->value(), 16).toUpper();
     preview->color.setHsv(qcol.hue(),qcol.saturation(),qcol.value());
     preview->repaint();
     light->setColor(qcol.name().toUpper().replace("#","") + white, false);
+}
+
+void LightControlContainerWidget::sliderChanged(int val)
+{
+    QString white = QString::number(val, 16).toUpper();
+    QString color = light->getColor();
+    light->setColor(color + white, false);
 }

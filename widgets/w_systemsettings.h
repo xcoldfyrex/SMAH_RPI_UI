@@ -9,7 +9,7 @@ class SystemSettings : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SystemSettings(QWidget *parent = 0);
+    explicit SystemSettings(QWidget *parent = nullptr);
     QWidget *topWidget;
     QGridLayout *contentLayout;
 

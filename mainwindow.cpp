@@ -31,15 +31,26 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     //create header template
     TopHeaderWidget *hcheader = new TopHeaderWidget(this,"Main Menu");
     QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainWidgetLayout = new QStackedLayout(this);
+
     this->contentLayout = new QStackedLayout;
 
     //create node widgets
     ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
     SystemSettings *systemSettingsWidget = new SystemSettings(this);
+    QWidget *contentHolder = new QWidget(this);
+    screensaverHolder = new ScreenSaverWidget(this);
+    idleTimer = new QTimer();
+    this->idleTimer->start(100*60*5);
+    connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));
 
     contentLayout->addWidget(zoneChooser->topWidget);
     contentLayout->addWidget(systemSettingsWidget->topWidget);
-    setLayout(mainLayout);
+    setLayout(mainWidgetLayout);
+    contentHolder->setLayout(mainLayout);
+    mainWidgetLayout->addWidget(contentHolder);
+    mainWidgetLayout->addWidget(screensaverHolder->topWidget);
+    mainWidgetLayout->setCurrentWidget(screensaverHolder->topWidget);
 
     mainLayout->setContentsMargins(0,0,0,0);
     mainLayout->addWidget(hcheader->topWidget);
@@ -50,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
         this->zoneContainerMap->insert(zone.getName(),zcw);
         contentLayout->addWidget(zcw->topWidget);
     }
-
     contentLayout->setCurrentIndex(0);
 
     //qRegisterMetaType<smah::Zone>("smah::Zone");
@@ -105,4 +115,22 @@ void MainWindow::addPreset(Preset preset)
         }
     }
     gColorPresetMap.append(preset);
+}
+
+void MainWindow::hideSaver()
+{
+    this->mainWidgetLayout->setCurrentIndex(0);
+}
+
+void MainWindow::showSaver()
+{
+    this->mainWidgetLayout->setCurrentIndex(1);
+}
+
+void MainWindow::resetIdle()
+{
+    if (this->mainWidgetLayout->currentIndex() != 0)
+        hideSaver();
+    this->idleTimer->stop();
+    this->idleTimer->start(100*60*5);
 }

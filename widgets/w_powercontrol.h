@@ -15,7 +15,7 @@ class PowerControlWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PowerControlWidget(Zone zone, QWidget *parent = 0);
+    explicit PowerControlWidget(Zone zone, QWidget *parent = nullptr);
     QWidget *topWidget;
 
 private:

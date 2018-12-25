@@ -12,7 +12,7 @@ class HSVWheel : public QWidget
 {
     Q_OBJECT
 public:
-    explicit HSVWheel(QWidget *parent = 0);
+    explicit HSVWheel(QWidget *parent = nullptr);
 
     virtual QSize sizeHint () const;
     virtual QSize minimumSizeHint () const;

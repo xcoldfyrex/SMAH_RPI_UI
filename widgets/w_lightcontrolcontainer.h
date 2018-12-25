@@ -25,7 +25,7 @@ class LightControlContainerWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit LightControlContainerWidget(Zone zone, Light *light, QWidget *parent = 0);
+    explicit LightControlContainerWidget(Zone zone, Light *light, QWidget *parent = nullptr);
     LightControlContainerWidget() {}
     ~LightControlContainerWidget();
     QWidget *topWidget;
@@ -43,6 +43,7 @@ public:
 
 public slots:
     void updateFromWheel(QColor qcol);
+    void sliderChanged(int val);
 
 private:
     Ui::LightControlWidget *ui;
@@ -50,6 +51,7 @@ private:
     Zone zone;
     Light *light;
     QCheckBox *chkWhiteEnabled;
+    QSlider *sl_whitelevel;
 
 };
 

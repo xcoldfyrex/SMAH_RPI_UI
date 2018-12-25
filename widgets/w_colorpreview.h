@@ -10,7 +10,7 @@ class ColorPreview : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ColorPreview(QWidget *parent = 0);
+    explicit ColorPreview(QWidget *parent = nullptr);
     QColor color;
 
 private:

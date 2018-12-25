@@ -2,7 +2,7 @@
 
 ColorPreview::ColorPreview(QWidget *parent) : QWidget(parent)
 {
-
+    this->repaint();
 }
 
 void ColorPreview::paintEvent(QPaintEvent *)
@@ -21,7 +21,7 @@ void ColorPreview::paintEvent(QPaintEvent *)
     brush.setStyle(Qt::SolidPattern);
     painter.setBrush(brush);
     painter.setRenderHint(QPainter::Antialiasing, false);
-    painter.drawRect(0, 40, this->width()-1, 100);
+    painter.drawRect(0, 40, 100, 100);
     painter.setPen(penHText);
     painter.drawText(0,20, color.name().replace("#",""));
 }

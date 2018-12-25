@@ -1,4 +1,5 @@
 #include "pca9685.h"
+#include <QDebug>
 
 int PCA9685_init(smah_i2c bus) {
     return smah_i2c_reg_write(bus, PCA9685_ADDRESS, PCA9685_MODE1, PCA9685_ALLCALL | PCA9685_AI)
@@ -6,15 +7,16 @@ int PCA9685_init(smah_i2c bus) {
 }
 
 int PCA9685_setDutyCycle(smah_i2c bus, char channel, short value) {
-    value = value < 0? 0:
-            value > 100? PCA9685_MAX_DUTY_CICLE:
-            (PCA9685_MAX_DUTY_CICLE * value) / 100;
-
+    // fuck this
+    //value = value < 0? 0:
+            //value > 100? PCA9685_MAX_DUTY_CICLE:
+            //(PCA9685_MAX_DUTY_CICLE * value) / 100;
+    value = value * ((1 << 12) - 1) / ((1 << 8) - 1);
     unsigned char buf[5];
     buf[0] = PCA9685_LED0_ON_L + (PCA9685_REGISTERS_PER_CHANNEL * channel);
     buf[1] = buf[2] = 0x00;
-    buf[3] = value & 0xFF; buf[4] = (value >> 8) & 0xF;
-
+    buf[3] = value & 0xFF;
+    buf[4] = (value >> 8) & 0xF;
     return smah_i2c_write(bus, PCA9685_ADDRESS, buf, 5);
 }
 

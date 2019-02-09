@@ -42,6 +42,7 @@ private:
     QPushButton *btnShowActions = new QPushButton;
     QListWidget *zoneButtons = new QListWidget(this);
     Zone zone;
+    QLabel *lblEnvironment;
 
 private slots:
     void showLightContainer();
@@ -49,6 +50,7 @@ private slots:
     void showOverview();
     void showActions();
     void buttonListClicked();
+    void updateEnvironment();
 };
 
 #endif // ZONECONTAINERWIDGET_H

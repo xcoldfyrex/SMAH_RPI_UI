@@ -2,7 +2,7 @@
 #include "math.h"
 #define ZeroPercentVoltage 0.958
 
-ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone *zone) : QWidget(parent)
+ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone zone) : QWidget(parent)
 {
 
     this->topWidget = new QWidget;
@@ -16,7 +16,7 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone *zone) : QWidge
     lblZoneEnvIcon->setPixmap(QPixmap::fromImage(*imgZoneEnvIcon));
     lblZoneEnvIcon->resize(32,32);
 
-    lblZoneEnvHeader = new QLabel(zone->getName());
+    lblZoneEnvHeader = new QLabel(zone.getName());
     lblZoneEnvData = new QLabel();
 
     lblZoneEnvHeader->setObjectName("lblZoneEnvHeader");
@@ -37,6 +37,19 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone *zone) : QWidge
 
 void ZoneEnvironmentPanel::enviroUpdate()
 {
+    if (this->zone.getSensorList().size() == 0)
+        return;
+    for (Sensor *sensor : this->zone.getSensorList())
+    {
+        QString text;
+        text += sensor->getName() + "\n\r";
+        text += QString::number(sensor->getTemperature()) + "F\n\r";
+        if (sensor->getHumidity() > 0)
+            text += QString::number(sensor->getHumidity()) + "% RH\n\r";
+
+        lblZoneEnvData->setText(text);
+    }
+
     //float temp = ceilf(rawVoltage(zone->environmentMap.value(0) * 100) * 100) / 100;
     //float rh_voltage = rawVoltage(zone->environmentMap.value(1));
     //float RH = ceilf((((rh_voltage - .958) / .0307) * 100)) / 100;

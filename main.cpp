@@ -19,6 +19,7 @@
 #include "pca9685.h"
 #include "i2c/i2c.h"
 #include "eventfilter.h"
+#include "sensor.h"
 
 QMap<QString, Zone> gZoneMap;
 QMap<int, Preset> gColorPresetMap;
@@ -31,7 +32,7 @@ QString MY_IP_ADDR;
 int MY_DEVICE_ID;
 smah_i2c bus;
 QString homeLocation;
-
+TCPServer tcpServer;
 
 
 void loadZones()
@@ -92,15 +93,24 @@ void loadZones()
                     g_lightMap.insert(lightElement.attribute("id").toInt(), light);
                 }
             }
-            //QDomNodeList powerItems = element.elementsByTagName("power");
-            //for (int a = 0; a < powerItems.count(); a++) {
-            // /   QDomNode powerNode = powerItems.at(a);
-            //    if (powerNode.isElement()) {
-            //        QDomElement powerElement = powerNode.toElement();
-            //zone->powerControls.insert(powerElement.attribute("id").toInt(), powerElement.attribute("name"));
-            //    }
-            //}
-            //gZoneMapDELETEME->insert(zone->id, zone);
+
+            /* each sensor device in the zone */
+            QDomNodeList sensors = element.elementsByTagName("sensor");
+            for (int a = 0; a < sensors.count(); a++) {
+                QDomNode sensorNode = sensors.at(a);
+                if (sensorNode.isElement()) {
+                    QDomElement sensorElement = sensorNode.toElement();
+                    Sensor *sensor = new Sensor(
+                                sensorElement.attribute("name"),
+                                sensorElement.attribute("id").toShort(),
+                                sensorElement.attribute("device").toInt()
+                                );
+                    zone.addSensor(sensor);
+                    //g_deviceList.insert(powerElement.attribute("hw"),rpidevice);
+
+
+                }
+            }
             gZoneMap.insert(zone.getName(),zone);
         }
     }
@@ -268,10 +278,10 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont("Crescent-Regular.ttf");
     QFontDatabase::addApplicationFont("DigitaldreamFat.ttf");
 
-    TCPServer tcpServer;
-    DatagramHandler broadcaster;
+
 
     MainWindow mainWindow;
+    DatagramHandler broadcaster;
     mainWindow.show();
     a.installEventFilter(&filter);
     QObject::connect(&filter,SIGNAL(userActivity()), &mainWindow,SLOT(resetIdle()));

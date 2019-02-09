@@ -13,7 +13,7 @@ ClientSocket *determineZone(Light *light)
             return sock;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void broadcastMessage(int srcDevice, int value)

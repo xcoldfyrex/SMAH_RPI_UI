@@ -8,12 +8,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "zwavemanager.h"
-
+#include "tcpserver.h"
 #include <QDebug>
 
 
 extern QMap<QString, Zone> gZoneMap;
 extern QList<Preset> gColorPresetMap;
+extern TCPServer tcpServer;
+
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
@@ -42,8 +44,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     screensaverHolder = new ScreenSaverWidget(this);
     idleTimer = new QTimer();
     this->idleTimer->start(100*60*5);
-    connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));
-
+    connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));    
     contentLayout->addWidget(zoneChooser->topWidget);
     contentLayout->addWidget(systemSettingsWidget->topWidget);
     setLayout(mainWidgetLayout);

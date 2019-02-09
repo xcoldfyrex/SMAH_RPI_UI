@@ -14,8 +14,8 @@ class ZoneEnvironmentPanel : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneEnvironmentPanel(QWidget *parent = 0);
-    ZoneEnvironmentPanel(QWidget *parent, Zone *zone);
+    explicit ZoneEnvironmentPanel(QWidget *parent = nullptr);
+    ZoneEnvironmentPanel(QWidget *parent, Zone zone);
     QWidget *topWidget;
 
 private:
@@ -23,7 +23,7 @@ private:
     QLabel *lblZoneEnvHeader;
     QLabel *lblZoneEnvData;
     QTimer *updateTimer;
-    Zone *zone;
+    Zone zone;
     float rawVoltage(int reading);
 
 signals:

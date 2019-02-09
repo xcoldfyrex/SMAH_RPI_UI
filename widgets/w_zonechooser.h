@@ -31,8 +31,8 @@ public slots:
 
 private:
     QMap<Zone,QPushButton> zoneSelectorMap;
-    int offset = 0;
     QListWidget *zoneList;
+    int offset = 0;
 
 };
 

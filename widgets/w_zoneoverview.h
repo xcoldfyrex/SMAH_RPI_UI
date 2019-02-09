@@ -12,7 +12,7 @@ class ZoneOverviewWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneOverviewWidget(Zone zone, QWidget *parent = 0);
+    explicit ZoneOverviewWidget(Zone zone, QWidget *parent = nullptr);
     QWidget *topWidget;
     QGridLayout *contentLayout;
 

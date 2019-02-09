@@ -87,7 +87,7 @@ void ClientSocket::readyRead()
             in >> blockSize;
         }
 
-        if (tcpSocket->bytesAvailable() < (int) blockSize)
+        if (tcpSocket->bytesAvailable() < static_cast<int>(blockSize))
             return;
 
         in >> buffer;
@@ -196,6 +196,8 @@ void ClientSocket::processPayload(QByteArray buffer)
         {
             this->rpidevice = g_deviceList.value(devid);
             qInfo() << "Device connected: " << this->rpidevice.getHwAddress() << this->rpidevice.getName();
+            this->rpidevice.setIP(this->remoteAddress.toString());
+            emit deviceArrived(this->rpidevice);
         } else {
             qWarning() << "Unknown device connected: " << devid;
         }

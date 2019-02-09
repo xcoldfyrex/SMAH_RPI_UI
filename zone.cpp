@@ -5,7 +5,6 @@ Zone::Zone(int id, QString name)
     this->id = id;
     this->name = name;
     qRegisterMetaType<Zone>("Zone");
-    //QList<QWidget*> *pageStack = new QList<QWidget*>();
 }
 
 Zone::Zone()
@@ -27,5 +26,15 @@ Light* Zone::getLightById(int id)
         if (light->getId() == id)
             return light;
     }
-    return NULL;
+    return Q_NULLPTR;
+}
+
+Sensor* Zone::getSensorById(int id)
+{
+    for (Sensor *sensor : this->getSensorList())
+    {
+        if (sensor->getNodeId() == id)
+            return sensor;
+    }
+    return nullptr;
 }

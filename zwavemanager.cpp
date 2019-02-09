@@ -16,6 +16,7 @@
 #include "platform/Log.h"
 #include "Defs.h"
 #include "zone.h"
+#include "sensor.h"
 
 #include <QDebug>
 
@@ -64,7 +65,7 @@ NodeInfo* GetNodeInfo
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -115,21 +116,25 @@ void OnNotification
         pthread_mutex_lock( &g_criticalSection );
         if( NodeInfo* nodeInfo = GetNodeInfo( _notification ) )
         {
-            nodeInfo = nodeInfo;		// placeholder for real action
+            //nodeInfo = nodeInfo;		// placeholder for real action
             for( list<ValueID>::iterator it2 = nodeInfo->m_values.begin();
                  it2 != nodeInfo->m_values.end(); ++it2 )
             {
                 ValueID v = *it2;
+                //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                //Manager::Get()->SetValue(v, value);
+
+
                 if( v.GetCommandClassId() == 0x25)
                 {
                     bool value;
                     Manager::Get()->GetValueAsBool(v, &value);
                     pthread_mutex_unlock( &g_criticalSection );
-                    g_nodeValues.insert(nodeInfo->m_nodeId, (int) value);
+                    g_nodeValues.insert(nodeInfo->m_nodeId, static_cast<int>(value));
                     qDebug() << "Node state changed:" << nodeInfo->m_nodeId << value;
                     for (Zone zone : gZoneMap.values())
                     {
-                        if (zone.getLightById(nodeInfo->m_nodeId) != NULL)
+                        if (zone.getLightById(nodeInfo->m_nodeId) != nullptr)
                         {
                             zone.getLightById(nodeInfo->m_nodeId)->updateLevel(value);
                             zone.getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
@@ -138,6 +143,8 @@ void OnNotification
 
                     //    return value;
                 }
+
+                // COMMAND_CLASS_SWITCH_MULTILEVEL
                 if( v.GetCommandClassId() == 0x26)
                 {
                     switch (v.GetType())
@@ -158,7 +165,7 @@ void OnNotification
                             g_nodeValues.insert(nodeInfo->m_nodeId, (int) value);
                             for (Zone zone : gZoneMap.values())
                             {
-                                if (zone.getLightById(nodeInfo->m_nodeId) != NULL)
+                                if (zone.getLightById(nodeInfo->m_nodeId) != nullptr)
                                 {
                                     zone.getLightById(nodeInfo->m_nodeId)->updateLevel(value);
                                     zone.getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
@@ -184,11 +191,143 @@ void OnNotification
                     //    return value;
                 }
 
+                // COMMAND_CLASS_SWITCH_ALL
                 if( v.GetCommandClassId() == 0x27)
                 {
 
                     //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                 }
+
+                // COMMAND_CLASS_SENSOR_MULTILEVEL_V2
+                if( v.GetCommandClassId() == 0x31)
+                {
+                    switch (v.GetType())
+                    {
+                    case ValueID::ValueType_Decimal:
+                    {
+                        string value;
+                        Manager::Get()->GetValueAsString(v, &value);
+
+
+
+                        if (v.GetIndex() == 1)
+                        {
+                            for (Zone zone : gZoneMap.values())
+                            {
+                                if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                                {
+                                    zone.getSensorById(nodeInfo->m_nodeId)->setTemperature(QString::fromStdString(value).toFloat() * 9/5 + 32);
+                                }
+                            }
+                            qDebug() << nodeInfo->m_nodeId << "TEMPERATURE:" << (QString::fromStdString(value).toFloat()) * 9/5 + 32 ;
+                        } else if (v.GetIndex() == 3) {
+                            for (Zone zone : gZoneMap.values())
+                            {
+                                if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                                {
+                                    zone.getSensorById(nodeInfo->m_nodeId)->setLux(QString::fromStdString(value).toShort());
+                                }
+                            }
+                            qDebug() << nodeInfo->m_nodeId << "LIGHT LEVEL:" << QString::fromStdString(value);
+                        } else if (v.GetIndex() == 10) {
+                            qDebug() << nodeInfo->m_nodeId << "MOTION:" << QString::fromStdString(value);
+                        } else {
+                            // extra debug crap
+                            //qDebug() << nodeInfo->m_nodeId << QString::fromStdString(value) << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        }
+                        break;
+                    }
+
+                        //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    }
+                }
+
+                // COMMAND_CLASS_ALARM
+                if( v.GetCommandClassId() == 0x71)
+                {
+                    switch (v.GetType())
+                    {
+                    case ValueID::ValueType_Byte:
+                    {
+                        uint8 value;
+                        Manager::Get()->GetValueAsByte(v, &value);
+                        if (v.GetIndex() == 10)
+                        {
+                            qDebug() << nodeInfo->m_nodeId << "ALARM!!!! " << value;
+                        }
+                        break;
+                    }
+
+                        //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    }
+                }
+
+                // COMMAND_CLASS_BATTERY
+                if( v.GetCommandClassId() == 0x80)
+                {
+                    switch (v.GetType())
+                    {
+                    case ValueID::ValueType_Byte:
+                    {
+                        uint8 value;
+                        Manager::Get()->GetValueAsByte(v, &value);
+                        if (v.GetIndex() == 0)
+                        {
+                            qDebug() << "BAT" << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        }
+                        break;
+                    }
+
+                        //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    }
+                }
+
+                if( v.GetCommandClassId() == 0x70)
+                {
+                    switch (v.GetType())
+                    {
+
+                    case ValueID::ValueType_Short:
+                    {
+
+                        if (v.GetIndex() == 64)
+                        {
+                            short value;
+                            //Manager::Get()->SetValue(v, (short) 6000);
+                            Manager::Get()->GetValueAsShort(v, &value);
+                            //qDebug() << "TEMP INT" << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        }
+                        break;
+                    }
+
+                        //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    }
+                }
+
+                /*
+                if( v.GetCommandClassId() == 0x84)
+                {
+                    switch (v.GetType())
+                    {
+
+                    case ValueID::ValueType_Int:
+                    {
+
+                        if (v.GetIndex() == 3)
+                        {
+                            int value;
+                            //Manager::Get()->SetValue(v, (int) 60);
+                            Manager::Get()->GetValueAsInt(v, &value);
+                            qDebug() << "WAKE INT" << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                        }
+                        break;
+                    }
+
+                        //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    }
+                }
+                */
+
             }
         }
         break;
@@ -199,7 +338,7 @@ void OnNotification
         // One of the node's association groups has changed
         if( NodeInfo* nodeInfo = GetNodeInfo( _notification ) )
         {
-            nodeInfo = nodeInfo;		// placeholder for real action
+            //nodeInfo = nodeInfo;		// placeholder for real action
         }
         break;
     }
@@ -242,7 +381,7 @@ void OnNotification
         // basic_set or hail message.
         if( NodeInfo* nodeInfo = GetNodeInfo( _notification ) )
         {
-            nodeInfo = nodeInfo;		// placeholder for real action
+            //nodeInfo = nodeInfo;		// placeholder for real action
         }
         break;
     }
@@ -313,7 +452,8 @@ bool getZWaveState(int nodeid)
              it2 != nodeInfo->m_values.end(); ++it2 )
         {
             ValueID v = *it2;
-            //string val = Manager::Get()->GetValueLabel(v);
+            string val = Manager::Get()->GetValueLabel(v);
+            //qDebug() << v.GetCommandClassId() << QString().fromStdString(val) << nodeInfo->m_nodeId;
             if( v.GetCommandClassId() == 0x25)
             {
                 bool value;
@@ -412,21 +552,25 @@ void init_zwave()
     // is passed to the OnNotification method.  If the OnNotification is a method of
     // a class, the context would usually be a pointer to that class object, to
     // avoid the need for the notification handler to be a static.
-    Manager::Get()->AddWatcher( OnNotification, NULL);
+    Manager::Get()->AddWatcher( OnNotification, nullptr);
 
     // Add a Z-Wave Driver
     // Modify this line to set the correct serial port for your PC interface.
 
+    qInfo() << "ZWave Driver version:" << QString::fromStdString(Manager::Get()->getVersionAsString());
 
     string port = "/dev/ttyACM0";
 
-    Manager::Get()->AddDriver( port );
-
+    if (! Manager::Get()->AddDriver( port ))
+    {
+        qDebug() << "ERR";
+        return;
+    }
 
     // Now we just wait for either the AwakeNodesQueried or AllNodesQueried notification,
     // then write out the config file.
     // In a normal app, we would be handling notifications and building a UI for the user.
-    pthread_cond_wait( &initCond, &initMutex );
+    pthread_cond_wait( &initCond, &initMutex);
 
     // Since the configuration file contains command class information that is only
     // known after the nodes on the network are queried, wait until all of the nodes
@@ -438,7 +582,11 @@ void init_zwave()
 
 
 
+    } else {
     }
+
+    getZWaveState(5);
+    getZWaveState(4);
 
 
     return;
@@ -454,7 +602,7 @@ void zwave_destroy()
     printf("Dropped: %d Retries: %d\n", data.m_dropped, data.m_retries);
 
     Manager::Get()->RemoveDriver("/dev/ttyACM0");
-    Manager::Get()->RemoveWatcher( OnNotification, NULL );
+    Manager::Get()->RemoveWatcher( OnNotification, nullptr );
     Manager::Destroy();
     Options::Destroy();
     pthread_mutex_destroy( &g_criticalSection );

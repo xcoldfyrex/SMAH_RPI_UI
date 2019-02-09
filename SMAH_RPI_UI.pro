@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     commandrouter.cpp \
     zwavemanager.cpp \
     sunriseset.cpp \
-    widgets/w_screensaver.cpp
+    widgets/w_screensaver.cpp \
+    sensor.cpp
 
 
 
@@ -84,7 +85,8 @@ HEADERS  += \
     zwavemanager.h \
     sunriseset.h \
     widgets/w_screensaver.h \
-    eventfilter.h
+    eventfilter.h \
+    sensor.h
 
 
 FORMS    += \

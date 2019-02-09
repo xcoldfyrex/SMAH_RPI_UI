@@ -11,7 +11,7 @@ ScreenSaverWidget::ScreenSaverWidget(QWidget *parent) : QWidget(parent)
     this->setCursor(Qt::BlankCursor);
     topWidget->setObjectName("saverBackground");
     lblClock->setObjectName("lblSaverClock");
-    lblClock->setAlignment(Qt::AlignCenter);
+    lblClock->setAlignment(Qt::AlignLeft);
     this->topWidgetLayout = new QHBoxLayout(topWidget);
     topWidgetLayout->addWidget(lblClock);
     //timer for clock

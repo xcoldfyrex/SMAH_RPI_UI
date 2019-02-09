@@ -119,17 +119,17 @@ void Light::setColorInPWM(QString color, bool keepActive = true)
         this->taskList->clear();
     }
     bool ok;
-    int r = color.mid(0,2).toInt(&ok, 16);
-    int g = color.mid(2,2).toInt(&ok, 16);
-    int b = color.mid(4,2).toInt(&ok, 16);
-    int w = color.mid(6,2).toInt(&ok, 16);
+    short r = color.mid(0,2).toShort(&ok, 16);
+    short g = color.mid(2,2).toShort(&ok, 16);
+    short b = color.mid(4,2).toShort(&ok, 16);
+    short w = color.mid(6,2).toShort(&ok, 16);
     qDebug() << color;
     if (this->pwmbank == 0) {
         // devices not on i2c device
-        gpioPWM(GPIO_PIN_RED, r);
-        gpioPWM(GPIO_PIN_GREEN, g);
-        gpioPWM(GPIO_PIN_BLUE, b);
-        gpioPWM(GPIO_PIN_WHITE, w);
+        gpioPWM(GPIO_PIN_RED, static_cast<uint>(r));
+        gpioPWM(GPIO_PIN_GREEN, static_cast<uint>(g));
+        gpioPWM(GPIO_PIN_BLUE, static_cast<uint>(b));
+        gpioPWM(GPIO_PIN_WHITE, static_cast<uint>(w));
     } else {
         // well, it's on a fucking i2c bus.
         PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 0, r );
@@ -146,7 +146,7 @@ QString Light::getColorFromPWM()
     int g = gpioGetPWMdutycycle(GPIO_PIN_GREEN);
     int b = gpioGetPWMdutycycle(GPIO_PIN_BLUE);
     int w = gpioGetPWMdutycycle(GPIO_PIN_WHITE);
-    return NULL;
+    return Q_NULLPTR;
 }
 
 void Light::setActivePreset(Preset preset)

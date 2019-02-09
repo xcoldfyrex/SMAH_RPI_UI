@@ -10,6 +10,7 @@
 
 #include "rpidevice.h"
 #include "light.h"
+#include "sensor.h"
 
 class Zone {
 
@@ -27,10 +28,18 @@ public:
     {
             this->zoneLightList.insert(light->getName(), light);
     }
+
+    void addSensor(Sensor *sensor)
+    {
+            this->sensorList.insert(sensor->getName(), sensor);
+    }
+
     QString getName() const { return this->name; }
     QMap<QString, RPIDevice> getDeviceList() const { return this->deviceList; }
+    QMap<QString, Sensor*> getSensorList() const { return this->sensorList; }
     QMap <QString, Light*> getLightList() const { return this->zoneLightList; }
     Light *getLightById(int id);
+    Sensor *getSensorById(int id);
     QList<QWidget*> pageStack;
     void addDevice(RPIDevice device);
 
@@ -38,6 +47,7 @@ private:
     int id;
     QString name;
     QMap <QString, RPIDevice> deviceList;
+    QMap <QString, Sensor*> sensorList;
     QMap <QString, Light*> zoneLightList;
 };
 

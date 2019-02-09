@@ -73,15 +73,20 @@ private slots:
     void colorStepAction(QColor color);
 
 private:
+
     int id, type, deviceid;
-    QList<PresetTask*> *taskList;
-    QString name;
-    bool state = 0;
     int level = 0;
     short pwmbank = -1;
-    QString color = "000000";
-    QString whiteLevel = "00";
+    bool state = 0;
     bool localUpdate = false;
+
+    QString name;
+    QString whiteLevel = "00";
+    QString color = "000000";    
+    QList<PresetTask*> *taskList;
+
+
+
 };
 
 #endif // LIGHT_H

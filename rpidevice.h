@@ -18,13 +18,19 @@ public:
     QString getName() const { return this->name; }
     QString getHwAddress() const { return this->hwAddress; }
     QMap<int, PowerFunction> getPowerFunctionList() const { return this->powerControls; }
+    long getConnectionStart() { return this->connectTime; }
+    QString getName() { return this->name; }
+    QString getIP() { return this->ip; }
+    void setIP(QString ip) {  this->ip = ip; }
+    void setConnectionStart(long t) { this->connectTime = t; }
 
 private:
     int id;
-    QString name, hwAddress;
+    QString name, hwAddress, ip;
     QMap <int, PowerFunction> powerControls;
     QMap <int, EnvironmentFunction> enviroData;
-    QMap <int, LightFunction> lightControls;
+    QMap <int, LightFunction> lightControls;    
+    long connectTime;
 
     class LightFunction {
         QString name;
@@ -38,13 +44,13 @@ private:
         PowerFunction(QString name, int id, short type);
         int getId() { return this->id; }
         int getType() { return this->type; }
-        QString getName() { return this->name; }
 
     protected:
         bool state = false;
         QString name;
         int id;
         short type;
+
 
     private:
 

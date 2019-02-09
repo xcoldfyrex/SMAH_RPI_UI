@@ -4,6 +4,8 @@
 #include <QTimer>
 #include <QObject>
 
+#include "tcpserver.h"
+
 class QUdpSocket;
 
 class DatagramHandler : public QObject
@@ -16,7 +18,7 @@ private:
     QUdpSocket *udpSocket = nullptr;
     QUdpSocket *udpSocketBcast = nullptr;
     QTimer timer;
-    void broadcastDatagram();
+    void broadcastDatagram();    
 
 private slots:
     void processPendingDatagrams();

@@ -77,9 +77,19 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
      * zone functions bar
     */
 
+    lblEnvironment = new QLabel();
+    lblEnvironment->setObjectName("lblEnvironment");
+    QTimer *updateTimer = new QTimer();
+    updateTimer->setInterval(1000);
+    updateTimer->start();
+    connect(updateTimer, SIGNAL(timeout()), this, SLOT(updateEnvironment()),Qt::DirectConnection);
+
+
     zoneButtons = new QListWidget(this);
     zoneButtons->setObjectName("zoneButtons");
     QSpacerItem *verticalSpacer = new QSpacerItem(0,500,QSizePolicy::Expanding, QSizePolicy::Expanding);
+    zoneFunctionLayout->setAlignment(Qt::AlignTop);
+    zoneFunctionLayout->addWidget(lblEnvironment);
     zoneFunctionLayout->addItem(verticalSpacer);
     QListWidgetItem *itemLights = new QListWidgetItem("> Light Controls");
     QListWidgetItem *itemPower = new QListWidgetItem("> Power Controls");
@@ -97,8 +107,6 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     zoneFunctionLayout->addWidget(zoneButtons);
 
     zoneFunctionLayout->setContentsMargins(10,10,10,10);
-    zoneFunctionLayout->setAlignment(Qt::AlignTop);
-    //zoneFunctionLayout->addStretch(1);
 
     connect(btnShowLights,SIGNAL(clicked()),this,SLOT(showLightContainer()));
     connect(btnShowActions,SIGNAL(clicked()),this,SLOT(showActions()));
@@ -122,11 +130,12 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
      * bottom status bar
     */
     QLabel *lblZone = new QLabel(zone.getName());
-    QPushButton *btnShowOverview = new QPushButton("Zone Functions");
+    QPushButton *btnShowOverview = new QPushButton("> Zone Functions");
+    btnShowOverview->setObjectName("btnShowOverview");
     bottomLayout->addWidget(btnShowOverview);
     bottomLayout->addStretch(1);
     bottomLayout->addWidget(lblZone);
-    bottomPanelWidget->setFixedHeight(50);
+    bottomPanelWidget->setFixedHeight(75);
     bottomPanelWidget->setObjectName("bottomPanelWidget");
     connect(btnShowOverview,SIGNAL(clicked()),this,SLOT(showOverview()));
     this->zone.pageStack.insert(0, zoneMainWidget);
@@ -164,4 +173,20 @@ void ZoneContainerWidget::buttonListClicked()
 {
     contentLayout->setCurrentIndex(zoneButtons->currentItem()->data(Qt::UserRole).toInt());
     this->zone.pageStack.append(contentLayout->currentWidget());
+}
+
+void ZoneContainerWidget::updateEnvironment()
+{
+    if (this->zone.getSensorList().size() == 0)
+        return;
+    for (Sensor *sensor : this->zone.getSensorList())
+    {
+        QString text;
+        text += sensor->getName() + "\n\r";
+        text += QString::number(sensor->getTemperature()) + "F\n\r";
+        if (sensor->getHumidity() > 0)
+            text += QString::number(sensor->getHumidity()) + "% RH\n\r";
+
+        lblEnvironment->setText(text);
+    }
 }

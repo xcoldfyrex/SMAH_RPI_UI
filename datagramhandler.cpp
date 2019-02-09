@@ -5,6 +5,8 @@
 #include "tcpsocket.h"
 
 extern QList<ClientSocket*> g_clientMap;
+extern TCPServer tcpServer;
+
 
 DatagramHandler::DatagramHandler()
 {
@@ -49,7 +51,8 @@ void DatagramHandler::processPendingDatagrams()
                     }
                 }
             }
-            ClientSocket *client = new ClientSocket(*address, NULL);
+            ClientSocket *client = new ClientSocket(*address, nullptr);
+            connect(client,SIGNAL(deviceArrived(RPIDevice)), &tcpServer, SLOT(devReady(RPIDevice)),Qt::DirectConnection);
             g_clientMap.append(client);
         }
     }

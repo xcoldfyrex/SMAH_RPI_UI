@@ -33,6 +33,7 @@ public slots:
 signals:
     void error(QTcpSocket::SocketError socketError);
     void socketDisconnected(ClientSocket *tcpSocket);
+    void deviceArrived(RPIDevice device);
 
 private:
     int socketDescriptor;

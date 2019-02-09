@@ -25,6 +25,12 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
         item->setText("> " + zone.getName());
         zoneList->addItem(item);
         offset++;
+        if (zone.getSensorList().size() != 0)
+        {
+            ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone);
+            zenv->topWidget->setObjectName("zoneEnv");
+            contentLayout->addWidget(zenv->topWidget, Qt::AlignLeft);
+        }
 
         /*
     if (zone->getEnvironmentCapability()) {

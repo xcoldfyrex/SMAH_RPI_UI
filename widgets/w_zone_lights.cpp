@@ -4,6 +4,7 @@
 #include "w_zone_lights.h"
 #include "zwavemanager.h"
 #include "w_presetchooser.h"
+#include "qengravedlabel.h"
 
 #include <QDebug>
 
@@ -16,11 +17,6 @@ ZoneLightsWidget::ZoneLightsWidget(Zone zone, QWidget *parent) : QWidget(parent)
     QWidget *overviewWidget = new QWidget(this);
     this->contentLayout = new QGridLayout(overviewWidget);
     this->topWidget->addWidget(overviewWidget);
-    QLabel *toggleNameHeader = new QLabel("Function");
-    toggleNameHeader->setObjectName("lblToggleNameHeader");
-
-    this->contentLayout->addWidget(toggleNameHeader,0,0);
-    this->contentLayout->addWidget(new QLabel("Action"),0,2);
     this->contentLayout->setAlignment(Qt::AlignTop);
 
     addToggleFunctions();
@@ -34,10 +30,10 @@ void ZoneLightsWidget::addToggleFunctions()
     {
         //light->initState();
 
-        QLabel *toggleName = new QLabel(light->getName());
+        QEngravedLabel *toggleName = new QEngravedLabel(light->getName());
         toggleName->setObjectName("lblToggleName");
         QSignalMapper *signalMapper = new QSignalMapper(this);
-        QPushButton *toggle;
+        QEngravedPushButton *toggle;
         QSlider *slider;
         // Determine what type of light it is
         if (light->getType() == LIGHT_RGB_LED ||
@@ -48,7 +44,7 @@ void ZoneLightsWidget::addToggleFunctions()
         {
             // Can color and shit
             LightControlContainerWidget *colorLightControlWidget = new LightControlContainerWidget(zone, light, this);
-            toggle = new QPushButton("> Set");
+            toggle = new QEngravedPushButton("> Set");
             toggle->setObjectName("btnShowLightControl");
             this->topWidget->addWidget(colorLightControlWidget->topWidget);
             signalMapper->setMapping(toggle,colorLightControlWidget->topWidget);
@@ -66,19 +62,24 @@ void ZoneLightsWidget::addToggleFunctions()
 
             connect(presetChooserWidget->btnBack,SIGNAL(clicked(bool)),this, SLOT(hidePresetChooser()));
             connect(colorLightControlWidget->btnBack,SIGNAL(clicked(bool)),this, SLOT(hidePresetChooser()));
-
-
             this->topWidget->addWidget(presetChooserWidget->topWidget);
             this->contentLayout->addWidget(toggle,x,2);
         } else if (light->getType() == 1) {
+            // dimmable
             slider = new QSlider(Qt::Horizontal);
-            slider->setMaximum(100);
+            slider->setMaximum(99);
             slider->setMinimum(1);
             this->contentLayout->addWidget(slider,x,2);
             slider->setMaximumWidth(800);
+            connect(slider, &QSlider::sliderReleased, [slider, light](){
+                light->setLevel(slider->value());
+            });
+            connect(light, &Light::levelChanged, [slider, light](){
+               slider->setValue(light->getLevel());
+            });
         } else {
             // Just on and off
-            toggle = new QPushButton("> Toggle");
+            toggle = new QEngravedPushButton("> Toggle");
             toggle->setObjectName("btnShowLightControl");
             signalMapper->setMapping(toggle,light->getId());
             connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
@@ -115,11 +116,6 @@ void ZoneLightsWidget::togglePower(int id) {
     }
 }
 
-void ZoneLightsWidget::updateState(Light *light)
-{
-
-}
-
 void ZoneLightsWidget::showPresetChooser(QWidget *widget)
 {
     this->topWidget->setCurrentWidget(widget);
@@ -141,8 +137,6 @@ void ZoneLightsWidget::buttonListClicked(int id)
         if (l->getId() == id)
             light = l;
     }
-
-    qDebug() << light->getId();
 
     QListWidget *widget = qobject_cast<QListWidget*>(sender());
     //    LightControlContainerWidget *widget = qobject_cast<LightControlContainerWidget*>(light->lcwWidget);

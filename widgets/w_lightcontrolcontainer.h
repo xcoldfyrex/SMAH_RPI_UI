@@ -14,6 +14,7 @@
 #include "w_colorpreview.h"
 #include "light.h"
 #include "zone.h"
+#include "qengravedlabel.h"
 
 
 namespace Ui {
@@ -34,12 +35,12 @@ public:
     QHBoxLayout *contentLayout;
     QPicture *hsvSwatch;
     QColor rgb;
-    QListWidget *zoneButtons;
+    QEngravedList *zoneButtons;
     Light *getLight() { return this->light; }
 
-    QPushButton *btnSetPreset;
-    QPushButton *btnSetOff;
-    QPushButton *btnBack;
+    QEngravedPushButton *btnSetPreset;
+    QEngravedPushButton *btnSetOff;
+    QEngravedPushButton *btnBack;
 
 public slots:
     void updateFromWheel(QColor qcol);

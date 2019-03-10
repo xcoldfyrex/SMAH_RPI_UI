@@ -14,18 +14,19 @@ class TCPServer : public QTcpServer
 public:
     TCPServer(QObject *parent = Q_NULLPTR);
     QMap<QString, int> *outstanding;
+    void startListen();
 
 protected:
     void incomingConnection(qintptr socketDescriptor);
 
 public slots:
     void cleanSocket(ClientSocket *socket);
-    void devReady(RPIDevice device);
-    void devLost(RPIDevice device);
+    void devReady(RPIDevice *device);
+    void devLost(RPIDevice *device);
 
 signals:
-    void deviceReady(RPIDevice device);
-    void deviceLost(RPIDevice device);
+    void deviceReady(RPIDevice *device);
+    void deviceLost(RPIDevice *device);
 };
 
 #endif // TCPSERVER_H

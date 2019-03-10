@@ -9,9 +9,14 @@ RPIDevice::RPIDevice(int id, QString name, QString hwAddress)
     this->hwAddress = hwAddress;
 }
 
-RPIDevice::RPIDevice()
+RPIDevice::RPIDevice(QObject *parent) : QObject(parent)
 {
 
+}
+
+RPIDevice::~RPIDevice()
+{
+    int a;
 }
 
 RPIDevice::PowerFunction::PowerFunction(QString name, int id, short type)

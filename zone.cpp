@@ -12,11 +12,11 @@ Zone::Zone()
     qRegisterMetaType<Zone>("Zone");
 }
 
-void Zone::addDevice(RPIDevice device)
+void Zone::addDevice(RPIDevice *device)
 {
-    if (this->deviceList.contains(device.getHwAddress()))
+    if (this->deviceList.contains(device->getHwAddress()))
         return;
-    this->deviceList.insert(device.getHwAddress(),device);
+    this->deviceList.insert(device->getHwAddress(),device);
 }
 
 Light* Zone::getLightById(int id)

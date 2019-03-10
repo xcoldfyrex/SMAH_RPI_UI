@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     QWidget *contentHolder = new QWidget(this);
     screensaverHolder = new ScreenSaverWidget(this);
     idleTimer = new QTimer();
-    this->idleTimer->start(100*60*5);
+    this->idleTimer->start(100*120*5);
     connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));    
     contentLayout->addWidget(zoneChooser->topWidget);
     contentLayout->addWidget(systemSettingsWidget->topWidget);
@@ -128,10 +128,14 @@ void MainWindow::showSaver()
     this->mainWidgetLayout->setCurrentIndex(1);
 }
 
-void MainWindow::resetIdle()
+void MainWindow::resetIdle(QEvent *ev)
 {
     if (this->mainWidgetLayout->currentIndex() != 0)
+    {
+        ev->ignore();
+        ev->setAccepted(false);
         hideSaver();
+    }
     this->idleTimer->stop();
     this->idleTimer->start(100*60*5);
 }

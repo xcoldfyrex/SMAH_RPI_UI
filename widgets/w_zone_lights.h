@@ -23,7 +23,7 @@ private:
     Zone zone;
     QGridLayout *contentLayout;
     QStackedWidget *topLayout;
-    LightControlContainerWidget *colorLightControlWidget;
+    LightControlContainerWidget *colorLightControlWidget;    
 
 
 signals:
@@ -35,7 +35,6 @@ private slots:
     void addToggleFunctions();
     void showCustomLights(QWidget *widget);
     void togglePower(int id);
-    void updateState(Light *light);
     void showPresetChooser(QWidget *widget);
     void hidePresetChooser();
     void buttonListClicked(int id);

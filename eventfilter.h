@@ -12,12 +12,12 @@ protected:
     bool eventFilter(QObject *obj, QEvent *ev)
     {
         if(ev->type() == QEvent::KeyPress || ev->type() == QEvent::MouseButtonPress)
-            emit userActivity();
+            emit userActivity(ev);
         return QObject::eventFilter(obj, ev);
     }
 
 signals:
-    void userActivity();
+    void userActivity(QEvent *ev);
 
 };
 

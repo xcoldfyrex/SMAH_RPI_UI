@@ -8,7 +8,7 @@ ClientSocket *determineZone(Light *light)
 {
     for (ClientSocket *sock : g_clientMap)
     {
-        if (sock->getDevice().getId() == light->getGetDeviceId())
+        if (sock->getDeviceID() == light->getGetDeviceId())
         {
             return sock;
         }
@@ -16,13 +16,15 @@ ClientSocket *determineZone(Light *light)
     return nullptr;
 }
 
-void broadcastMessage(int srcDevice, int value)
+void broadcastMessage(int srcDevice, int type, float value, int index)
 {
     for (ClientSocket *sock : g_clientMap)
     {
         QJsonObject jsonPayload;
         jsonPayload["value"] = value;
         jsonPayload["id"] = srcDevice;
+        jsonPayload["type"] = type;
+        jsonPayload["index"] = index;
         sock->prepareToSend("UPDATE", jsonPayload);
     }
 }

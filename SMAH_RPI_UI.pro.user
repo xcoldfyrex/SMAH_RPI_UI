@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.7.1, 2018-12-25T09:39:54. -->
+<!-- Written by QtCreator 4.7.2, 2019-02-10T10:07:52. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -92,7 +92,7 @@
        <value type="QString">-r</value>
       </valuelist>
       <value type="bool" key="Qt4ProjectManager.MakeStep.Clean">false</value>
-      <value type="QString" key="Qt4ProjectManager.MakeStep.MakeArguments">-j 8</value>
+      <value type="QString" key="Qt4ProjectManager.MakeStep.MakeArguments">-j 8 -k</value>
       <value type="QString" key="Qt4ProjectManager.MakeStep.MakeCommand"></value>
      </valuemap>
      <value type="int" key="ProjectExplorer.BuildStepList.StepsCount">2</value>

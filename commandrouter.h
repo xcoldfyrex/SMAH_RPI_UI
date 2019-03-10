@@ -5,6 +5,5 @@
 #include "tcpsocket.h"
 
 ClientSocket *determineZone(Light *light);
-void broadcastMessage(int srcDevice, int value);
-
+void broadcastMessage(int srcDevice, int type, float value, int index);
 #endif // COMMANDROUTER_H

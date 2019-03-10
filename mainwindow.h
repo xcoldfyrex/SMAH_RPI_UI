@@ -45,7 +45,7 @@ public slots:
     void addPreset(Preset preset);
     void hideSaver();
     void showSaver();
-    void resetIdle();
+    void resetIdle(QEvent *ev);
 };
 
 #endif // MAINWINDOW_H

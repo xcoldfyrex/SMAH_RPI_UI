@@ -3,8 +3,7 @@
 */
 
 #include "w_zonecontainer.h"
-//#include "w_lightcontrolcontainer.h"
-//#include "w_scheduledactions.h"
+#include "qengravedlabel.h"
 
 ZoneContainerWidget::ZoneContainerWidget(Zone zone)
 {
@@ -27,7 +26,6 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     QPushButton *btnShowLights = new QPushButton;
     QPushButton *btnShowPower = new QPushButton;
     QPushButton *btnShowActions = new QPushButton;
-
 
     /*
      * outer layout
@@ -62,11 +60,11 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     //presetChooserWidget = new PresetChooser(zone, this);
     //presetChooserWidget->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    zoneOverViewWidget = new ZoneOverviewWidget(zone, this);
+    //zoneOverViewWidget = new ZoneOverviewWidget(zone, this);
     contentLayout->setContentsMargins(0,0,0,0);
     contentLayout->addWidget(zoneMainWidget);
     contentLayout->addWidget(zoneLightsWidget->topWidget);
-    contentLayout->addWidget(zoneOverViewWidget->topWidget);
+    //contentLayout->addWidget(zoneOverViewWidget->topWidget);
     //contentLayout->addWidget(lightControlWidget->topWidget);
     //contentLayout->addWidget(presetChooserWidget->topWidget);
     //contentLayout->addWidget(scheduledActionsWidget->topWidget);
@@ -85,7 +83,7 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(updateEnvironment()),Qt::DirectConnection);
 
 
-    zoneButtons = new QListWidget(this);
+    zoneButtons = new QEngravedList(this);
     zoneButtons->setObjectName("zoneButtons");
     QSpacerItem *verticalSpacer = new QSpacerItem(0,500,QSizePolicy::Expanding, QSizePolicy::Expanding);
     zoneFunctionLayout->setAlignment(Qt::AlignTop);
@@ -129,8 +127,8 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     /*
      * bottom status bar
     */
-    QLabel *lblZone = new QLabel(zone.getName());
-    QPushButton *btnShowOverview = new QPushButton("> Zone Functions");
+    QEngravedLabel *lblZone = new QEngravedLabel(zone.getName());
+    QEngravedPushButton *btnShowOverview = new QEngravedPushButton("> Zone Functions");
     btnShowOverview->setObjectName("btnShowOverview");
     bottomLayout->addWidget(btnShowOverview);
     bottomLayout->addStretch(1);

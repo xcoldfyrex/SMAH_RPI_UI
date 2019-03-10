@@ -18,6 +18,7 @@ DatagramHandler::DatagramHandler()
     connect(&timer, &QTimer::timeout, this, &DatagramHandler::broadcastDatagram);
     connect(udpSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
     timer.start(5000);
+    delete bcast;
 }
 
 void DatagramHandler::broadcastDatagram()
@@ -39,7 +40,6 @@ void DatagramHandler::processPendingDatagrams()
         if (QString(datagram.constData()) == "__SMAH__")
             // goat a HELLO
         {
-            //qInfo() << "Got HELLO from" << *address;
             //check to see ifit's already pending in the map and drop ifso
             if ( g_clientMap.size() != 0)
             {
@@ -47,13 +47,15 @@ void DatagramHandler::processPendingDatagrams()
                 {
                     if (sock->getPeerAddress() == *address)
                     {
+                        delete address;
                         return;
                     }
                 }
             }
             ClientSocket *client = new ClientSocket(*address, nullptr);
-            connect(client,SIGNAL(deviceArrived(RPIDevice)), &tcpServer, SLOT(devReady(RPIDevice)),Qt::DirectConnection);
+            connect(client,SIGNAL(deviceArrived(RPIDevice*)), &tcpServer, SLOT(devReady(RPIDevice*)),Qt::DirectConnection);
             g_clientMap.append(client);
         }
     }
+    delete address;
 }

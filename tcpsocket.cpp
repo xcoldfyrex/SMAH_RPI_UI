@@ -1,11 +1,15 @@
 #include "tcpsocket.h"
 #include "zone.h"
+#include "build_number.h"
+
 #include <QNetworkInterface>
 
 extern QList<ClientSocket*> g_clientMap;
-extern QMap <QString, RPIDevice> g_deviceList;
-extern QMap <int, Light*> g_lightMap;
+extern QMap<QString, Zone> gZoneMap;
+extern QMap<QString, RPIDevice*> g_deviceList;
+extern QMap<int, Light*> g_lightMap;
 extern QMap<int, Preset> gColorPresetMap;
+extern QString MY_HW_ADDR;
 
 
 // spawned by the tcpserver
@@ -63,10 +67,10 @@ void ClientSocket::sendData(QJsonObject data)
         QByteArray block;
         QDataStream out(&block, QIODevice::WriteOnly);
         out.setVersion(QDataStream::Qt_5_0);
-        out << (quint16)0;
+        out << static_cast<quint16>(0);
         out << ba;
         out.device()->seek(0);
-        out << (quint16)(block.size() - sizeof(quint16));
+        out << static_cast<quint16>(static_cast<unsigned long>(block.size()) - sizeof(quint16));
         tcpSocket->write(block);
         tcpSocket->flush();
     }
@@ -98,14 +102,16 @@ void ClientSocket::readyRead()
 
 void ClientSocket::disconnected() {
     qInfo("Client disconnect(%s)", tcpSocket->peerAddress().toString().toStdString().c_str());
+    /// FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ///g_deviceList.value(devid)->setIP("-");
+    g_clientMap.removeOne(this);
     tcpSocket->deleteLater();
+    delete this;
 }
 
 void ClientSocket::socketError()
 {
     qWarning() << "Socket error on host:"  << this->remoteAddress.toString() << tcpSocket->errorString().toStdString().c_str();
-    g_clientMap.removeOne(this);
-    tcpSocket->deleteLater();
 }
 
 /* generates a JSON object to encapsulate payload */
@@ -145,24 +151,9 @@ void ClientSocket::prepareToSend(QString command, QJsonObject jsonPayload)
 /* does all shit needed to send the proper ID to server*/
 void ClientSocket::send_id(QTcpSocket *tcpSocket, QJsonObject data)
 {
-    QString mac = "N/A";
-    //QNetworkInterface interface = QNetworkInterface::interfaceFromName(QString("wlp36s0"));
-    //mac = interface.hardwareAddress();
-    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
-    {
-        if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack))
-            foreach (QNetworkAddressEntry entry, interface.addressEntries())
-            {
-                if (interface.name() == "wlp36s0" || interface.name() == "wlan0")
-                {
-                    mac = interface.hardwareAddress();
-                    break;
-                }
-            }
-
-    }
     QJsonObject jsonPayload;
-    jsonPayload["clientid"] = mac;
+    jsonPayload["clientid"] = MY_HW_ADDR;
+    jsonPayload["version"] = BUILD;
     prepareToSend("ID", jsonPayload, data.value("requestID").toString());
 }
 
@@ -195,8 +186,10 @@ void ClientSocket::processPayload(QByteArray buffer)
         if (g_deviceList.contains(devid))
         {
             this->rpidevice = g_deviceList.value(devid);
-            qInfo() << "Device connected: " << this->rpidevice.getHwAddress() << this->rpidevice.getName();
-            this->rpidevice.setIP(this->remoteAddress.toString());
+            this->devid = this->rpidevice->getId();
+            qInfo() << "Device connected: " << this->rpidevice->getHwAddress() << this->rpidevice->getName();
+            this->rpidevice->setVersion(incomingPayload["version"].toInt());
+            this->rpidevice->setIP(this->remoteAddress.toString());
             emit deviceArrived(this->rpidevice);
         } else {
             qWarning() << "Unknown device connected: " << devid;
@@ -233,6 +226,17 @@ void ClientSocket::processPayload(QByteArray buffer)
         }
     }
 
+    /* set dimmer level*/
+    if (command == "LEVEL" )
+    {
+        int id = incomingPayload["id"].toInt();
+        int level = incomingPayload["value"].toInt();
+        if (g_lightMap.contains(id))
+        {
+            g_lightMap.value(id)->setLevel(level);
+        }
+    }
+
     /* preset toggle */
     if (command == "PRESET" )
     {
@@ -249,13 +253,36 @@ void ClientSocket::processPayload(QByteArray buffer)
     /* preset toggle */
     if (command == "UPDATE" )
     {
-        int value = incomingPayload["value"].toInt();
+        double value = incomingPayload["value"].toDouble();
         int id = incomingPayload["id"].toInt();
+        int type = incomingPayload["type"].toInt();
+        int index = incomingPayload["index"].toInt();
 
-        if (g_lightMap.contains(id))
-        {
+        // light
+        if (type == 0) {
+            if (g_lightMap.contains(id))
+            {
                 g_lightMap.value(id)->setLastUpdateLocal(false);
                 g_lightMap.value(id)->updateLevel(value);
+            }
         }
+
+        // sensor
+        if (type == 1)
+        {
+            for (Zone zone : gZoneMap.values())
+            {
+                if (zone.getSensorById(id) != nullptr)
+                {
+                    if (index == 0)
+                        zone.getSensorById(id)->setTemperature(value);
+                    if (index == 1)
+                        zone.getSensorById(id)->setHumidity(value);
+                    if (index == 2)
+                        zone.getSensorById(id)->setLux(static_cast<short>(value));
+                }
+            }
+        }
+
     }
 }

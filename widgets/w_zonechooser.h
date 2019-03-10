@@ -9,6 +9,7 @@
 
 #include "mainwindow.h"
 #include "zone.h"
+#include "qengravedlabel.h"
 
 namespace Ui {
 class MenuWindow;
@@ -31,7 +32,7 @@ public slots:
 
 private:
     QMap<Zone,QPushButton> zoneSelectorMap;
-    QListWidget *zoneList;
+    QEngravedList *zoneList;
     int offset = 0;
 
 };

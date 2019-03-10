@@ -2,6 +2,7 @@
 #include <QSignalMapper>
 #include <QMetaType>
 #include <QSizePolicy>
+#include <QGraphicsEffect>
 
 #include "w_zonechooser.h"
 #include "w_zoneenvironment.h"
@@ -14,40 +15,39 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
 
 {
     this->topWidget = new QWidget;
-    zoneList = new QListWidget(this);
+    zoneList = new QEngravedList(this);
     zoneList->setObjectName("zoneList");
     this->contentLayout = new QHBoxLayout(topWidget);
+    QWidget *envWidget = new QWidget(this);
+    QGridLayout *envHolder = new QGridLayout(envWidget);
+
     this->myParent = dynamic_cast<MainWindow*>(parent);
+    int enviroGridOffset = 0;
     foreach (Zone zone, gZoneMap) {
-        QListWidgetItem *item = new QListWidgetItem();
-        QVariant data(zone.getName());
-        item->setData(Qt::UserRole, data);
-        item->setText("> " + zone.getName());
-        zoneList->addItem(item);
-        offset++;
+
+        // right now we only look at lights
+        if (zone.getLightList().size() != 0)
+        {
+            QListWidgetItem *item = new QListWidgetItem();
+            QVariant data(zone.getName());
+            item->setData(Qt::UserRole, data);
+            item->setText("> " + zone.getName());
+            zoneList->addItem(item);
+            offset++;
+        }
         if (zone.getSensorList().size() != 0)
         {
             ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone);
             zenv->topWidget->setObjectName("zoneEnv");
-            contentLayout->addWidget(zenv->topWidget, Qt::AlignLeft);
+            zenv->setMinimumWidth(800);
+            zenv->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            envHolder->addWidget(zenv->topWidget, enviroGridOffset, 0, Qt::AlignLeft);
+            enviroGridOffset++;
         }
-
-        /*
-    if (zone->getEnvironmentCapability()) {
-        ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone);
-        zenv->topWidget->setObjectName("zoneEnv");
-        contentLayout->addWidget(zenv->topWidget,envZones, 0, 1, 1, Qt::AlignLeft);
     }
-    if (zone->getLedColorCapability() || zone->getLedWhiteCapability() || zone->getPowerCapability()) {
-        signalMapper->setMapping(zone->zoneSelector,zone->getId());
-        connect(zone->zoneSelector,SIGNAL(clicked()),signalMapper,SLOT(map()));
-        connect(signalMapper,SIGNAL(mapped(int)),myParent,SLOT(showZone(int)));
-        contentLayout->addWidget(zone->zoneSelector,controlZones  /*gridLoc, 1, 1, 1, Qt::AlignVCenter);
-    }
-    */
-
-    }
-
+    QSpacerItem *verticalSpacer = new QSpacerItem(40, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    envHolder->addItem(verticalSpacer,enviroGridOffset,0);
+    contentLayout->addWidget(envWidget,0, Qt::AlignLeft);
     contentLayout->addWidget(zoneList,1, Qt::AlignRight);
     zoneList->setMinimumWidth(zoneList->sizeHintForColumn(0) + 20);
     zoneList->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));

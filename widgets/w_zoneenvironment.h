@@ -9,6 +9,7 @@
 #include <QList>
 
 #include "zone.h"
+#include "qengravedlabel.h"
 
 class ZoneEnvironmentPanel : public QWidget
 {
@@ -20,8 +21,8 @@ public:
 
 private:
     QGridLayout *contentLayout;
-    QLabel *lblZoneEnvHeader;
-    QLabel *lblZoneEnvData;
+    QEngravedLabel *lblZoneEnvHeader;
+    QEngravedLabel *lblZoneEnvData;
     QTimer *updateTimer;
     Zone zone;
     float rawVoltage(int reading);

@@ -84,7 +84,7 @@ void Light::updateLevel(int level)
 
     if (this->type == LIGHT_ZWAVE_DIMMABLE)
     {
-        text = QString::number(level) + "%";
+        text = QString::number(level) + '%';
         this->statusLabel->setText(text);
     }
 
@@ -92,10 +92,30 @@ void Light::updateLevel(int level)
         sendUpdate();
 }
 
+void Light::setLevel(int level)
+{
+    if (this->type == LIGHT_ZWAVE_DIMMABLE)
+    {
+        if (this->localUpdate)
+        {
+            //this->level = level;
+            setZWaveLevel(level, this->id);
+        } else {
+            ClientSocket *sock = determineZone(this);
+            if (!sock)
+                return;
+            QJsonObject jsonPayload;
+            jsonPayload["value"] = level;
+            jsonPayload["id"] = this->id;
+            sock->prepareToSend("LEVEL", jsonPayload);
+        }
+    }
+}
+
 void Light::sendUpdate()
 {
     this->statusLabel->setText(QString::number(this->level));
-    broadcastMessage(this->id, this->level);
+    broadcastMessage(this->id, 0, this->level, 0);
     emit levelChanged(this);
 }
 
@@ -123,7 +143,6 @@ void Light::setColorInPWM(QString color, bool keepActive = true)
     short g = color.mid(2,2).toShort(&ok, 16);
     short b = color.mid(4,2).toShort(&ok, 16);
     short w = color.mid(6,2).toShort(&ok, 16);
-    qDebug() << color;
     if (this->pwmbank == 0) {
         // devices not on i2c device
         gpioPWM(GPIO_PIN_RED, static_cast<uint>(r));
@@ -132,6 +151,7 @@ void Light::setColorInPWM(QString color, bool keepActive = true)
         gpioPWM(GPIO_PIN_WHITE, static_cast<uint>(w));
     } else {
         // well, it's on a fucking i2c bus.
+        // also matt is a fucking wanker and sj is a troglodite
         PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 0, r );
         PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 1, g );
         PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 2, b );

@@ -18,16 +18,16 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     this->topWidget = new QWidget;
     this->contentLayout = new QHBoxLayout(topWidget);
     QVBoxLayout *rightItems = new QVBoxLayout();
-    btnSetPreset = new QPushButton("> Choose Preset");
-    btnSetOff = new QPushButton("> Turn Off");
-    btnBack = new QPushButton("> Back");
+    btnSetPreset = new QEngravedPushButton("> Choose Preset");
+    btnSetOff = new QEngravedPushButton("> Turn Off");
+    btnBack = new QEngravedPushButton("> Back");
     btnSetPreset->setObjectName("btnSetPreset");
     btnSetOff->setObjectName("btnSetOff");
     btnBack->setObjectName("btnBack");
     sl_whitelevel = new QSlider(Qt::Horizontal);
     sl_whitelevel->setMaximum(255);
     sl_whitelevel->setMinimum(0);
-    sl_whitelevel->setMaximumWidth(256);
+    sl_whitelevel->setMaximumWidth(500);
 
 
 

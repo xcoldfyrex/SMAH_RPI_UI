@@ -30,6 +30,7 @@ public:
     QString getColor() { return this->color; }
     int getId() { return this->id; }
     int getGetDeviceId() { return this->deviceid; }
+    int getLevel() { return this->level; }
     bool getState() { return this->level; }
     bool isLocal() {
         if (this->deviceid == MY_DEVICE_ID)
@@ -56,6 +57,7 @@ public:
     QString getColorFromPWM();
     void setColorInPWM(QString color, bool keepActive);
     void updateLevel(int level);
+    void setLevel(int level);
     void sendUpdate();
     QWidget *lcwWidget;
 

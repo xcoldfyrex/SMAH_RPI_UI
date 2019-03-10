@@ -1,35 +1,47 @@
 #ifndef LIBSMAHDEVICE_H
 #define LIBSMAHDEVICE_H
 
+#include <QObject>
 #include <QString>
 #include <QMap>
 #include <QList>
 
-class RPIDevice
+class RPIDevice : public QObject
 {
+    Q_OBJECT
+
     class LightFunction;
     class EnvironmentFunction;
     class PowerFunction;
 
 public:
+    explicit RPIDevice(QObject *parent = nullptr);
     RPIDevice(int id, QString name, QString hwAddress);
-    RPIDevice();
+    ~RPIDevice();
     int getId() const { return this->id; }
     QString getName() const { return this->name; }
     QString getHwAddress() const { return this->hwAddress; }
     QMap<int, PowerFunction> getPowerFunctionList() const { return this->powerControls; }
     long getConnectionStart() { return this->connectTime; }
+    int getVersion() { return this->version; }
     QString getName() { return this->name; }
     QString getIP() { return this->ip; }
-    void setIP(QString ip) {  this->ip = ip; }
+    void setIP(QString ip) {
+        this->ip = ip;
+        emit ipChanged(ip);
+    }
+    void setVersion(int v) { this->version = v; }
     void setConnectionStart(long t) { this->connectTime = t; }
+    QString ip = "not connected";
+
 
 private:
     int id;
-    QString name, hwAddress, ip;
+    int version;
+    QString name, hwAddress;
     QMap <int, PowerFunction> powerControls;
     QMap <int, EnvironmentFunction> enviroData;
-    QMap <int, LightFunction> lightControls;    
+    QMap <int, LightFunction> lightControls;
     long connectTime;
 
     class LightFunction {
@@ -61,6 +73,9 @@ private:
         short type;
         int id;
     };
+
+signals:
+    void ipChanged(QString ip);
 
 };
 

@@ -208,19 +208,23 @@ void OnNotification
                         string value;
                         Manager::Get()->GetValueAsString(v, &value);
 
-
-
                         if (v.GetIndex() == 1)
                         {
+                            // temperature
                             for (Zone zone : gZoneMap.values())
                             {
                                 if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
                                 {
-                                    zone.getSensorById(nodeInfo->m_nodeId)->setTemperature(QString::fromStdString(value).toFloat() * 9/5 + 32);
+                                    if (zone.getSensorById(nodeInfo->m_nodeId)->isFarenheit())
+                                    {
+                                        zone.getSensorById(nodeInfo->m_nodeId)->setTemperature(QString::fromStdString(value).toFloat());
+                                    } else {
+                                        zone.getSensorById(nodeInfo->m_nodeId)->setTemperature(QString::fromStdString(value).toFloat() * 9/5 + 32);
+                                    }
                                 }
                             }
-                            qDebug() << nodeInfo->m_nodeId << "TEMPERATURE:" << (QString::fromStdString(value).toFloat()) * 9/5 + 32 ;
                         } else if (v.GetIndex() == 3) {
+                            // light level
                             for (Zone zone : gZoneMap.values())
                             {
                                 if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
@@ -228,18 +232,17 @@ void OnNotification
                                     zone.getSensorById(nodeInfo->m_nodeId)->setLux(QString::fromStdString(value).toShort());
                                 }
                             }
-                            qDebug() << nodeInfo->m_nodeId << "LIGHT LEVEL:" << QString::fromStdString(value);
                         } else if (v.GetIndex() == 10) {
                             qDebug() << nodeInfo->m_nodeId << "MOTION:" << QString::fromStdString(value);
                         } else {
                             // extra debug crap
                             //qDebug() << nodeInfo->m_nodeId << QString::fromStdString(value) << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                         }
-                        break;
                     }
 
-                        //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                     }
+                    qDebug() << "SENSOR: NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+
                 }
 
                 // COMMAND_CLASS_ALARM
@@ -271,6 +274,7 @@ void OnNotification
                     {
                         uint8 value;
                         Manager::Get()->GetValueAsByte(v, &value);
+                        // battery level
                         if (v.GetIndex() == 0)
                         {
                             qDebug() << "BAT" << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
@@ -486,6 +490,28 @@ bool getZWaveState(int nodeid)
     }
     pthread_mutex_unlock( &g_criticalSection );
     return false;
+}
+
+void setZWaveLevel(uint8 value, int nodeid)
+{
+    pthread_mutex_lock( &g_criticalSection );
+    for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
+    {
+        NodeInfo* nodeInfo = *it;
+        if( nodeInfo->m_nodeId != nodeid ) continue;
+        for( list<ValueID>::iterator it2 = nodeInfo->m_values.begin();
+             it2 != nodeInfo->m_values.end(); ++it2 )
+        {
+            ValueID v = *it2;
+            if( v.GetCommandClassId() == 0x26)
+            {
+                //qDebug() << "DIMMER" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                Manager::Get()->SetValue(v, value);
+                break;
+            }
+        }
+    }
+    pthread_mutex_unlock( &g_criticalSection );
 }
 
 void setZWaveToggle(bool value, int nodeid)

@@ -24,7 +24,8 @@
 QMap<QString, Zone> gZoneMap;
 QMap<int, Preset> gColorPresetMap;
 QList<ClientSocket*> g_clientMap;
-QMap <QString, RPIDevice> g_deviceList;
+QMap <QString, RPIDevice*> g_deviceList;
+QList <Sensor*> g_sensorList;
 QMap <int, Light*> g_lightMap;
 QMap <int, int> g_nodeValues;
 QString MY_HW_ADDR;
@@ -65,15 +66,15 @@ void loadZones()
                 QDomNode deviceNode = devices.at(a);
                 if (deviceNode.isElement()) {
                     QDomElement powerElement = deviceNode.toElement();
-                    RPIDevice rpidevice(
+                    RPIDevice *rpidevice = new RPIDevice(
                                 powerElement.attribute("id").toInt(),
                                 powerElement.attribute("name"),
                                 powerElement.attribute("hw")
                                 );
                     zone.addDevice(rpidevice);
                     g_deviceList.insert(powerElement.attribute("hw"),rpidevice);
-                    if (rpidevice.getHwAddress() == MY_HW_ADDR)
-                        MY_DEVICE_ID = rpidevice.getId();
+                    if (rpidevice->getHwAddress() == MY_HW_ADDR)
+                        MY_DEVICE_ID = rpidevice->getId();
                     //zone->powerControls.insert(powerElement.attribute("id").toInt(), powerElement.attribute("name"));
                 }
             }
@@ -103,10 +104,11 @@ void loadZones()
                     Sensor *sensor = new Sensor(
                                 sensorElement.attribute("name"),
                                 sensorElement.attribute("id").toShort(),
-                                sensorElement.attribute("device").toInt()
+                                sensorElement.attribute("device").toInt(),
+                                sensorElement.attribute("farenheit").toShort()
                                 );
                     zone.addSensor(sensor);
-                    //g_deviceList.insert(powerElement.attribute("hw"),rpidevice);
+                    g_sensorList.append(sensor);
 
 
                 }
@@ -245,7 +247,7 @@ int main(int argc, char *argv[])
         if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack))
             foreach (QNetworkAddressEntry entry, interface.addressEntries())
             {
-                if (interface.name() == "wlp36s0" || interface.name() == "wlan0")
+                if (interface.name() == "wlp5s0" || interface.name() == "wlan0")
                 {
                     MY_HW_ADDR = interface.hardwareAddress();
                     break;
@@ -279,12 +281,13 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont("DigitaldreamFat.ttf");
 
 
-
+    tcpServer.startListen();
     MainWindow mainWindow;
+
     DatagramHandler broadcaster;
     mainWindow.show();
     a.installEventFilter(&filter);
-    QObject::connect(&filter,SIGNAL(userActivity()), &mainWindow,SLOT(resetIdle()));
+    QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
     return a.exec();
 
 }

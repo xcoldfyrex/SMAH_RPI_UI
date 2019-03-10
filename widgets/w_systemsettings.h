@@ -7,6 +7,8 @@
 #include <QListWidget>
 
 #include <rpidevice.h>
+#include "qengravedlabel.h"
+
 
 class SystemSettings : public QWidget
 {
@@ -17,8 +19,8 @@ public:
     QGridLayout *contentLayout;
 
 private:
-    QListWidget *statusList;
-    QListWidget *deviceList;
+    QEngravedList *statusList;
+    QEngravedList *deviceList;
 
 signals:
 
@@ -26,8 +28,8 @@ private slots:
     void reloadStyles();
 
 public slots:
-    void addDevice(RPIDevice device);
-    void removeDevice(RPIDevice device);
+    void addDevice(RPIDevice *device);
+    void removeDevice(RPIDevice *device);
 };
 
 #endif // SYSTEMSETTINGS_H

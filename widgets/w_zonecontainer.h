@@ -11,16 +11,13 @@
 #include "w_zoneoverview.h"
 #include "w_zone_lights.h"
 #include "zone.h"
+#include "qengravedlabel.h"
 
 class PresetChooser;
 
 class ZoneOverviewWidget;
 
 class ZoneLightsWidget;
-
-//class ZoneLightsWidget;
-
-//class Zone;
 
 class ZoneContainerWidget : public QWidget
 {
@@ -40,7 +37,7 @@ private:
     QPushButton *btnShowLights = new QPushButton;
     QPushButton *btnShowPower = new QPushButton;
     QPushButton *btnShowActions = new QPushButton;
-    QListWidget *zoneButtons = new QListWidget(this);
+    QEngravedList *zoneButtons = new QEngravedList(this);
     Zone zone;
     QLabel *lblEnvironment;
 

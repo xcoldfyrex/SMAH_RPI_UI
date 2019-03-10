@@ -16,22 +16,20 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone zone) : QWidget
     lblZoneEnvIcon->setPixmap(QPixmap::fromImage(*imgZoneEnvIcon));
     lblZoneEnvIcon->resize(32,32);
 
-    lblZoneEnvHeader = new QLabel(zone.getName());
-    lblZoneEnvData = new QLabel();
+    lblZoneEnvData = new QEngravedLabel();
 
-    lblZoneEnvHeader->setObjectName("lblZoneEnvHeader");
     lblZoneEnvData->setObjectName("lblZoneEnvData");
     contentLayout->addWidget(lblZoneEnvIcon,0,0,2,2);
     contentLayout->setAlignment(Qt::AlignLeft);
 
-    contentLayout->addWidget(this->lblZoneEnvHeader,0,2, Qt::AlignLeft);
-    contentLayout->addWidget(this->lblZoneEnvData,1,2, Qt::AlignLeft);
+    contentLayout->addWidget(this->lblZoneEnvData,0,2, Qt::AlignLeft);
     topWidget->setLayout(contentLayout);
+    topWidget->resize(topWidget->height(),300);
 
     updateTimer = new QTimer();
     updateTimer->setInterval(1000);
     updateTimer->start();
-
+    delete imgZoneEnvIcon;
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(enviroUpdate()),Qt::DirectConnection);
 }
 
@@ -42,8 +40,8 @@ void ZoneEnvironmentPanel::enviroUpdate()
     for (Sensor *sensor : this->zone.getSensorList())
     {
         QString text;
-        text += sensor->getName() + "\n\r";
-        text += QString::number(sensor->getTemperature()) + "F\n\r";
+        text += sensor->getName() + "\n";
+        text += QString::number(sensor->getTemperature()) + " F\n";
         if (sensor->getHumidity() > 0)
             text += QString::number(sensor->getHumidity()) + "% RH\n\r";
 

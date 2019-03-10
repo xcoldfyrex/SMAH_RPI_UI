@@ -1,8 +1,8 @@
 #include <QTimer>
 #include <QTime>
-#include "w_screensaver.h"
+#include <QGraphicsEffect>
 
-#include <QDebug>
+#include "w_screensaver.h"
 
 ScreenSaverWidget::ScreenSaverWidget(QWidget *parent) : QWidget(parent)
 {
@@ -18,6 +18,10 @@ ScreenSaverWidget::ScreenSaverWidget(QWidget *parent) : QWidget(parent)
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(showTime()));
     timer->start(1000);
+    QGraphicsDropShadowEffect* eff = new QGraphicsDropShadowEffect(this);
+    eff->setBlurRadius(5);
+    eff->setColor(QColor("FFFFFF"));
+    lblClock->setGraphicsEffect(eff);
 }
 
 void ScreenSaverWidget::showTime()

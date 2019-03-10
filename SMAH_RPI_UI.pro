@@ -77,7 +77,6 @@ HEADERS  += \
     pca9685.h \
     preset.h \
     presettask.h \
-    rpidevice.h \
     tcpserver.h \
     tcpsocket.h \
     ui_menuwindow.h \
@@ -86,7 +85,9 @@ HEADERS  += \
     sunriseset.h \
     widgets/w_screensaver.h \
     eventfilter.h \
-    sensor.h
+    sensor.h \
+    commandrouter.h \
+    widgets/qengravedlabel.h
 
 
 FORMS    += \

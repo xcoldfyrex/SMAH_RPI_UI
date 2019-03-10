@@ -11,6 +11,7 @@
 #include "preset.h"
 #include "zone.h"
 #include "light.h"
+#include "qengravedlabel.h"
 
 class PresetChooser : public QWidget
 {
@@ -18,9 +19,9 @@ class PresetChooser : public QWidget
 public:
     PresetChooser(Zone zone, Light *light, QWidget *parent = nullptr);
     QWidget *topWidget;
-    QListWidget *presetList;
-    QListWidget *presetButtons;
-    QPushButton *btnBack;
+    QEngravedList *presetList;
+    QEngravedList *presetButtons;
+    QEngravedPushButton *btnBack;
     QVBoxLayout *contentLayout;
 private:
     Zone zone;

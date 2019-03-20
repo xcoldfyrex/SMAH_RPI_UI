@@ -26,10 +26,6 @@ signals:
 
 private slots:
     void reloadStyles();
-
-public slots:
-    void addDevice(RPIDevice *device);
-    void removeDevice(RPIDevice *device);
 };
 
 #endif // SYSTEMSETTINGS_H

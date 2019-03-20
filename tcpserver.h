@@ -15,6 +15,7 @@ public:
     TCPServer(QObject *parent = Q_NULLPTR);
     QMap<QString, int> *outstanding;
     void startListen();
+    void broadcastMessage(int srcDevice, int type, float value, int index);
 
 protected:
     void incomingConnection(qintptr socketDescriptor);
@@ -27,6 +28,7 @@ public slots:
 signals:
     void deviceReady(RPIDevice *device);
     void deviceLost(RPIDevice *device);
+    void broadcastSignal(QString data, QJsonObject payload);
 };
 
 #endif // TCPSERVER_H

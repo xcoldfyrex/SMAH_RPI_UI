@@ -16,7 +16,7 @@ class ZoneEnvironmentPanel : public QWidget
     Q_OBJECT
 public:
     explicit ZoneEnvironmentPanel(QWidget *parent = nullptr);
-    ZoneEnvironmentPanel(QWidget *parent, Zone zone);
+    ZoneEnvironmentPanel(QWidget *parent, Zone zone, bool compact = false);
     QWidget *topWidget;
 
 private:

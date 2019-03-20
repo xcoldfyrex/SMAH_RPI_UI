@@ -13,6 +13,7 @@ void TCPServer::incomingConnection(qintptr socketDescriptor)
 {
     ClientSocket *socket = new ClientSocket(socketDescriptor, this);
     connect(socket,SIGNAL(socketDisconnected(ClientSocket*)), this, SLOT(cleanSocket(ClientSocket*)));
+    connect(this,SIGNAL(broadcastSignal(QString, QJsonObject)), socket,SLOT(prepareToSend(QString,QJsonObject)));
     //connect(socket,SIGNAL(deviceArrived(RPIDevice)), this, SLOT(devReady(RPIDevice)),Qt::DirectConnection);
     g_clientMap.append(socket);
 }
@@ -51,4 +52,14 @@ void TCPServer::startListen()
         qWarning() << "Error opening listening socket";
     }
     outstanding = new QMap<QString, int>();
+}
+
+void TCPServer::broadcastMessage(int srcDevice, int type, float value, int index)
+{
+    QJsonObject jsonPayload;
+    jsonPayload["value"] = value;
+    jsonPayload["id"] = srcDevice;
+    jsonPayload["type"] = type;
+    jsonPayload["index"] = index;
+    emit broadcastSignal("UPDATE", jsonPayload);
 }

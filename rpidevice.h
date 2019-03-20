@@ -5,6 +5,7 @@
 #include <QString>
 #include <QMap>
 #include <QList>
+#include <QtDebug>
 
 class RPIDevice : public QObject
 {
@@ -17,7 +18,6 @@ class RPIDevice : public QObject
 public:
     explicit RPIDevice(QObject *parent = nullptr);
     RPIDevice(int id, QString name, QString hwAddress);
-    ~RPIDevice();
     int getId() const { return this->id; }
     QString getName() const { return this->name; }
     QString getHwAddress() const { return this->hwAddress; }
@@ -26,13 +26,13 @@ public:
     int getVersion() { return this->version; }
     QString getName() { return this->name; }
     QString getIP() { return this->ip; }
-    void setIP(QString ip) {
-        this->ip = ip;
-        emit ipChanged(ip);
+    QString ip = "not connected";
+    void setIP(QString ipa) {
+        ip = ipa;
+        emit ipChanged(ipa);
     }
     void setVersion(int v) { this->version = v; }
     void setConnectionStart(long t) { this->connectTime = t; }
-    QString ip = "not connected";
 
 
 private:

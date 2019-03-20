@@ -14,11 +14,6 @@ RPIDevice::RPIDevice(QObject *parent) : QObject(parent)
 
 }
 
-RPIDevice::~RPIDevice()
-{
-    int a;
-}
-
 RPIDevice::PowerFunction::PowerFunction(QString name, int id, short type)
 {
     this->id = id;

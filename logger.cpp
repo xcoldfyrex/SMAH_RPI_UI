@@ -17,7 +17,7 @@ void systemlogHandler(QtMsgType type, const QMessageLogContext &context, const Q
         fprintf(stderr, "%s %s[INFO]%s %s\n", date, green, normal, localMsg.constData());
         break;
     case QtWarningMsg:
-        fprintf(stderr, "%s %s[WARNING]%s %s\n", date, yellow, normal, localMsg.constData());
+        fprintf(stderr, "%s %s[WARNING]%s %s (%s:%u, %s)\n", date, yellow, normal, localMsg.constData(), context.file, context.line, context.function);
         break;
     case QtCriticalMsg:
         fprintf(stderr, "%s %s[CRITICAL] %s %s (%s:%u, %s)\n", date, red, normal, localMsg.constData(), context.file, context.line, context.function);

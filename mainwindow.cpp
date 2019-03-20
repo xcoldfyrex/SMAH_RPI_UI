@@ -64,13 +64,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     }
     contentLayout->setCurrentIndex(0);
 
-    //qRegisterMetaType<smah::Zone>("smah::Zone");
-
-    //connect(networkThread,SIGNAL(zoneDiscovered(smah::Zone)),zoneChooser,SLOT(addZoneButton(smah::Zone)),Qt::QueuedConnection);
-    //connect(networkThread,SIGNAL(zoneDiscovered(smah::Zone)),this,SLOT(createZoneElements(smah::Zone)),Qt::QueuedConnection);
-    //connect(networkThread,SIGNAL(presetArrived(Preset)),this,SLOT(addPreset(Preset)));
-    //connect(this,SIGNAL(requestingNetworkOut(QString, QJsonObject, QString)),networkThread,SLOT(prepareToSendWrapper(QString,QJsonObject,QString)),Qt::QueuedConnection);
-
     if (QFileInfo::exists("/dev/ttyACM0"))
     {
         qInfo() << "INIT ZWave";

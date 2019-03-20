@@ -2,26 +2,27 @@
 #include "math.h"
 #define ZeroPercentVoltage 0.958
 
-ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone zone) : QWidget(parent)
+ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone zone, bool compact) : QWidget(parent)
 {
 
     this->topWidget = new QWidget;
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
     this->zone = zone;
-
-    QImage *imgZoneEnvIcon = new QImage("thermometer.png");
-    QLabel *lblZoneEnvIcon = new QLabel(" ");
-    *imgZoneEnvIcon = imgZoneEnvIcon->scaled(32,32,Qt::KeepAspectRatio);
-    lblZoneEnvIcon->setPixmap(QPixmap::fromImage(*imgZoneEnvIcon));
-    lblZoneEnvIcon->resize(32,32);
-
     lblZoneEnvData = new QEngravedLabel();
-
-    lblZoneEnvData->setObjectName("lblZoneEnvData");
-    contentLayout->addWidget(lblZoneEnvIcon,0,0,2,2);
+    if (! compact) {
+        QImage *imgZoneEnvIcon = new QImage("thermometer.png");
+        QLabel *lblZoneEnvIcon = new QLabel(" ");
+        *imgZoneEnvIcon = imgZoneEnvIcon->scaled(32,32,Qt::KeepAspectRatio);
+        lblZoneEnvIcon->setPixmap(QPixmap::fromImage(*imgZoneEnvIcon));
+        lblZoneEnvIcon->resize(32,32);
+        contentLayout->addWidget(lblZoneEnvIcon,0,0,2,2);
+        lblZoneEnvData->setObjectName("lblZoneEnvData");
+        delete imgZoneEnvIcon;
+    } else {
+        lblZoneEnvData->setObjectName("lblSaverTemp");
+    }
     contentLayout->setAlignment(Qt::AlignLeft);
-
     contentLayout->addWidget(this->lblZoneEnvData,0,2, Qt::AlignLeft);
     topWidget->setLayout(contentLayout);
     topWidget->resize(topWidget->height(),300);
@@ -29,7 +30,6 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone zone) : QWidget
     updateTimer = new QTimer();
     updateTimer->setInterval(1000);
     updateTimer->start();
-    delete imgZoneEnvIcon;
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(enviroUpdate()),Qt::DirectConnection);
 }
 

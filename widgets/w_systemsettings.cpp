@@ -33,33 +33,52 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     QVBoxLayout *vboxDevStatus = new QVBoxLayout(devStatus);
     QGridLayout *grdDevStatus = new QGridLayout();
     vboxDevStatus->addLayout(grdDevStatus);
-    grdDevStatus->addWidget(new QEngravedLabel("build number"),0,0);
-    grdDevStatus->addWidget(new QEngravedLabel(QString::number(BUILD)),0,1);
-    grdDevStatus->addWidget(new QEngravedLabel("build date"),1,0);
-    grdDevStatus->addWidget(new QEngravedLabel(QString(DATE)),1,1);
-    grdDevStatus->addWidget(new QEngravedLabel("IP Address"),2,0);
-    grdDevStatus->addWidget(new QEngravedLabel(QString(MY_IP_ADDR)),2,1);
-    grdDevStatus->addWidget(new QEngravedLabel("mac Address"),3,0);
-    grdDevStatus->addWidget(new QEngravedLabel(QString(MY_HW_ADDR)),3,1);
+    QEngravedLabel *lblStatus = new QEngravedLabel("local device status");
+    lblStatus->setObjectName("gridHeader");
+    grdDevStatus->setSpacing(0);
+    grdDevStatus->addWidget(lblStatus,0,0,1,4);
+    grdDevStatus->addWidget(new QEngravedLabel("build number"),1,0);
+    grdDevStatus->addWidget(new QEngravedLabel(QString::number(BUILD)),1,1);
+    grdDevStatus->addWidget(new QEngravedLabel("build date"),2,0);
+    grdDevStatus->addWidget(new QEngravedLabel(QString(DATE)),2,1);
+    grdDevStatus->addWidget(new QEngravedLabel("IP Address"),3,0);
+    grdDevStatus->addWidget(new QEngravedLabel(QString(MY_IP_ADDR)),3,1);
+    grdDevStatus->addWidget(new QEngravedLabel("mac Address"),4,0);
+    grdDevStatus->addWidget(new QEngravedLabel(QString(MY_HW_ADDR)),4,1);
     grdDevStatus->setAlignment(Qt::AlignTop);
 
     QWidget *deviceStatus = new QWidget(this);
     QVBoxLayout *vboxDeviceStatus = new QVBoxLayout(deviceStatus);
     QGridLayout *grdDeviceStatus = new QGridLayout();
-    grdDeviceStatus->addWidget(new QEngravedLabel("name"),0,0);
-    grdDeviceStatus->addWidget(new QEngravedLabel("mac"),0,1);
-    grdDeviceStatus->addWidget(new QEngravedLabel("ip"),0,2);
-    grdDeviceStatus->addWidget(new QEngravedLabel("bytes"),0,3);
-    grdDeviceStatus->addWidget(new QEngravedLabel("version"),0,4);
+    QEngravedLabel *lblName = new QEngravedLabel("name");
+    QEngravedLabel *lblMac= new QEngravedLabel("mac");
+    QEngravedLabel *lblip = new QEngravedLabel("ip");
+    QEngravedLabel *lblbytes = new QEngravedLabel("bytes");
+    QEngravedLabel *lblVersion = new QEngravedLabel("version");
+
+    lblName->setObjectName("gridHeader");
+    lblMac->setObjectName("gridHeader");
+    lblip->setObjectName("gridHeader");
+    lblbytes->setObjectName("gridHeader");
+    lblVersion->setObjectName("gridHeader");
+
+    grdDeviceStatus->setSpacing(0);
+
+
+    grdDeviceStatus->addWidget(lblName,0,0);
+    grdDeviceStatus->addWidget(lblMac,0,1);
+    grdDeviceStatus->addWidget(lblip,0,2);
+    grdDeviceStatus->addWidget(lblbytes,0,3);
+    grdDeviceStatus->addWidget(lblVersion,0,4);
     vboxDeviceStatus->addLayout(grdDeviceStatus);
     int devcnt = 1;
     for(RPIDevice *device : g_deviceList)
     {
 
-        grdDeviceStatus->addWidget(new QEngravedLabel(device->getName()),devcnt,0);
-        grdDeviceStatus->addWidget(new QEngravedLabel(device->getHwAddress()),devcnt,1);
-        QEngravedLabel *lblIP = new QEngravedLabel("-");
-        QEngravedLabel *lblBytes = new QEngravedLabel("0");
+        grdDeviceStatus->addWidget(new QEngravedLabel(device->getName() + "\t"),devcnt,0);
+        grdDeviceStatus->addWidget(new QEngravedLabel(device->getHwAddress() + "\t"),devcnt,1);
+        QEngravedLabel *lblIP = new QEngravedLabel("-\t");
+        QEngravedLabel *lblBytes = new QEngravedLabel("0\t");
         QEngravedLabel *lblVersion = new QEngravedLabel("-");
         grdDeviceStatus->addWidget(lblIP,devcnt,2);
         grdDeviceStatus->addWidget(lblBytes,devcnt,3);
@@ -76,10 +95,22 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     QWidget *sensorStatus = new QWidget(this);
     QVBoxLayout *vboxSensorStatus = new QVBoxLayout(sensorStatus);
     QGridLayout *grdSensorStatus = new QGridLayout();
-    grdSensorStatus->addWidget(new QEngravedLabel("sensor"),0,0);
-    grdSensorStatus->addWidget(new QEngravedLabel("id"),0,1);
-    grdSensorStatus->addWidget(new QEngravedLabel("lux"),0,2);
-    grdSensorStatus->addWidget(new QEngravedLabel("battery"),0,3);
+    QEngravedLabel *lblSensor = new QEngravedLabel("sensor");
+    QEngravedLabel *lblid = new QEngravedLabel("id");
+    QEngravedLabel *lbllux = new QEngravedLabel("lux");
+    QEngravedLabel *lblbattery = new QEngravedLabel("battery");
+
+
+    lblSensor->setObjectName("gridHeader");
+    lblid->setObjectName("gridHeader");
+    lbllux->setObjectName("gridHeader");
+    lblbattery->setObjectName("gridHeader");
+
+    grdSensorStatus->setSpacing(0);
+    grdSensorStatus->addWidget(lblSensor,0,0);
+    grdSensorStatus->addWidget(lblid,0,1);
+    grdSensorStatus->addWidget(lbllux,0,2);
+    grdSensorStatus->addWidget(lblbattery,0,3);
     vboxSensorStatus->addLayout(grdSensorStatus);
     int senscnt = 1;
     for(Sensor *sensor : g_sensorList)
@@ -127,19 +158,4 @@ void SystemSettings::reloadStyles()
     File.open(QFile::ReadOnly);
     QString StyleSheet = QLatin1String(File.readAll());
     qApp->setStyleSheet(StyleSheet);
-}
-
-void SystemSettings::addDevice(RPIDevice *device)
-{
-    //QListWidgetItem *itemDevice = new QListWidgetItem(device.getName() + " " + device.getIP());
-    //QVariant dataitemConnectedDevice(device.getHwAddress());
-    //itemDevice->setData(Qt::UserRole, dataitemConnectedDevice);
-    //this->deviceList->addItem(itemDevice);
-}
-
-void SystemSettings::removeDevice(RPIDevice *device)
-{
-    //    this->deviceList->re
-    int x = 1;
-    x++;
 }

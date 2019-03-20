@@ -21,15 +21,16 @@ public:
     ClientSocket(QHostAddress address, QObject *parent);
     QHostAddress getPeerAddress() { return this->remoteAddress; }
     //RPIDevice *getDevice() { return this->rpidevice; }
-    int getDeviceID() { return this->devid; }
+    QString getDeviceID() { return this->devid; }
+    int getRPIDeviceID() { return this->rpidevice->getId(); }
     void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
-    void prepareToSend(QString command, QJsonObject jsonPayload);
 
 
 public slots:
     void readyRead();
     void disconnected();
     void socketError();
+    void prepareToSend(QString command, QJsonObject jsonPayload);
 
 signals:
     void error(QTcpSocket::SocketError socketError);
@@ -44,7 +45,7 @@ private:
     std::string peer_address;
     quint16 blockSize;
     QObject *parent;
-    int devid = 0;
+    QString devid = "";
     QHostAddress remoteAddress;
     RPIDevice *rpidevice;
     void send_id(QTcpSocket *tcpSocket, QJsonObject data);

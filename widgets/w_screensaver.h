@@ -17,7 +17,6 @@ public:
 
 private:
     QLabel *lblClock;
-    QHBoxLayout *topWidgetLayout;
 
 private slots:
     void showTime();

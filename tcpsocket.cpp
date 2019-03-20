@@ -59,6 +59,11 @@ ClientSocket::ClientSocket(QHostAddress address, QObject *parent)
 
 void ClientSocket::sendData(QJsonObject data)
 {
+    if (tcpSocket == nullptr)
+    {
+        qWarning() << "Tried to send on null socket: " << data;
+        return;
+    }
     if(tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
         QJsonDocument temp(data);
@@ -101,12 +106,19 @@ void ClientSocket::readyRead()
 }
 
 void ClientSocket::disconnected() {
-    qInfo("Client disconnect(%s)", tcpSocket->peerAddress().toString().toStdString().c_str());
-    /// FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ///g_deviceList.value(devid)->setIP("-");
+    //qInfo("Client disconnect(%s)", tcpSocket->peerAddress().toString().toStdString().c_str());
+    if (g_deviceList.contains(this->devid))
+    {
+        qInfo() << "Device LEFT: " << this->rpidevice->getHwAddress() << this->rpidevice->getName();
+        this->rpidevice->setVersion(0);
+        this->rpidevice->setIP("-");
+    } else {
+        //qWarning() << "Unknown device disconnected: " << tcpSocket->peerAddress().toString().toStdString().c_str() << devid;
+    }
     g_clientMap.removeOne(this);
+    tcpSocket->close();
     tcpSocket->deleteLater();
-    delete this;
+    //delete this;
 }
 
 void ClientSocket::socketError()
@@ -157,8 +169,7 @@ void ClientSocket::send_id(QTcpSocket *tcpSocket, QJsonObject data)
     prepareToSend("ID", jsonPayload, data.value("requestID").toString());
 }
 
-void ClientSocket::processPayload(QByteArray buffer)
-{
+void ClientSocket::processPayload(QByteArray buffer){
     qDebug() << buffer;
     QJsonDocument doc = QJsonDocument::fromJson(buffer.data());
     if(doc.isNull())
@@ -186,7 +197,7 @@ void ClientSocket::processPayload(QByteArray buffer)
         if (g_deviceList.contains(devid))
         {
             this->rpidevice = g_deviceList.value(devid);
-            this->devid = this->rpidevice->getId();
+            this->devid = this->rpidevice->getHwAddress();
             qInfo() << "Device connected: " << this->rpidevice->getHwAddress() << this->rpidevice->getName();
             this->rpidevice->setVersion(incomingPayload["version"].toInt());
             this->rpidevice->setIP(this->remoteAddress.toString());
@@ -274,12 +285,15 @@ void ClientSocket::processPayload(QByteArray buffer)
             {
                 if (zone.getSensorById(id) != nullptr)
                 {
+                    zone.getSensorById(id)->setValue(index,static_cast<float>(value));
+                    /*
                     if (index == 0)
                         zone.getSensorById(id)->setTemperature(value);
                     if (index == 1)
                         zone.getSensorById(id)->setHumidity(value);
                     if (index == 2)
                         zone.getSensorById(id)->setLux(static_cast<short>(value));
+                        */
                 }
             }
         }

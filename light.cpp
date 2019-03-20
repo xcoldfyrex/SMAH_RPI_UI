@@ -2,6 +2,7 @@
 #include "pigpio.h"
 #include "gpio_defs.h"
 #include "commandrouter.h"
+#include "tcpserver.h"
 #include "pca9685.h"
 
 #include <QDebug>
@@ -9,6 +10,8 @@ extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
 extern smah_i2c bus;
+extern TCPServer tcpServer;
+
 
 Light::Light(QObject *parent) : QObject(parent)
 {
@@ -115,7 +118,7 @@ void Light::setLevel(int level)
 void Light::sendUpdate()
 {
     this->statusLabel->setText(QString::number(this->level));
-    broadcastMessage(this->id, 0, this->level, 0);
+    tcpServer.broadcastMessage(this->id, 0, this->level, 0);
     emit levelChanged(this);
 }
 

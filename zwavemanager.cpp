@@ -131,7 +131,7 @@ void OnNotification
                     Manager::Get()->GetValueAsBool(v, &value);
                     pthread_mutex_unlock( &g_criticalSection );
                     g_nodeValues.insert(nodeInfo->m_nodeId, static_cast<int>(value));
-                    qDebug() << "Node state changed:" << nodeInfo->m_nodeId << value;
+                    //qDebug() << "Node state changed:" << nodeInfo->m_nodeId << value;
                     for (Zone zone : gZoneMap.values())
                     {
                         if (zone.getLightById(nodeInfo->m_nodeId) != nullptr)
@@ -207,41 +207,17 @@ void OnNotification
                     {
                         string value;
                         Manager::Get()->GetValueAsString(v, &value);
-
-                        if (v.GetIndex() == 1)
+                        for (Zone zone : gZoneMap.values())
                         {
-                            // temperature
-                            for (Zone zone : gZoneMap.values())
+                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
                             {
-                                if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
-                                {
-                                    if (zone.getSensorById(nodeInfo->m_nodeId)->isFarenheit())
-                                    {
-                                        zone.getSensorById(nodeInfo->m_nodeId)->setTemperature(QString::fromStdString(value).toFloat());
-                                    } else {
-                                        zone.getSensorById(nodeInfo->m_nodeId)->setTemperature(QString::fromStdString(value).toFloat() * 9/5 + 32);
-                                    }
-                                }
-                            }
-                        } else if (v.GetIndex() == 3) {
-                            // light level
-                            for (Zone zone : gZoneMap.values())
-                            {
-                                if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
-                                {
-                                    zone.getSensorById(nodeInfo->m_nodeId)->setLux(QString::fromStdString(value).toShort());
-                                }
-                            }
-                        } else if (v.GetIndex() == 10) {
-                            qDebug() << nodeInfo->m_nodeId << "MOTION:" << QString::fromStdString(value);
-                        } else {
-                            // extra debug crap
-                            //qDebug() << nodeInfo->m_nodeId << QString::fromStdString(value) << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
-                        }
-                    }
+                                zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), QString::fromStdString(value).toFloat());
 
+                            }
+                        }
+                        qDebug() << "SENSOR: NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v)) << QString::fromStdString(value);
                     }
-                    qDebug() << "SENSOR: NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                    }
 
                 }
 
@@ -256,7 +232,7 @@ void OnNotification
                         Manager::Get()->GetValueAsByte(v, &value);
                         if (v.GetIndex() == 10)
                         {
-                            qDebug() << nodeInfo->m_nodeId << "ALARM!!!! " << value;
+                            //qDebug() << nodeInfo->m_nodeId << "ALARM!!!! " << value;
                         }
                         break;
                     }
@@ -611,8 +587,8 @@ void init_zwave()
     } else {
     }
 
-    getZWaveState(5);
-    getZWaveState(4);
+    //getZWaveState(5);
+    //getZWaveState(4);
 
 
     return;

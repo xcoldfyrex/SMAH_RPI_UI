@@ -26,8 +26,6 @@ public:
 
 private:
     TopHeaderWidget *hcheader;
-    QMap<QString, ZoneContainerWidget*> *zoneContainerMap;
-    ZoneContainerWidget *getZoneContainer(QString zone) { return zoneContainerMap->value(zone); }
     QStackedLayout *mainWidgetLayout;
     ScreenSaverWidget *screensaverHolder;
     QTimer *idleTimer;
@@ -41,7 +39,6 @@ signals:
 public slots:
     void showZoneChooser();
     void showSystemWidget();
-    void showZone(QString zone);
     void addPreset(Preset preset);
     void hideSaver();
     void showSaver();

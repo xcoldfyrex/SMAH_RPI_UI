@@ -24,7 +24,7 @@ ScreenSaverWidget::ScreenSaverWidget(QWidget *parent) : QWidget(parent)
         if (zone.getName() == "Outside") {
             if (zone.getSensorList().size() != 0)
             {
-                ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone, true);
+                ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone.getSensorList().value("Outside"), true);
                 zenv->topWidget->setObjectName("lblSaverTemp");
                 topWidgetLayout->addWidget(zenv->topWidget,1,0);
             }

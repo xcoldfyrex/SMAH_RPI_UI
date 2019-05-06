@@ -278,7 +278,9 @@ int main(int argc, char *argv[])
     qApp->setStyleSheet(StyleSheet);
 
     QFontDatabase::addApplicationFont("Crescent-Regular.ttf");
-    QFontDatabase::addApplicationFont("DigitaldreamFat.ttf");
+    QFontDatabase::addApplicationFont("Roboto-Thin.ttf");
+    QFontDatabase::addApplicationFont("NotoSans-Regular.ttf");
+
 
 
     tcpServer.startListen();
@@ -289,5 +291,4 @@ int main(int argc, char *argv[])
     a.installEventFilter(&filter);
     QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
     return a.exec();
-
 }

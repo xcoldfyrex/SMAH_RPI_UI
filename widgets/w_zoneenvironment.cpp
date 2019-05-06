@@ -2,13 +2,13 @@
 #include "math.h"
 #define ZeroPercentVoltage 0.958
 
-ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone zone, bool compact) : QWidget(parent)
+ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Sensor *sensor, bool compact) : QWidget(parent)
 {
 
     this->topWidget = new QWidget;
     this->topWidget = new QWidget;
     this->contentLayout = new QGridLayout(topWidget);
-    this->zone = zone;
+    this->sensor = sensor;
     lblZoneEnvData = new QEngravedLabel();
     if (! compact) {
         QImage *imgZoneEnvIcon = new QImage("thermometer.png");
@@ -35,10 +35,7 @@ ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Zone zone, bool comp
 
 void ZoneEnvironmentPanel::enviroUpdate()
 {
-    if (this->zone.getSensorList().size() == 0)
-        return;
-    for (Sensor *sensor : this->zone.getSensorList())
-    {
+
         QString text;
         text += sensor->getName() + "\n";
         text += QString::number(sensor->getTemperature()) + " F\n";
@@ -46,7 +43,7 @@ void ZoneEnvironmentPanel::enviroUpdate()
             text += QString::number(sensor->getHumidity()) + "% RH\n\r";
 
         lblZoneEnvData->setText(text);
-    }
+
 
     //float temp = ceilf(rawVoltage(zone->environmentMap.value(0) * 100) * 100) / 100;
     //float rh_voltage = rawVoltage(zone->environmentMap.value(1));

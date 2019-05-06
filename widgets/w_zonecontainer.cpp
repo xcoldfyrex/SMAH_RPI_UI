@@ -21,7 +21,7 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     QHBoxLayout *bottomLayout = new QHBoxLayout(bottomPanelWidget);
     QVBoxLayout *zoneMainLayout = new QVBoxLayout(zoneMainWidget);
 
-    QHBoxLayout *zoneFunctionLayout = new QHBoxLayout(zonePanelWidget);
+    QVBoxLayout *zoneFunctionLayout = new QVBoxLayout(zonePanelWidget);
     //QHBoxLayout *devicePanelLayout = new QHBoxLayout(devicePanelWidget);
     QPushButton *btnShowLights = new QPushButton;
     QPushButton *btnShowPower = new QPushButton;
@@ -85,13 +85,11 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
 
     zoneButtons = new QEngravedList(this);
     zoneButtons->setObjectName("zoneButtons");
-    QSpacerItem *verticalSpacer = new QSpacerItem(0,500,QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     zoneFunctionLayout->setAlignment(Qt::AlignTop);
-    zoneFunctionLayout->addWidget(lblEnvironment);
-    zoneFunctionLayout->addItem(verticalSpacer);
-    QListWidgetItem *itemLights = new QListWidgetItem("> Light Controls");
-    QListWidgetItem *itemPower = new QListWidgetItem("> Power Controls");
-    QListWidgetItem *itemEvents = new QListWidgetItem("> Scheduled Events");
+    QListWidgetItem *itemLights = new QListWidgetItem("Light Controls");
+    QListWidgetItem *itemPower = new QListWidgetItem("Power Controls");
+    QListWidgetItem *itemEvents = new QListWidgetItem("Scheduled Events");
     itemLights->setData(Qt::UserRole,1);
     itemPower->setData(Qt::UserRole,2);
     itemEvents->setData(Qt::UserRole,3);
@@ -103,8 +101,11 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
 
     zonePanelWidget->setObjectName("zoneFunctionsWidget");
     zoneFunctionLayout->addWidget(zoneButtons);
+    QSpacerItem *verticalSpacer = new QSpacerItem(0,500,QSizePolicy::Expanding, QSizePolicy::Expanding);
+    zoneFunctionLayout->addItem(verticalSpacer);
+    zoneFunctionLayout->addWidget(lblEnvironment);
 
-    zoneFunctionLayout->setContentsMargins(10,10,10,10);
+    zoneFunctionLayout->setContentsMargins(0,0,0,0);
 
     connect(btnShowLights,SIGNAL(clicked()),this,SLOT(showLightContainer()));
     connect(btnShowActions,SIGNAL(clicked()),this,SLOT(showActions()));
@@ -177,14 +178,14 @@ void ZoneContainerWidget::updateEnvironment()
 {
     if (this->zone.getSensorList().size() == 0)
         return;
+    QString text;
     for (Sensor *sensor : this->zone.getSensorList())
     {
-        QString text;
-        text += sensor->getName() + "\n\r";
-        text += QString::number(sensor->getTemperature()) + "F\n\r";
+        text += sensor->getName() + "\n";
+        text += QString::number(sensor->getTemperature()) + "F\n";
         if (sensor->getHumidity() > 0)
-            text += QString::number(sensor->getHumidity()) + "% RH\n\r";
-
+            text += QString::number(sensor->getHumidity()) + "% RH\n";
+        text += "\n";
         lblEnvironment->setText(text);
     }
 }

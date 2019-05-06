@@ -9,59 +9,58 @@
 #include "ui_mainwindow.h"
 #include "zwavemanager.h"
 #include "tcpserver.h"
+#include "widgets/w_zonefunctionsbasewidget.h"
 #include <QDebug>
 
+#include <QApplication>
+#include <QDir>
+#include <QStandardPaths>
 
-extern QMap<QString, Zone> gZoneMap;
+
 extern QList<Preset> gColorPresetMap;
 extern TCPServer tcpServer;
 
-
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {
+    this->setFixedSize(1280,800);
+    this->move(0,0);
     this->setObjectName("MainWindow");
     this->setStyle(QApplication::style());
     this->setAutoFillBackground(true);
     this->style()->unpolish(this);
     this->style()->polish(this);
-    this->resize(1280,800);
     this->update();
     this->repaint();
 
-    this->zoneContainerMap = new QMap<QString, ZoneContainerWidget*>;
 
     //create header template
     TopHeaderWidget *hcheader = new TopHeaderWidget(this,"Main Menu");
     QVBoxLayout *mainLayout = new QVBoxLayout;
+    ZoneFunctionsBaseWidget *zoneBase = new ZoneFunctionsBaseWidget(this);
     mainWidgetLayout = new QStackedLayout(this);
 
     this->contentLayout = new QStackedLayout;
 
     //create node widgets
-    ZoneChooserWidget *zoneChooser = new ZoneChooserWidget(this);
     SystemSettings *systemSettingsWidget = new SystemSettings(this);
     QWidget *contentHolder = new QWidget(this);
     screensaverHolder = new ScreenSaverWidget(this);
     idleTimer = new QTimer();
     this->idleTimer->start(100*120*5);
-    connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));    
-    contentLayout->addWidget(zoneChooser->topWidget);
+    connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));
+    contentLayout->addWidget(zoneBase->topWidget);
     contentLayout->addWidget(systemSettingsWidget->topWidget);
     setLayout(mainWidgetLayout);
     contentHolder->setLayout(mainLayout);
     mainWidgetLayout->addWidget(contentHolder);
     mainWidgetLayout->addWidget(screensaverHolder->topWidget);
-    mainWidgetLayout->setCurrentWidget(screensaverHolder->topWidget);
+    /////////////////////////mainWidgetLayout->setCurrentWidget(screensaverHolder->topWidget);
 
     mainLayout->setContentsMargins(0,0,0,0);
+    mainWidgetLayout->setContentsMargins(0,0,0,0);
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
 
-    foreach (Zone zone, gZoneMap) {
-        ZoneContainerWidget *zcw = new ZoneContainerWidget(zone);
-        this->zoneContainerMap->insert(zone.getName(),zcw);
-        contentLayout->addWidget(zcw->topWidget);
-    }
     contentLayout->setCurrentIndex(0);
 
     if (QFileInfo::exists("/dev/ttyACM0"))
@@ -85,12 +84,13 @@ void MainWindow::paintEvent(QPaintEvent *pe)
 
 void MainWindow::showZoneChooser() {
     contentLayout->setCurrentIndex(0);
-}
+    QString homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
+    QDir::setCurrent(homeLocation + "/.smah/assets");
 
-void MainWindow::showZone(QString zone) {
-    /* TODO: ADD ERROR HANDLING IF ZONELIST IS NULL */
-    //emit zoneChanged(zone);
-    contentLayout->setCurrentWidget(this->getZoneContainer(zone)->topWidget);
+    QFile File("main.css");
+    File.open(QFile::ReadOnly);
+    QString StyleSheet = QLatin1String(File.readAll());
+    qApp->setStyleSheet(StyleSheet);
 }
 
 void MainWindow::showSystemWidget() {

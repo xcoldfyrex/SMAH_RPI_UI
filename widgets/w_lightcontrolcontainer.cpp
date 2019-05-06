@@ -18,9 +18,9 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     this->topWidget = new QWidget;
     this->contentLayout = new QHBoxLayout(topWidget);
     QVBoxLayout *rightItems = new QVBoxLayout();
-    btnSetPreset = new QEngravedPushButton("> Choose Preset");
-    btnSetOff = new QEngravedPushButton("> Turn Off");
-    btnBack = new QEngravedPushButton("> Back");
+    btnSetPreset = new QEngravedPushButton("Presets");
+    btnSetOff = new QEngravedPushButton("Turn Off");
+    btnBack = new QEngravedPushButton("Back");
     btnSetPreset->setObjectName("btnSetPreset");
     btnSetOff->setObjectName("btnSetOff");
     btnBack->setObjectName("btnBack");

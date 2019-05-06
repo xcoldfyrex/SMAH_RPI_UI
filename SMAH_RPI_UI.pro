@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     zwavemanager.cpp \
     sunriseset.cpp \
     widgets/w_screensaver.cpp \
-    sensor.cpp
+    sensor.cpp \
+    widgets/w_zonefunctionsbasewidget.cpp
 
 
 
@@ -87,7 +88,8 @@ HEADERS  += \
     eventfilter.h \
     sensor.h \
     commandrouter.h \
-    widgets/qengravedlabel.h
+    widgets/qengravedlabel.h \
+    widgets/w_zonefunctionsbasewidget.h
 
 
 FORMS    += \

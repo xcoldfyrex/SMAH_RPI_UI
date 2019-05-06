@@ -7,7 +7,7 @@
 #include <QMap>
 #include <QListWidget>
 
-#include "mainwindow.h"
+#include "w_zonefunctionsbasewidget.h"
 #include "zone.h"
 #include "qengravedlabel.h"
 
@@ -23,9 +23,9 @@ class ZoneChooserWidget : public QWidget
 
 public:
     explicit ZoneChooserWidget(QWidget *parent = nullptr);
-    QHBoxLayout *contentLayout;
+    QVBoxLayout *contentLayout;
     QWidget *topWidget;
-    MainWindow *myParent;
+    ZoneFunctionsBaseWidget *myParent;
 
 public slots:
     void getZoneFromSelected();

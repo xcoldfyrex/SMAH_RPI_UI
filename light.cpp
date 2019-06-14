@@ -99,7 +99,7 @@ void Light::setLevel(int level)
 {
     if (this->type == LIGHT_ZWAVE_DIMMABLE)
     {
-        if (this->localUpdate)
+        if (this->isLocal())
         {
             //this->level = level;
             setZWaveLevel(level, this->id);

@@ -10,7 +10,7 @@ class ZoneFunctionsBaseWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneFunctionsBaseWidget(QWidget *parent = nullptr);
+    explicit ZoneFunctionsBaseWidget(QWidget *parent = Q_NULLPTR);
     QWidget *topWidget;
     QHBoxLayout *mainLayout;
     QStackedLayout *contentLayout;
@@ -19,6 +19,7 @@ public:
 private:
     QMap<QString, ZoneContainerWidget*> *zoneContainerMap;
     ZoneContainerWidget *getZoneContainer(QString zone) { return zoneContainerMap->value(zone); }
+    void paintEvent(QPaintEvent *);
 
 signals:
 

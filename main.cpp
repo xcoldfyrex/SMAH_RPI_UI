@@ -34,6 +34,7 @@ int MY_DEVICE_ID;
 smah_i2c bus;
 QString homeLocation;
 TCPServer tcpServer;
+bool zwave_ready = false;
 
 
 void loadZones()
@@ -223,19 +224,19 @@ int main(int argc, char *argv[])
     bus = smah_i2c_open("/dev/i2c-1");
     if (bus == nullptr)
     {
-        qWarning() << "Failed to open i2c bus";
+        qInfo() << "I2C init failed";
     } else {
-        qInfo() << "i2c bus opened";
+        qInfo() << "I2C init successful";
         if (PCA9685_setFreq(bus, 1000) == 0)
         {
             PCA9685_init(bus);
-            qInfo() << "PCA init";
+            qInfo() << "PCA init successful";
             PCA9685_setDutyCycle(bus,0, 0);
             PCA9685_setDutyCycle(bus,1, 0);
             PCA9685_setDutyCycle(bus,2, 0);
             PCA9685_setDutyCycle(bus,3, 0);
         } else {
-            qWarning() << "PCA init failed";
+            qInfo() << "PCA init failed";
         }
     }
 
@@ -247,7 +248,7 @@ int main(int argc, char *argv[])
         if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack))
             foreach (QNetworkAddressEntry entry, interface.addressEntries())
             {
-                if (interface.name() == "wlp5s0" || interface.name() == "wlan0")
+                if (interface.name() == "wlp5s0" || interface.name() == "wlan0" || interface.name() == "eth0")
                 {
                     MY_HW_ADDR = interface.hardwareAddress();
                     break;
@@ -284,7 +285,8 @@ int main(int argc, char *argv[])
 
 
     tcpServer.startListen();
-    MainWindow mainWindow;
+    MainWindow mainWindow(Q_NULLPTR);
+    mainWindow.setStyleSheet(StyleSheet);
 
     DatagramHandler broadcaster;
     mainWindow.show();

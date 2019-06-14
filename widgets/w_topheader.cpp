@@ -34,7 +34,7 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     this->topWidgetLayout->addSpacerItem(spcHeader);
     topWidgetLayout->addWidget(btnInfo);
     topWidgetLayout->addWidget(btnHome);
-
+    topWidgetLayout->setContentsMargins(0,0,0,0);
     topWidget->setFixedHeight(75);
     grid->setObjectName("headerGrid");
     btnHome->setObjectName("btnTopZones");
@@ -75,8 +75,8 @@ void TopHeaderWidget::showTime()
     int sunset;
     sunrise = sun.calcSunrise();
     sunset = sun.calcSunset();
-    QString sr = QString::number(sunrise/60) + ":" + QString::number(abs(sunrise%60));
-    QString sd = QString::number(sunset/60) + ":" + QString::number(abs(sunset%60));
-    this->lblSunrise->setText("Sunrise: " + sr);
-    this->lblSunset->setText("Sunset: " + sd);
+    QString sr = QString::number(sunrise/60).rightJustified(2, '0') + ":" + QString::number(abs(sunrise%60)).rightJustified(2, '0');
+    QString sd = QString::number(sunset/60).rightJustified(2, '0') + ":" + QString::number(abs(sunset%60)).rightJustified(2, '0');
+    this->lblSunrise->setText("Sunrise:\t" + sr);
+    this->lblSunset->setText("Sunset:\t" + sd);
 }

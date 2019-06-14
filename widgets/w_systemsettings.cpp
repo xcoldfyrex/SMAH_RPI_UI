@@ -53,13 +53,11 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     QEngravedLabel *lblName = new QEngravedLabel("name");
     QEngravedLabel *lblMac= new QEngravedLabel("mac");
     QEngravedLabel *lblip = new QEngravedLabel("ip");
-    QEngravedLabel *lblbytes = new QEngravedLabel("bytes");
     QEngravedLabel *lblVersion = new QEngravedLabel("version");
 
     lblName->setObjectName("gridHeader");
     lblMac->setObjectName("gridHeader");
     lblip->setObjectName("gridHeader");
-    lblbytes->setObjectName("gridHeader");
     lblVersion->setObjectName("gridHeader");
 
     grdDeviceStatus->setSpacing(0);
@@ -68,8 +66,7 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     grdDeviceStatus->addWidget(lblName,0,0);
     grdDeviceStatus->addWidget(lblMac,0,1);
     grdDeviceStatus->addWidget(lblip,0,2);
-    grdDeviceStatus->addWidget(lblbytes,0,3);
-    grdDeviceStatus->addWidget(lblVersion,0,4);
+    grdDeviceStatus->addWidget(lblVersion,0,3);
     vboxDeviceStatus->addLayout(grdDeviceStatus);
     int devcnt = 1;
     for(RPIDevice *device : g_deviceList)
@@ -78,11 +75,9 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
         grdDeviceStatus->addWidget(new QEngravedLabel(device->getName() + "\t"),devcnt,0);
         grdDeviceStatus->addWidget(new QEngravedLabel(device->getHwAddress() + "\t"),devcnt,1);
         QEngravedLabel *lblIP = new QEngravedLabel("-\t");
-        QEngravedLabel *lblBytes = new QEngravedLabel("0\t");
         QEngravedLabel *lblVersion = new QEngravedLabel("-");
         grdDeviceStatus->addWidget(lblIP,devcnt,2);
-        grdDeviceStatus->addWidget(lblBytes,devcnt,3);
-        grdDeviceStatus->addWidget(lblVersion,devcnt,4);
+        grdDeviceStatus->addWidget(lblVersion,devcnt,3);
         devcnt++;
         connect(device, &RPIDevice::ipChanged, [lblIP,lblVersion,device](QString ip) {
             lblIP->setText(ip);

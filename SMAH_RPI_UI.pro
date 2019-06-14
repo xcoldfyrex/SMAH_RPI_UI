@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     sunriseset.cpp \
     widgets/w_screensaver.cpp \
     sensor.cpp \
-    widgets/w_zonefunctionsbasewidget.cpp
+    widgets/w_zonefunctionsbasewidget.cpp \
+    ui_mainwindow.cpp
 
 
 
@@ -80,7 +81,6 @@ HEADERS  += \
     presettask.h \
     tcpserver.h \
     tcpsocket.h \
-    ui_menuwindow.h \
     zone.h \
     zwavemanager.h \
     sunriseset.h \
@@ -89,12 +89,12 @@ HEADERS  += \
     sensor.h \
     commandrouter.h \
     widgets/qengravedlabel.h \
-    widgets/w_zonefunctionsbasewidget.h
+    widgets/w_zonefunctionsbasewidget.h \
+    ui_mainwindow.h
 
 
 FORMS    += \
-    mainwindow.ui \
-    lightcontrolwidget.ui
+    ui_mainwindow.ui
 
 DEFINES += QT_MESSAGELOGCONTEXT
 

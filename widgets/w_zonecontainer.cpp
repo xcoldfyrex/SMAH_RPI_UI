@@ -132,6 +132,8 @@ ZoneContainerWidget::ZoneContainerWidget(Zone zone)
     QEngravedPushButton *btnShowOverview = new QEngravedPushButton("> Zone Functions");
     btnShowOverview->setObjectName("btnShowOverview");
     bottomLayout->addWidget(btnShowOverview);
+    bottomLayout->setContentsMargins(0,0,0,0);
+
     bottomLayout->addStretch(1);
     bottomLayout->addWidget(lblZone);
     bottomPanelWidget->setFixedHeight(75);

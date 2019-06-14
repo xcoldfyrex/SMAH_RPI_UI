@@ -22,7 +22,7 @@
 
 extern QMap<QString, Zone> gZoneMap;
 extern QMap <int, int> g_nodeValues;
-
+extern bool zwave_ready;
 
 using namespace OpenZWave;
 
@@ -470,6 +470,11 @@ bool getZWaveState(int nodeid)
 
 void setZWaveLevel(uint8 value, int nodeid)
 {
+    if (!zwave_ready)
+    {
+        qWarning() << "ZWave NOT read, Attempted to set level on " << nodeid;
+        return;
+    }
     pthread_mutex_lock( &g_criticalSection );
     for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
     {
@@ -492,6 +497,12 @@ void setZWaveLevel(uint8 value, int nodeid)
 
 void setZWaveToggle(bool value, int nodeid)
 {
+    if (!zwave_ready)
+    {
+        qWarning() << "ZWave NOT read, Attempted to set level on " << nodeid;
+        return;
+    }
+
     pthread_mutex_lock( &g_criticalSection );
     for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
     {
@@ -582,9 +593,10 @@ void init_zwave()
     if( !g_initFailed )
     {
 
-
+        zwave_ready = true;
 
     } else {
+        zwave_ready = false;
     }
 
     //getZWaveState(5);

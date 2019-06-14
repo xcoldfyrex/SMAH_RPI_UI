@@ -47,7 +47,7 @@ void ZoneLightsWidget::addToggleFunctions()
             toggle = new QEngravedPushButton("> Set");
             toggle->setObjectName("btnShowLightControl");
             this->topWidget->addWidget(colorLightControlWidget->topWidget);
-            signalMapper->setMapping(toggle,colorLightControlWidget->topWidget);
+            signalMapper->setMapping(toggle,colorLightControlWidget->topWidget);                        
             connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
             connect(signalMapper,SIGNAL(mapped(QWidget*)),this,SLOT(showCustomLights(QWidget*)),Qt::QueuedConnection);
 
@@ -81,9 +81,9 @@ void ZoneLightsWidget::addToggleFunctions()
             // Just on and off
             toggle = new QEngravedPushButton("> Toggle");
             toggle->setObjectName("btnShowLightControl");
-            signalMapper->setMapping(toggle,light->getId());
-            connect(toggle,SIGNAL(clicked()),signalMapper,SLOT(map()));
-            connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(togglePower(int)));
+            connect(toggle, &QEngravedPushButton::clicked, [light](){
+                light->toggleState();
+            });
             this->contentLayout->addWidget(toggle,x,2);
 
         }
@@ -106,14 +106,14 @@ void ZoneLightsWidget::showCustomLights(QWidget *widget)
     this->topWidget->setCurrentWidget(widget);
 }
 
-void ZoneLightsWidget::togglePower(int id) {
+void ZoneLightsWidget::togglePower(Light *light) {
     // TODO
     // why the fuck must i pass an int here instead of the object
-    foreach (Light *light, this->zone.getLightList())
-    {
-        if (light->getId() == id)
+    //foreach (Light *light, this->zone.getLightList())
+    //{
+//        if (light->getId() == id)
             light->toggleState();
-    }
+  //  }
 }
 
 void ZoneLightsWidget::showPresetChooser(QWidget *widget)

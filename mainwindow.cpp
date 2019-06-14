@@ -35,8 +35,11 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 
     //create header template
     TopHeaderWidget *hcheader = new TopHeaderWidget(this,"Main Menu");
+    hcheader->setObjectName("TopHeaderWidget");
     QVBoxLayout *mainLayout = new QVBoxLayout;
     ZoneFunctionsBaseWidget *zoneBase = new ZoneFunctionsBaseWidget(this);
+    zoneBase->setObjectName("ZoneFunctionsBaseWidget");
+
     mainWidgetLayout = new QStackedLayout(this);
 
     this->contentLayout = new QStackedLayout;
@@ -45,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     SystemSettings *systemSettingsWidget = new SystemSettings(this);
     QWidget *contentHolder = new QWidget(this);
     screensaverHolder = new ScreenSaverWidget(this);
+
     idleTimer = new QTimer();
     this->idleTimer->start(100*120*5);
     connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));
@@ -54,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     contentHolder->setLayout(mainLayout);
     mainWidgetLayout->addWidget(contentHolder);
     mainWidgetLayout->addWidget(screensaverHolder->topWidget);
-    /////////////////////////mainWidgetLayout->setCurrentWidget(screensaverHolder->topWidget);
+    mainWidgetLayout->setCurrentWidget(screensaverHolder->topWidget);
 
     mainLayout->setContentsMargins(0,0,0,0);
     mainWidgetLayout->setContentsMargins(0,0,0,0);
@@ -62,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addLayout(contentLayout);
 
     contentLayout->setCurrentIndex(0);
+    contentLayout->setContentsMargins(0,0,0,0);
 
     if (QFileInfo::exists("/dev/ttyACM0"))
     {
@@ -70,11 +75,11 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     } else {
         qInfo() << "ZWave device not found. Skipping.";
     }
+
 }
 
-void MainWindow::paintEvent(QPaintEvent *pe)
+void MainWindow::paintEvent(QPaintEvent *)
 {
-    Q_UNUSED(pe);
 
     QStyleOption o;
     o.initFrom(this);
@@ -84,6 +89,7 @@ void MainWindow::paintEvent(QPaintEvent *pe)
 
 void MainWindow::showZoneChooser() {
     contentLayout->setCurrentIndex(0);
+    /*
     QString homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
     QDir::setCurrent(homeLocation + "/.smah/assets");
 
@@ -91,6 +97,7 @@ void MainWindow::showZoneChooser() {
     File.open(QFile::ReadOnly);
     QString StyleSheet = QLatin1String(File.readAll());
     qApp->setStyleSheet(StyleSheet);
+    */
 }
 
 void MainWindow::showSystemWidget() {

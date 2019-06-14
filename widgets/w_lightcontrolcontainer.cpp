@@ -45,16 +45,21 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
     preview->color.setRgb(255,255,255);
     rgb.setHsv(0,255,255);
 
-    contentLayout->addWidget(preview);
     contentLayout->addWidget(colorPalette);
+    contentLayout->addWidget(preview);
     contentLayout->addLayout(rightItems);
     rightItems->addWidget(btnSetPreset,1, Qt::AlignLeft);
     rightItems->addWidget(btnSetOff,1, Qt::AlignLeft);
     rightItems->addWidget(btnBack,1, Qt::AlignLeft);
-    rightItems->addStretch(1);
+
+    //rightItems->addStretch(2);
+
+
     //rightItems->addWidget(chkWhiteEnabled);
-    rightItems->addWidget(new QLabel("White Intesnity"));
+    rightItems->addWidget(new QLabel("White Intensity"));
     rightItems->addWidget(sl_whitelevel);
+    rightItems->addWidget(preview);
+
 
     connect(colorPalette,SIGNAL(colorChange(QColor)),this,SLOT(updateFromWheel(QColor)));
     connect(sl_whitelevel,SIGNAL(valueChanged(int)),this, SLOT(sliderChanged(int)));

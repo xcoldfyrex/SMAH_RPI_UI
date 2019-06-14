@@ -34,7 +34,7 @@ public slots:
 private slots:
     void addToggleFunctions();
     void showCustomLights(QWidget *widget);
-    void togglePower(int id);
+    void togglePower(Light *light);
     void showPresetChooser(QWidget *widget);
     void hidePresetChooser();
     void buttonListClicked(int id);

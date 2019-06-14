@@ -36,8 +36,8 @@ public:
 
 
 private:
-    int id;
-    int version;
+    int id = -1;
+    int version = -1;
     QString name, hwAddress;
     QMap <int, PowerFunction> powerControls;
     QMap <int, EnvironmentFunction> enviroData;

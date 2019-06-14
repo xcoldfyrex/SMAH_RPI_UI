@@ -53,8 +53,8 @@ void DatagramHandler::processPendingDatagrams()
                 }
             }
             ClientSocket *client = new ClientSocket(*address, nullptr);
-            connect(client,SIGNAL(deviceArrived(RPIDevice*)), &tcpServer, SLOT(devReady(RPIDevice*)),Qt::DirectConnection);
             g_clientMap.append(client);
+            connect(client,SIGNAL(deviceArrived(RPIDevice*)), &tcpServer, SLOT(devReady(RPIDevice*)),Qt::DirectConnection);
         }
     }
     delete address;

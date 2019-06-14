@@ -37,20 +37,7 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
             item->setText(zone.getName());
             zoneList->addItem(item);
             offset++;
-        }
-        /*
-        if (zone.getSensorList().size() != 0)
-        {
-            for (Sensor *sensor : zone.getSensorList()) {
-                ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, sensor);
-                zenv->topWidget->setObjectName("zoneEnv");
-                zenv->setMinimumWidth(800);
-                zenv->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-                //envHolder->addWidget(zenv->topWidget, enviroGridOffset, 0, Qt::AlignLeft);
-                enviroGridOffset++;
-            }
-        }
-        */
+        }        
     }
     QSpacerItem *verticalSpacer = new QSpacerItem(40, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
     envHolder->addItem(verticalSpacer,enviroGridOffset,0);    

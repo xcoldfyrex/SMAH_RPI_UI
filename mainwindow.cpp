@@ -89,20 +89,10 @@ void MainWindow::paintEvent(QPaintEvent *)
 
 void MainWindow::showZoneChooser() {
     contentLayout->setCurrentIndex(0);
-    /*
-    QString homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
-    QDir::setCurrent(homeLocation + "/.smah/assets");
-
-    QFile File("main.css");
-    File.open(QFile::ReadOnly);
-    QString StyleSheet = QLatin1String(File.readAll());
-    qApp->setStyleSheet(StyleSheet);
-    */
 }
 
 void MainWindow::showSystemWidget() {
     contentLayout->setCurrentIndex(1);
-    //contentLayout->setCurrentWidget(this->systemSettingsWidget.topLevelWidget());
 }
 
 void MainWindow::addPreset(Preset preset)

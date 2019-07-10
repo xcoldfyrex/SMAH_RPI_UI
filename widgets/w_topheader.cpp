@@ -7,7 +7,7 @@
 #include "w_topheader.h"
 #include "mainwindow.h"
 #include "sunriseset.h"
-
+#include "rsslisting.h"
 
 TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(parent)
 {
@@ -53,6 +53,8 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(showTime()));
     timer->start(1000);
+       RSSListing *rsslisting = new RSSListing;
+       rsslisting->fetch("http://skfr.org/feed/");
 }
 
 void TopHeaderWidget::showTime()
@@ -80,3 +82,5 @@ void TopHeaderWidget::showTime()
     this->lblSunrise->setText("Sunrise:\t" + sr);
     this->lblSunset->setText("Sunset:\t" + sd);
 }
+
+

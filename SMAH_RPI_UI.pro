@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     widgets/w_screensaver.cpp \
     sensor.cpp \
     widgets/w_zonefunctionsbasewidget.cpp \
-    ui_mainwindow.cpp
+    ui_mainwindow.cpp \
+    rsslisting.cpp
 
 
 
@@ -90,7 +91,8 @@ HEADERS  += \
     commandrouter.h \
     widgets/qengravedlabel.h \
     widgets/w_zonefunctionsbasewidget.h \
-    ui_mainwindow.h
+    ui_mainwindow.h \
+    rsslisting.h
 
 
 FORMS    += \

@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QSpacerItem>
 #include <QTimer>
+#include <QDateTime>
 
 #include "w_systemsettings.h"
 #include "build_number.h"
@@ -93,19 +94,28 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     QEngravedLabel *lblSensor = new QEngravedLabel("sensor");
     QEngravedLabel *lblid = new QEngravedLabel("id");
     QEngravedLabel *lbllux = new QEngravedLabel("lux");
+    QEngravedLabel *lblrh = new QEngravedLabel("RH");
+    QEngravedLabel *lbltemp = new QEngravedLabel("temp");
     QEngravedLabel *lblbattery = new QEngravedLabel("battery");
-
+    QEngravedLabel *lblupdated = new QEngravedLabel("updated");
 
     lblSensor->setObjectName("gridHeader");
     lblid->setObjectName("gridHeader");
     lbllux->setObjectName("gridHeader");
     lblbattery->setObjectName("gridHeader");
+    lblupdated->setObjectName("gridHeader");
+    lblrh->setObjectName("gridHeader");
+    lbltemp->setObjectName("gridHeader");
 
     grdSensorStatus->setSpacing(0);
     grdSensorStatus->addWidget(lblSensor,0,0);
     grdSensorStatus->addWidget(lblid,0,1);
     grdSensorStatus->addWidget(lbllux,0,2);
-    grdSensorStatus->addWidget(lblbattery,0,3);
+    grdSensorStatus->addWidget(lblrh,0,3);
+    grdSensorStatus->addWidget(lbltemp,0,4);
+    grdSensorStatus->addWidget(lblbattery,0,5);
+    grdSensorStatus->addWidget(lblupdated,0,6);
+
     vboxSensorStatus->addLayout(grdSensorStatus);
     int senscnt = 1;
     for(Sensor *sensor : g_sensorList)
@@ -113,7 +123,27 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
 
         grdSensorStatus->addWidget(new QEngravedLabel(sensor->getName()),senscnt,0);
         grdSensorStatus->addWidget(new QEngravedLabel(QString::number(sensor->getNodeId())),senscnt,1);
+        QEngravedLabel *sensupdate = new QEngravedLabel("");
+        QEngravedLabel *sensbattery = new QEngravedLabel("");
+        QEngravedLabel *senslux = new QEngravedLabel("");
+        QEngravedLabel *sensrh = new QEngravedLabel("");
+        QEngravedLabel *senstemp = new QEngravedLabel("");
+        grdSensorStatus->addWidget(senslux,senscnt,2);
+        grdSensorStatus->addWidget(sensrh,senscnt,3);
+        grdSensorStatus->addWidget(senstemp,senscnt,4);
+        grdSensorStatus->addWidget(sensbattery,senscnt,5);
+        grdSensorStatus->addWidget(sensupdate,senscnt,6);
+
         senscnt++;
+        connect(refreshTimer, &QTimer::timeout, [sensor, sensbattery,sensupdate,sensrh,senslux,senstemp]()
+        {
+            sensupdate->setText(QDateTime::fromSecsSinceEpoch(sensor->getLastUpdate()).toString());
+            sensbattery->setText(QString::number(sensor->getBattery()));
+            senslux->setText(QString::number(sensor->getLux()));
+            sensrh->setText(QString::number(sensor->getHumidity()));
+            senstemp->setText(QString::number(sensor->getTemperature()));
+        });
+
     }
     grdSensorStatus->setAlignment(Qt::AlignTop);
 

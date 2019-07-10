@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QMap>
+#include <QDateTime>
+#include <QDate>
 
 #include "tcpserver.h"
 
@@ -27,6 +29,9 @@ public:
     int getNodeId() { return this->node_id; }
     int getDeviceId() { return this->device_id; }
     int getBattery() { return this->battery; }
+    qint64 getLastUpdate() { return this->updated; }
+    void setLastUpdate(qint64 ts) { this->updated = ts; }
+
     QString getName() { return this->name; }
     //void setTemperature(float temperature);
     //void setHumidity(float humidity);
@@ -38,6 +43,7 @@ public:
         this->values[index] = value;
         if (this->getDeviceId() == MY_DEVICE_ID)
             tcpServer.broadcastMessage(this->getNodeId(), 1, value, index);
+        setLastUpdate(QDateTime::currentSecsSinceEpoch());
     }
     float getValue(int index) {
         if (this->values.contains(index))
@@ -57,6 +63,7 @@ private:
     int battery = 0;
     int node_id;
     int device_id;
+    qint64 updated = 0;
     QString name;
     QMap<int, float> values;
 };

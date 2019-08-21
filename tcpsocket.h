@@ -18,7 +18,7 @@ class ClientSocket : public QObject
 
 public:
     explicit ClientSocket(qintptr ID, QObject *parent);
-    ClientSocket(QHostAddress address, QObject *parent);
+    ClientSocket(QHostAddress *address, QObject *parent);
     QHostAddress getPeerAddress() { return this->remoteAddress; }
     //RPIDevice *getDevice() { return this->rpidevice; }
     QString getDeviceID() { return this->devid; }

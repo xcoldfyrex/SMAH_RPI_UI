@@ -2,7 +2,7 @@
 #include "pigpio.h"
 #include "gpio_defs.h"
 #include "commandrouter.h"
-#include "tcpserver.h"
+#include "tcpconnectionfactory.h"
 #include "pca9685.h"
 
 #include <QDebug>
@@ -10,7 +10,7 @@ extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
 extern smah_i2c bus;
-extern TCPServer tcpServer;
+extern TCPConnectionFactory tcpServer;
 
 
 Light::Light(QObject *parent) : QObject(parent)

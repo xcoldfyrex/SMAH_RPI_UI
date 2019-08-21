@@ -6,10 +6,10 @@
 #include <QDateTime>
 #include <QDate>
 
-#include "tcpserver.h"
+#include "tcpconnectionfactory.h"
 
 extern int MY_DEVICE_ID;
-extern TCPServer tcpServer;
+extern TCPConnectionFactory tcpServer;
 
 class Sensor : public QObject
 {

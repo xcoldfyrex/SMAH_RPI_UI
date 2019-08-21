@@ -8,12 +8,12 @@
 
 #include "w_systemsettings.h"
 #include "build_number.h"
-#include "tcpserver.h"
+#include "tcpconnectionfactory.h"
 #include "sensor.h"
 
 extern QString MY_HW_ADDR;
 extern QString MY_IP_ADDR;
-extern TCPServer tcpServer;
+extern TCPConnectionFactory tcpServer;
 extern QList <Sensor*> g_sensorList;
 extern QMap <QString, RPIDevice*> g_deviceList;
 

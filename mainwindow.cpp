@@ -8,7 +8,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "zwavemanager.h"
-#include "tcpserver.h"
+#include "tcpconnectionfactory.h"
 #include "widgets/w_zonefunctionsbasewidget.h"
 #include <QDebug>
 
@@ -18,7 +18,7 @@
 
 
 extern QList<Preset> gColorPresetMap;
-extern TCPServer tcpServer;
+extern TCPConnectionFactory tcpServer;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
 {

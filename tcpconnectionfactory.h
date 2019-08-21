@@ -8,11 +8,11 @@
 #include "tcpsocket.h"
 #include "rpidevice.h"
 
-class TCPServer : public QTcpServer
+class TCPConnectionFactory : public QTcpServer
 {
     Q_OBJECT
 public:
-    TCPServer(QObject *parent = Q_NULLPTR);
+    TCPConnectionFactory(QObject *parent = Q_NULLPTR);
     QMap<QString, int> *outstanding;
     void startListen();
     void broadcastMessage(int srcDevice, int type, float value, int index);
@@ -24,6 +24,7 @@ public slots:
     void cleanSocket(ClientSocket *socket);
     void devReady(RPIDevice *device);
     void devLost(RPIDevice *device);
+    void initiateConnection(QHostAddress *address);
 
 signals:
     void deviceReady(RPIDevice *device);

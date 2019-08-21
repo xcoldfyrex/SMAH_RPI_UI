@@ -33,7 +33,6 @@ SOURCES += main.cpp\
     datagramhandler.cpp \
     widgets/w_zone_lights.cpp \
     light.cpp \
-    tcpserver.cpp \
     tcpsocket.cpp \
     presettask.cpp \
     zone.cpp \
@@ -46,7 +45,8 @@ SOURCES += main.cpp\
     sensor.cpp \
     widgets/w_zonefunctionsbasewidget.cpp \
     ui_mainwindow.cpp \
-    rsslisting.cpp
+    rsslisting.cpp \
+    tcpconnectionfactory.cpp
 
 
 
@@ -80,7 +80,6 @@ HEADERS  += \
     pca9685.h \
     preset.h \
     presettask.h \
-    tcpserver.h \
     tcpsocket.h \
     zone.h \
     zwavemanager.h \
@@ -92,7 +91,8 @@ HEADERS  += \
     widgets/qengravedlabel.h \
     widgets/w_zonefunctionsbasewidget.h \
     ui_mainwindow.h \
-    rsslisting.h
+    rsslisting.h \
+    tcpconnectionfactory.h
 
 
 FORMS    += \

@@ -6,6 +6,7 @@
 #include <QList>
 #include <QDir>
 #include <QNetworkInterface>
+#include <QHostAddress>
 
 #include "zone.h"
 #include "light.h"
@@ -15,7 +16,7 @@
 #include "datagramhandler.h"
 #include "pigpio.h"
 #include "gpio_defs.h"
-#include "tcpserver.h"
+#include "tcpconnectionfactory.h"
 #include "pca9685.h"
 #include "i2c/i2c.h"
 #include "eventfilter.h"
@@ -30,12 +31,12 @@ QMap <int, Light*> g_lightMap;
 QMap <int, int> g_nodeValues;
 QString MY_HW_ADDR;
 QString MY_IP_ADDR;
-int MY_DEVICE_ID;
+bool zwave_ready = false;
 smah_i2c bus;
 QString homeLocation;
-TCPServer tcpServer;
-bool zwave_ready = false;
 
+TCPConnectionFactory tcpServer;
+int MY_DEVICE_ID;
 
 void loadZones()
 {
@@ -289,6 +290,8 @@ int main(int argc, char *argv[])
     mainWindow.setStyleSheet(StyleSheet);
 
     DatagramHandler broadcaster;
+    QObject::connect(&broadcaster, SIGNAL(initiate(QHostAddress*)), &tcpServer, SLOT(initiateConnection(QHostAddress*)));
+
     mainWindow.show();
     a.installEventFilter(&filter);
     QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));

@@ -4,7 +4,7 @@
 #include <QTimer>
 #include <QObject>
 
-#include "tcpserver.h"
+#include "tcpconnectionfactory.h"
 
 class QUdpSocket;
 
@@ -18,10 +18,13 @@ private:
     QUdpSocket *udpSocket = nullptr;
     QUdpSocket *udpSocketBcast = nullptr;
     QTimer timer;
-    void broadcastDatagram();    
+    void broadcastDatagram();
 
 private slots:
     void processPendingDatagrams();
+
+signals:
+    void initiate(QHostAddress*);
 };
 
 #endif // BROADCASTER_H

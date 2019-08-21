@@ -31,28 +31,29 @@ ClientSocket::ClientSocket(qintptr ID, QObject *parent)
         pingTimer->setInterval(60000);
         pingTimer->start();
     }
-
-    connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(readyRead()));
+    //connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
+    //connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(readyRead()));
     connect(tcpSocket, SIGNAL(disconnected()),this,SLOT(disconnected()));
-    peer_address = this->tcpSocket->peerAddress().toString().toStdString();
-    this->remoteAddress = this->tcpSocket->peerAddress();
-    this->parent = parent;
-    QJsonObject data;
-    send_id(this->tcpSocket, data);
+    //peer_address = this->tcpSocket->peerAddress().toString().toStdString();
+    //this->remoteAddress = this->tcpSocket->peerAddress();
+    //this->parent = parent;
+    //QJsonObject data;
+    //send_id(this->tcpSocket, data);
 }
 
 // we conencted as a client
-ClientSocket::ClientSocket(QHostAddress address, QObject *parent)
+ClientSocket::ClientSocket(QHostAddress *address, QObject *parent)
     : QObject(parent)
 {
     this->blockSize = 0;
     this->tcpSocket = new QTcpSocket();
-    this->remoteAddress = address;
-    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
+    this->remoteAddress = *address;
+    //connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(readyRead()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(disconnected()),this,SLOT(disconnected()),Qt::DirectConnection);
     tcpSocket->close();
-    tcpSocket->connectToHost(address,9002);
+    //tcpSocket->deleteLater();
+    tcpSocket->connectToHost(*address,9002);
     QJsonObject data;
     send_id(this->tcpSocket,data);
 }
@@ -64,6 +65,7 @@ void ClientSocket::sendData(QJsonObject data)
         qWarning() << "Tried to send on null socket: " << data;
         return;
     }
+
     if(tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
         QJsonDocument temp(data);
@@ -109,13 +111,12 @@ void ClientSocket::disconnected() {
     //qInfo("Client disconnect(%s)", tcpSocket->peerAddress().toString().toStdString().c_str());
     if (g_deviceList.contains(this->devid))
     {
-        qInfo() << "Device LEFT: " << this->rpidevice->getHwAddress() << this->rpidevice->getName();
+        qInfo() << "Device LEFT: " << this->rpidevice->getHwAddress() << this->rpidevice->getName() << tcpSocket->errorString().toStdString().c_str();
         this->rpidevice->setVersion(0);
         this->rpidevice->setIP("-");
-    } else {
-        //qWarning() << "Unknown device disconnected: " << tcpSocket->peerAddress().toString().toStdString().c_str() << devid;
     }
     g_clientMap.removeOne(this);
+    qWarning() << "REMOVING" << this->remoteAddress << tcpSocket->socketDescriptor() << this;
     tcpSocket->close();
     tcpSocket->deleteLater();
     //delete this;
@@ -167,10 +168,11 @@ void ClientSocket::send_id(QTcpSocket *tcpSocket, QJsonObject data)
     jsonPayload["clientid"] = MY_HW_ADDR;
     jsonPayload["version"] = BUILD;
     prepareToSend("ID", jsonPayload, data.value("requestID").toString());
+    qWarning() << "SENDING" << tcpSocket->socketDescriptor() << this->remoteAddress;
 }
 
 void ClientSocket::processPayload(QByteArray buffer){
-    qDebug() << buffer;
+    qDebug() << this->tcpSocket->socketDescriptor() << buffer;
     QJsonDocument doc = QJsonDocument::fromJson(buffer.data());
     if(doc.isNull())
     {

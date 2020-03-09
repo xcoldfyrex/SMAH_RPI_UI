@@ -6,6 +6,7 @@
 #include "pca9685.h"
 
 #include <QDebug>
+
 extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
@@ -18,7 +19,7 @@ Light::Light(QObject *parent) : QObject(parent)
     this->statusLabel = new QLabel("N/A");
 }
 
-Light::Light(int id, QString name, int type, int deviceid, short bank)
+Light::Light(int id, QString name, int type, int deviceid, short bank, uint32 home_id)
 {
     this->id = id;
     this->name = name;
@@ -27,6 +28,7 @@ Light::Light(int id, QString name, int type, int deviceid, short bank)
     this->deviceid = deviceid;
     this->taskList = new QList<PresetTask*>();
     this->pwmbank = bank;
+    this->home_id = home_id;
 }
 
 //toggle a binary device
@@ -42,12 +44,16 @@ void Light::toggleState()
         qDebug() << "TOGGLE LOCAL";
     } else {
         //do shit to send to network
-        ClientSocket *sock = determineZone(this);
-        if (!sock)
-            return;
         QJsonObject jsonPayload;
         jsonPayload["id"] = this->id;
-        sock->prepareToSend("TOGGLE", jsonPayload);
+        //ClientSocket *sock = determineZone(this);
+        //if (!sock) {
+        // pray and broadcast. need to send to proper home_id
+        jsonPayload["home_id"] = (int) this->home_id;
+        tcpServer.broadcastMessageJSON("TOGGLE", jsonPayload);
+        return;
+        //}
+        //sock->prepareToSend("TOGGLE", jsonPayload);
     }
 
 }
@@ -104,14 +110,18 @@ void Light::setLevel(int level)
             //this->level = level;
             setZWaveLevel(level, this->id);
         } else {
-            ClientSocket *sock = determineZone(this);
-            if (!sock)
-                return;
             QJsonObject jsonPayload;
-            jsonPayload["value"] = level;
             jsonPayload["id"] = this->id;
-            sock->prepareToSend("LEVEL", jsonPayload);
+            //ClientSocket *sock = determineZone(this);
+            //if (!sock) {
+            // pray and broadcast. need to send to proper home_id
+            jsonPayload["home_id"] = (int) this->home_id;
+            jsonPayload["value"] = level;
+            tcpServer.broadcastMessageJSON("LEVEL", jsonPayload);
+            return;
+            //}
         }
+        //sock->prepareToSend("LEVEL", jsonPayload);
     }
 }
 

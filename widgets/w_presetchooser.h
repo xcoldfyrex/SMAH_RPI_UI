@@ -19,8 +19,8 @@ class PresetChooser : public QWidget
 public:
     PresetChooser(Zone zone, Light *light, QWidget *parent = nullptr);
     QWidget *topWidget;
-    QEngravedList *presetList;
-    QEngravedList *presetButtons;
+    QListWidget *presetList;
+    QListWidget *presetButtons;
     QEngravedPushButton *btnBack;
     QVBoxLayout *contentLayout;
 private:

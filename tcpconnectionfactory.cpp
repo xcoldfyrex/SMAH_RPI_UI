@@ -4,32 +4,17 @@
 extern QList<ClientSocket*> g_clientMap;
 
 TCPConnectionFactory::TCPConnectionFactory(QObject *parent)
-    : QTcpServer(parent)
-{
-
+    : QObject(parent)
+{    
 }
 
-void TCPConnectionFactory::incomingConnection(qintptr socketDescriptor)
+void TCPConnectionFactory::newConnection()
 {
-    //for (ClientSocket *socket : g_clientMap){
-
-    //}
-    //ClientSocket *socket = new ClientSocket(socketDescriptor, this);
-    //connect(socket,SIGNAL(socketDisconnected(ClientSocket*)), this, SLOT(cleanSocket(ClientSocket*)));
-    //connect(this,SIGNAL(broadcastSignal(QString, QJsonObject)), socket,SLOT(prepareToSend(QString,QJsonObject)));
-    //g_clientMap.append(socket);
-}
-
-void TCPConnectionFactory::initiateConnection(QHostAddress *address)
-{
-    ClientSocket *socket = new ClientSocket(address, Q_NULLPTR);
+    QTcpSocket *sock= server->nextPendingConnection();
+    ClientSocket *socket = new ClientSocket(sock, server);
     connect(socket,SIGNAL(socketDisconnected(ClientSocket*)), this, SLOT(cleanSocket(ClientSocket*)));
-    connect(this,SIGNAL(broadcastSignal(QString, QJsonObject)), socket,SLOT(prepareToSend(QString,QJsonObject)));
+    //connect(this,SIGNAL(broadcastSignal(QString, QJsonObject)), socket, SLOT(prepareToSend(QString,QJsonObject)));
     g_clientMap.append(socket);
-    for (ClientSocket *sock : g_clientMap)
-    {
-        qDebug() << sock->getPeerAddress();
-    }
 }
 
 void TCPConnectionFactory::cleanSocket(ClientSocket *socket)
@@ -65,8 +50,12 @@ void TCPConnectionFactory::devLost(RPIDevice *device)
 
 void TCPConnectionFactory::startListen()
 {
-    if (!this->listen(QHostAddress::AnyIPv4,9002)) {
+    server = new QTcpServer(this);
+    connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+    if (!server->listen(QHostAddress::AnyIPv4,9002)) {
         qWarning() << "Error opening listening socket";
+    } else {
+        qInfo() << "Server started!";
     }
     outstanding = new QMap<QString, int>();
 }
@@ -79,4 +68,9 @@ void TCPConnectionFactory::broadcastMessage(int srcDevice, int type, float value
     jsonPayload["type"] = type;
     jsonPayload["index"] = index;
     emit broadcastSignal("UPDATE", jsonPayload);
+}
+
+void TCPConnectionFactory::broadcastMessageJSON(QString type, QJsonObject data)
+{
+    emit broadcastSignal(type, data);
 }

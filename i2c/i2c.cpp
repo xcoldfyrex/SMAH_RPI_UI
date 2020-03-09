@@ -1,4 +1,7 @@
 #include "i2c.h"
+#include <QDebug>
+
+extern bool g_PCA9685_ready;
 
 struct smah_i2c_t {
     int fd;
@@ -25,6 +28,11 @@ smah_i2c smah_i2c_open(const char *filename) {
 }
 
 int smah_i2c_write(smah_i2c bus, int addr, unsigned char *buffer, int buffersize) {
+    if (!g_PCA9685_ready)
+    {
+        qCritical() << "Tried to write to I2C bus, but it's not ready: " << &buffer;
+        return 0;
+    }
     /* Lock mutex */
     pthread_mutex_lock(&bus->mutex);
 

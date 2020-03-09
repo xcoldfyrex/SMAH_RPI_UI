@@ -1,6 +1,7 @@
 #include "tcpsocket.h"
 #include "zone.h"
 #include "build_number.h"
+#include "tcpconnectionfactory.h"
 
 #include <QNetworkInterface>
 
@@ -10,52 +11,64 @@ extern QMap<QString, RPIDevice*> g_deviceList;
 extern QMap<int, Light*> g_lightMap;
 extern QMap<int, Preset> gColorPresetMap;
 extern QString MY_HW_ADDR;
+extern uint32 g_homeId;
+
+extern TCPConnectionFactory tcpServer;
+
 
 
 // spawned by the tcpserver
-ClientSocket::ClientSocket(qintptr ID, QObject *parent)
+ClientSocket::ClientSocket(QTcpSocket *ID, QObject *parent)
     : QObject(parent)
 {
-    this->socketDescriptor = ID;
     this->blockSize = 0;
 
-    tcpSocket = new QTcpSocket();
+    this->tcpSocket = ID;
 
-    if (!tcpSocket->setSocketDescriptor(this->socketDescriptor)) {
-        emit error(tcpSocket->error());
-        return;
-    }
-    else
-    {
-        pingTimer = new QTimer();
-        pingTimer->setInterval(60000);
-        pingTimer->start();
-    }
-    //connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
-    //connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(readyRead()));
+    pingTimer = new QTimer();
+    pingTimer->setInterval(60000);
+    pingTimer->start();
+
+    connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(readyRead()));
     connect(tcpSocket, SIGNAL(disconnected()),this,SLOT(disconnected()));
-    //peer_address = this->tcpSocket->peerAddress().toString().toStdString();
-    //this->remoteAddress = this->tcpSocket->peerAddress();
-    //this->parent = parent;
-    //QJsonObject data;
-    //send_id(this->tcpSocket, data);
+
+
+    peer_address = this->tcpSocket->peerAddress().toString().toStdString();
+    this->remoteAddress = this->tcpSocket->peerAddress();
+    this->parent = parent;
+    connect(tcpSocket, &QAbstractSocket::connected,[this]()
+    {
+        qDebug() << "SENDING INBOUND" << this->tcpSocket->peerAddress().toString();
+        QJsonObject data;
+        send_id(data);
+        hasSentID = true;
+    });
+    connect(&tcpServer, SIGNAL(broadcastSignal(QString, QJsonObject)), this, SLOT(prepareToSend(QString,QJsonObject)));
+
+
 }
 
 // we conencted as a client
-ClientSocket::ClientSocket(QHostAddress *address, QObject *parent)
+ClientSocket::ClientSocket(QHostAddress address, QObject *parent)
     : QObject(parent)
 {
     this->blockSize = 0;
     this->tcpSocket = new QTcpSocket();
-    this->remoteAddress = *address;
-    //connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError()),Qt::DirectConnection);
+    this->remoteAddress = address;
     connect(tcpSocket, SIGNAL(readyRead()),this,SLOT(readyRead()),Qt::DirectConnection);
     connect(tcpSocket, SIGNAL(disconnected()),this,SLOT(disconnected()),Qt::DirectConnection);
+
     tcpSocket->close();
-    //tcpSocket->deleteLater();
-    tcpSocket->connectToHost(*address,9002);
-    QJsonObject data;
-    send_id(this->tcpSocket,data);
+    connect(tcpSocket, &QAbstractSocket::connected,[this]()
+    {
+        // qDebug() << "SENDING OUTBOUND" << this->tcpSocket->peerAddress().toString();
+        QJsonObject data;
+        send_id(data);
+        hasSentID = true;
+    });
+
+    tcpSocket->connectToHost(address,9002);
+    connect(&tcpServer, SIGNAL(broadcastSignal(QString, QJsonObject)), this, SLOT(prepareToSend(QString,QJsonObject)));
 }
 
 void ClientSocket::sendData(QJsonObject data)
@@ -80,6 +93,11 @@ void ClientSocket::sendData(QJsonObject data)
         out << static_cast<quint16>(static_cast<unsigned long>(block.size()) - sizeof(quint16));
         tcpSocket->write(block);
         tcpSocket->flush();
+
+        // qDebug() << data;
+
+    } else {
+        qDebug() << "??" << tcpSocket->state() << this->remoteAddress << data;
     }
 }
 
@@ -116,10 +134,7 @@ void ClientSocket::disconnected() {
         this->rpidevice->setIP("-");
     }
     g_clientMap.removeOne(this);
-    qWarning() << "REMOVING" << this->remoteAddress << tcpSocket->socketDescriptor() << this;
     tcpSocket->close();
-    tcpSocket->deleteLater();
-    //delete this;
 }
 
 void ClientSocket::socketError()
@@ -162,17 +177,15 @@ void ClientSocket::prepareToSend(QString command, QJsonObject jsonPayload)
 }
 
 /* does all shit needed to send the proper ID to server*/
-void ClientSocket::send_id(QTcpSocket *tcpSocket, QJsonObject data)
+void ClientSocket::send_id(QJsonObject data)
 {
     QJsonObject jsonPayload;
     jsonPayload["clientid"] = MY_HW_ADDR;
     jsonPayload["version"] = BUILD;
     prepareToSend("ID", jsonPayload, data.value("requestID").toString());
-    qWarning() << "SENDING" << tcpSocket->socketDescriptor() << this->remoteAddress;
 }
 
 void ClientSocket::processPayload(QByteArray buffer){
-    qDebug() << this->tcpSocket->socketDescriptor() << buffer;
     QJsonDocument doc = QJsonDocument::fromJson(buffer.data());
     if(doc.isNull())
     {
@@ -203,6 +216,11 @@ void ClientSocket::processPayload(QByteArray buffer){
             qInfo() << "Device connected: " << this->rpidevice->getHwAddress() << this->rpidevice->getName();
             this->rpidevice->setVersion(incomingPayload["version"].toInt());
             this->rpidevice->setIP(this->remoteAddress.toString());
+            QJsonObject data;
+            if (!hasSentID) {
+                hasSentID = true;
+                send_id(data);
+            }
             emit deviceArrived(this->rpidevice);
         } else {
             qWarning() << "Unknown device connected: " << devid;
@@ -233,6 +251,9 @@ void ClientSocket::processPayload(QByteArray buffer){
     if (command == "TOGGLE" )
     {
         int id = incomingPayload["id"].toInt();
+        uint32 homeid = incomingPayload["home_id"].toInt();
+        if (homeid != g_homeId)
+            return;
         if (g_lightMap.contains(id))
         {
             g_lightMap.value(id)->toggleState();
@@ -243,6 +264,9 @@ void ClientSocket::processPayload(QByteArray buffer){
     if (command == "LEVEL" )
     {
         int id = incomingPayload["id"].toInt();
+        uint32 homeid = incomingPayload["home_id"].toInt();
+        if (homeid != g_homeId)
+            return;
         int level = incomingPayload["value"].toInt();
         if (g_lightMap.contains(id))
         {
@@ -288,14 +312,14 @@ void ClientSocket::processPayload(QByteArray buffer){
                 if (zone.getSensorById(id) != nullptr)
                 {
                     zone.getSensorById(id)->setValue(index,static_cast<float>(value));
-                    /*
-                    if (index == 0)
-                        zone.getSensorById(id)->setTemperature(value);
-                    if (index == 1)
-                        zone.getSensorById(id)->setHumidity(value);
-                    if (index == 2)
-                        zone.getSensorById(id)->setLux(static_cast<short>(value));
-                        */
+                    /* DEPRECATE THIS */
+                    //if (index == 0)
+                        //zone.getSensorById(id)->setTemperature(value);
+                    //if (index == 1)
+                      //  zone.getSensorById(id)->setHumidity(value);
+                    //if (index == 2)
+                      //  zone.getSensorById(id)->setLux(static_cast<short>(value));
+
                 }
             }
         }

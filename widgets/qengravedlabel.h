@@ -69,12 +69,12 @@ public:
 
     explicit QEngravedList(QWidget *parent= Q_NULLPTR)
         : QListWidget(parent){
-        //QGraphicsDropShadowEffect* eff = new QGraphicsDropShadowEffect(this);
-        //eff->setBlurRadius(2);
-        //eff->setXOffset(2);
-        //eff->setYOffset(2);
-        //eff->setColor(QColor("#111111"));
-        //this->setGraphicsEffect(eff);
+        QGraphicsDropShadowEffect* eff = new QGraphicsDropShadowEffect(this);
+        eff->setBlurRadius(2);
+        eff->setXOffset(2);
+        eff->setYOffset(2);
+        eff->setColor(QColor("#111111"));
+        this->setGraphicsEffect(eff);
     }
 
 protected:

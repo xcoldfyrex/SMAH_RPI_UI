@@ -6,6 +6,7 @@
 
 QT       += core gui network widgets xml
 CONFIG += console
+CONFIG     += debug
 
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
@@ -16,6 +17,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
     mainwindow.cpp \
     rpidevice.cpp \
+    w_weatherlistwidget.cpp \
     widgets/w_colorpreview.cpp \
     widgets/w_hsvwheel.cpp \
     widgets/w_lightcontrolcontainer.cpp \
@@ -46,13 +48,15 @@ SOURCES += main.cpp\
     widgets/w_zonefunctionsbasewidget.cpp \
     ui_mainwindow.cpp \
     rsslisting.cpp \
-    tcpconnectionfactory.cpp
+    tcpconnectionfactory.cpp \
+    w_weatherwidget.cpp
 
 
 
 HEADERS  += \
     mainwindow.h \
     rpidevice.h \
+    w_weatherlistwidget.h \
     widgets/w_colorpreview.h \
     widgets/w_hsvpalette.h \
     widgets/w_lightcontrolcontainer.h \
@@ -92,11 +96,13 @@ HEADERS  += \
     widgets/w_zonefunctionsbasewidget.h \
     ui_mainwindow.h \
     rsslisting.h \
-    tcpconnectionfactory.h
+    tcpconnectionfactory.h \
+    w_weatherwidget.h
 
 
 FORMS    += \
-    ui_mainwindow.ui
+    ui_mainwindow.ui \
+    weatherwidget.ui
 
 DEFINES += QT_MESSAGELOGCONTEXT
 
@@ -129,4 +135,6 @@ INCLUDEPATH += $$PWD/../../../../../usr/local/include
 DEPENDPATH += $$PWD/../../../../../usr/local/include
 
 DISTFILES += \
-    ../../../../../usr/local/include/openzwave/aes/aes.txt
+    ../../../../../usr/local/include/openzwave/aes/aes.txt \
+    Main.qml \
+    MainForm.ui.qml

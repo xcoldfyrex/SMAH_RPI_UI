@@ -10,13 +10,15 @@
 #include "build_number.h"
 #include "tcpconnectionfactory.h"
 #include "sensor.h"
+#include "zwavemanager.h"
 
 extern QString MY_HW_ADDR;
 extern QString MY_IP_ADDR;
 extern TCPConnectionFactory tcpServer;
 extern QList <Sensor*> g_sensorList;
 extern QMap <QString, RPIDevice*> g_deviceList;
-
+extern uint32  g_homeId;
+extern QString g_zwaveDriver;
 
 
 SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
@@ -35,6 +37,7 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     QGridLayout *grdDevStatus = new QGridLayout();
     vboxDevStatus->addLayout(grdDevStatus);
     QEngravedLabel *lblStatus = new QEngravedLabel("local device status");
+    QEngravedLabel *lblZwave = new QEngravedLabel("N/A");
     lblStatus->setObjectName("gridHeader");
     grdDevStatus->setSpacing(0);
     grdDevStatus->addWidget(lblStatus,0,0,1,4);
@@ -46,7 +49,15 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     grdDevStatus->addWidget(new QEngravedLabel(QString(MY_IP_ADDR)),3,1);
     grdDevStatus->addWidget(new QEngravedLabel("mac Address"),4,0);
     grdDevStatus->addWidget(new QEngravedLabel(QString(MY_HW_ADDR)),4,1);
+    grdDevStatus->addWidget(new QEngravedLabel("z-wave status"),5,0);
+    grdDevStatus->addWidget(lblZwave ,5,1);
     grdDevStatus->setAlignment(Qt::AlignTop);
+
+    connect(refreshTimer, &QTimer::timeout, [lblZwave]()
+    {
+       lblZwave->setText("Driver: "  + g_zwaveDriver + "\n"
+                         + "ID: " + QString::number(g_homeId, 16)) ;
+    });
 
     QWidget *deviceStatus = new QWidget(this);
     QVBoxLayout *vboxDeviceStatus = new QVBoxLayout(deviceStatus);

@@ -3,17 +3,17 @@
 #include <QPicture>
 
 #include "w_lightcontrolcontainer.h"
-#include "ui_lightcontrolwidget.h"
+//#include "ui_lightcontrolwidget.h"
 #include "w_hsvpalette.h"
 #include "w_zonecontainer.h"
 #include "mainwindow.h"
 
 LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light, QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::LightControlWidget)
+    QWidget(parent)//,
+    //ui(new Ui::LightControlWidget)
 
 {
-    ui->setupUi(this);
+    //ui->setupUi(this);
 
     this->topWidget = new QWidget;
     this->contentLayout = new QHBoxLayout(topWidget);
@@ -71,7 +71,7 @@ LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light
 
 LightControlContainerWidget::~LightControlContainerWidget()
 {
-    delete ui;
+    //delete ui;
 }
 
 void LightControlContainerWidget::updateFromWheel(QColor qcol)

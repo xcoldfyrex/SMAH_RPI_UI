@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QList>
 #include <QtDebug>
+// #include
 
 class RPIDevice : public QObject
 {

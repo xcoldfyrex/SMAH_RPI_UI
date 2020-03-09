@@ -7,15 +7,19 @@
 #include <QDate>
 
 #include "tcpconnectionfactory.h"
+#include "zwavemanager.h"
+
 
 extern int MY_DEVICE_ID;
 extern TCPConnectionFactory tcpServer;
+extern uint32  g_homeId;
+
 
 class Sensor : public QObject
 {
     Q_OBJECT
 public:
-    Sensor(QString name, int node_id, int device_id, bool farenheit=false);
+    Sensor(QString name, int node_id, int device_id, bool farenheit=false, uint32 home_id = 0);
     explicit Sensor(QObject *parent = nullptr);
     bool isFarenheit() { return this->farenheit; }
     float getTemperature() {
@@ -33,15 +37,14 @@ public:
     void setLastUpdate(qint64 ts) { this->updated = ts; }
 
     QString getName() { return this->name; }
-    //void setTemperature(float temperature);
-    //void setHumidity(float humidity);
-    //void setLux(short lux);
+    uint32 getHome_id() { return this->home_id; }
+
     //void setTemperatureFromRaw(float temperature);
     //void setHumidityFromRaw(float humidity);
     QMap<int, float> getValues() { return  this->values; }
     void setValue(int index, float value) {
         this->values[index] = value;
-        if (this->getDeviceId() == MY_DEVICE_ID)
+        if (this->getHome_id() == g_homeId)
             tcpServer.broadcastMessage(this->getNodeId(), 1, value, index);
         setLastUpdate(QDateTime::currentSecsSinceEpoch());
     }
@@ -54,17 +57,18 @@ public:
 
 private:
     bool farenheit = false;
-    //float temperature = 0;
-    //float humidity = 0;
-    //float raw_temperature = 0;
+    float temperature = 0; /* DEPRECATE THIS */
+    float humidity = 0; /* DEPRECATE THIS */
+    //float raw_temperature = 0; /* DEPRECATE THIS */
     //float raw_humidity = 0;
-    //short lux = 0;
+    short lux = 0; /* DEPRECATE THIS */
     //short motion_level = 0;
     int battery = 0;
     int node_id;
     int device_id;
     qint64 updated = 0;
     QString name;
+    uint32 home_id;
     QMap<int, float> values;
 };
 

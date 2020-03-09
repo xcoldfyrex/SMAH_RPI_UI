@@ -4,11 +4,12 @@
 #include <QTcpServer>
 #include <QMap>
 #include <QHostAddress>
+#include <QJsonObject>
 
 #include "tcpsocket.h"
 #include "rpidevice.h"
 
-class TCPConnectionFactory : public QTcpServer
+class TCPConnectionFactory : public QObject
 {
     Q_OBJECT
 public:
@@ -16,7 +17,10 @@ public:
     QMap<QString, int> *outstanding;
     void startListen();
     void broadcastMessage(int srcDevice, int type, float value, int index);
+    void broadcastMessageJSON(QString type, QJsonObject data);
 
+private:
+    QTcpServer *server;
 protected:
     void incomingConnection(qintptr socketDescriptor);
 
@@ -24,7 +28,7 @@ public slots:
     void cleanSocket(ClientSocket *socket);
     void devReady(RPIDevice *device);
     void devLost(RPIDevice *device);
-    void initiateConnection(QHostAddress *address);
+    void newConnection();
 
 signals:
     void deviceReady(RPIDevice *device);

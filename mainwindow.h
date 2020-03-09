@@ -39,6 +39,7 @@ signals:
 public slots:
     void showZoneChooser();
     void showSystemWidget();
+    void showWeatherWidget();
     void addPreset(Preset preset);
     void hideSaver();
     void showSaver();

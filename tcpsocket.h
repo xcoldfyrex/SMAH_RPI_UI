@@ -17,8 +17,8 @@ class ClientSocket : public QObject
     Q_OBJECT
 
 public:
-    explicit ClientSocket(qintptr ID, QObject *parent);
-    ClientSocket(QHostAddress *address, QObject *parent);
+    explicit ClientSocket(QTcpSocket *ID, QObject *parent);
+    ClientSocket(QHostAddress address, QObject *parent);
     QHostAddress getPeerAddress() { return this->remoteAddress; }
     //RPIDevice *getDevice() { return this->rpidevice; }
     QString getDeviceID() { return this->devid; }
@@ -48,9 +48,10 @@ private:
     QString devid = "";
     QHostAddress remoteAddress;
     RPIDevice *rpidevice;
-    void send_id(QTcpSocket *tcpSocket, QJsonObject data);
+    void send_id(QJsonObject data);
     void sendData(QJsonObject data);
     void processPayload(QByteArray buffer);
+    bool hasSentID = false;
 
     QJsonObject buildPayload();
 

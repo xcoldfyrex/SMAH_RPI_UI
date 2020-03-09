@@ -21,6 +21,7 @@ private:
     QLabel *lblSunset;
     QPushButton *btnHome;
     QPushButton *btnInfo;
+    QPushButton *btnWeather;
     QSpacerItem *spcHeader;
     QHBoxLayout *topWidgetLayout;
     QLabel *lblPath;

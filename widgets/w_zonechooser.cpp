@@ -19,6 +19,8 @@ ZoneChooserWidget::ZoneChooserWidget(QWidget *parent) :
     zoneList->setObjectName("zoneList");
     this->contentLayout = new QVBoxLayout(topWidget);
     contentLayout->setContentsMargins(0,0,0,0);
+    topWidget->setContentsMargins(0,0,0,0);
+
     QWidget *envWidget = new QWidget(this);
     QGridLayout *envHolder = new QGridLayout(envWidget);
     envHolder->setObjectName("envHolder");

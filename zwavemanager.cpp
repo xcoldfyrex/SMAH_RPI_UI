@@ -23,13 +23,13 @@
 extern QMap<QString, Zone> gZoneMap;
 extern QMap <int, int> g_nodeValues;
 extern bool zwave_ready;
+extern uint32 g_homeId;
+extern QString g_zwaveDriver;
 
 using namespace OpenZWave;
 
 bool temp = false;
 
-
-static uint32 g_homeId = 0;
 static bool   g_initFailed = false;
 
 typedef struct
@@ -121,9 +121,8 @@ void OnNotification
                  it2 != nodeInfo->m_values.end(); ++it2 )
             {
                 ValueID v = *it2;
-                //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                 //Manager::Get()->SetValue(v, value);
-
+                //qDebug() << "MAIN: NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
 
                 if( v.GetCommandClassId() == 0x25)
                 {
@@ -215,8 +214,10 @@ void OnNotification
 
                             }
                         }
-                        qDebug() << "SENSOR: NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v)) << QString::fromStdString(value);
+                        //qDebug() << "SENSOR: NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v)) << QString::fromStdString(value);
+                        break;
                     }
+                        //qDebug() << "SENSOR: NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                     }
 
                 }
@@ -224,19 +225,87 @@ void OnNotification
                 // COMMAND_CLASS_ALARM
                 if( v.GetCommandClassId() == 0x71)
                 {
+                    //break
+                    // some reason the value seems to be the index
+
                     switch (v.GetType())
                     {
                     case ValueID::ValueType_Byte:
                     {
                         uint8 value;
                         Manager::Get()->GetValueAsByte(v, &value);
-                        if (v.GetIndex() == 10)
+                        //qDebug() << "AL V B " << value;
+
+                        //if (v.GetIndex() == 10)
+                        //{
+                        for (Zone zone : gZoneMap.values())
                         {
-                            //qDebug() << nodeInfo->m_nodeId << "ALARM!!!! " << value;
+                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                            {
+                                zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
+
+                            }
                         }
+
+                        //}
                         break;
                     }
+                    case ValueID::ValueType_Int:
+                    {
+                        int value;
+                        Manager::Get()->GetValueAsInt(v, &value);
+                        //qDebug() << "AL V I " << value;
 
+                        //if (v.GetIndex() == 10)
+                        //{
+                        for (Zone zone : gZoneMap.values())
+                        {
+                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                            {
+                                zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
+
+                            }
+                        }
+
+                        //}
+                        break;
+                    }
+                    case ValueID::ValueType_List:
+                    {
+                        vector<std::string> valuelabel;
+                        vector<int> valuelist;
+
+                        Manager::Get()->GetValueListItems(v, &valuelabel);
+                        Manager::Get()->GetValueListValues(v, &valuelist);
+
+                        int x = 0;
+                        for (std::string s : valuelabel)
+                        {
+                            if (valuelist[x] == 0x08)
+                            {
+                                qDebug() << "ALARM"  << nodeInfo->m_nodeId;
+
+                            }
+                        //qDebug() << "AL V V I" << v.GetIndex() << QString::fromStdString(s) << QString::fromStdString(Manager::Get()->GetValueLabel(v)) << valuelist[x];
+                        x++;
+                        }
+
+
+
+                        //if (v.GetIndex() == 10)
+                        //{
+                        for (Zone zone : gZoneMap.values())
+                        {
+                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                            {
+                                //zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
+
+                            }
+                        }
+
+                        //}
+                        break;
+                    }
                         //qDebug() << "SA" << v.GetCommandClassId() << "NODE" << nodeInfo->m_nodeId << "TYPE" << v.GetType() << "INDEX" << v.GetIndex() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                     }
                 }
@@ -406,10 +475,19 @@ void OnNotification
     }
 
     case Notification::Type_DriverReset:
+    {
+        int a = 1;
+        break;
+    }
     case Notification::Type_Notification:
     case Notification::Type_NodeNaming:
     case Notification::Type_NodeProtocolInfo:
     case Notification::Type_NodeQueriesComplete:
+    case Notification::Type_DriverRemoved:
+    {
+        int a = 1;
+        break;
+    }
     default:
     {
     }
@@ -569,8 +647,8 @@ void init_zwave()
 
     // Add a Z-Wave Driver
     // Modify this line to set the correct serial port for your PC interface.
-
-    qInfo() << "ZWave Driver version:" << QString::fromStdString(Manager::Get()->getVersionAsString());
+    g_zwaveDriver = QString::fromStdString(Manager::Get()->getVersionAsString());
+    qInfo() << "ZWave Driver version:" << g_zwaveDriver;
 
     string port = "/dev/ttyACM0";
 
@@ -598,11 +676,6 @@ void init_zwave()
     } else {
         zwave_ready = false;
     }
-
-    //getZWaveState(5);
-    //getZWaveState(4);
-
-
     return;
 }
 

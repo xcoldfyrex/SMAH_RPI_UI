@@ -10,6 +10,8 @@
 #include "zwavemanager.h"
 #include "tcpconnectionfactory.h"
 #include "widgets/w_zonefunctionsbasewidget.h"
+#include "w_weatherwidget.h"
+
 #include <QDebug>
 
 #include <QApplication>
@@ -37,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     TopHeaderWidget *hcheader = new TopHeaderWidget(this,"Main Menu");
     hcheader->setObjectName("TopHeaderWidget");
     QVBoxLayout *mainLayout = new QVBoxLayout;
+    WeatherWidget *weatherWidget = new WeatherWidget(this);
     ZoneFunctionsBaseWidget *zoneBase = new ZoneFunctionsBaseWidget(this);
     zoneBase->setObjectName("ZoneFunctionsBaseWidget");
 
@@ -54,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     connect(idleTimer,SIGNAL(timeout()), this, SLOT(showSaver()));
     contentLayout->addWidget(zoneBase->topWidget);
     contentLayout->addWidget(systemSettingsWidget->topWidget);
+    contentLayout->addWidget(weatherWidget);
+    contentLayout->setMargin(0);
     setLayout(mainWidgetLayout);
     contentHolder->setLayout(mainLayout);
     mainWidgetLayout->addWidget(contentHolder);
@@ -65,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(hcheader->topWidget);
     mainLayout->addLayout(contentLayout);
 
-    contentLayout->setCurrentIndex(0);
+    contentLayout->setCurrentIndex(2);
     contentLayout->setContentsMargins(0,0,0,0);
 
     if (QFileInfo::exists("/dev/ttyACM0"))
@@ -93,6 +98,10 @@ void MainWindow::showZoneChooser() {
 
 void MainWindow::showSystemWidget() {
     contentLayout->setCurrentIndex(1);
+}
+
+void MainWindow::showWeatherWidget() {
+    contentLayout->setCurrentIndex(2);
 }
 
 void MainWindow::addPreset(Preset preset)

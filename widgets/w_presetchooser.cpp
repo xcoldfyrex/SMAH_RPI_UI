@@ -9,7 +9,7 @@ extern QMap<int, Preset> gColorPresetMap;
 PresetChooser::PresetChooser(Zone zone, Light *light, QWidget *parent) : QWidget(parent)
 {
 
-    presetButtons = new QEngravedList(this);
+    presetButtons = new QListWidget(this);
     presetButtons->setObjectName("presetButtons");
     QListWidgetItem *itemBack = new QListWidgetItem("> Back");
     itemBack->setData(Qt::UserRole,1);
@@ -20,7 +20,7 @@ PresetChooser::PresetChooser(Zone zone, Light *light, QWidget *parent) : QWidget
 
     this->topWidget = new QWidget;
     this->contentLayout = new QVBoxLayout(topWidget);
-    this->presetList = new QEngravedList(this);
+    this->presetList = new QListWidget(this);
     this->zone = zone;
     this->light = light;
     presetList->setIconSize(QSize(512,32));

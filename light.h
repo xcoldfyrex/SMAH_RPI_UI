@@ -18,14 +18,16 @@ const int LIGHT_RGBW_INVIDIDUAL_ADDRESS = 13;
 const int LIGHT_MACICLIGHT = 100;
 
 extern int MY_DEVICE_ID;
+extern uint32 g_homeId;
 
 class Light : public QObject
 {
     Q_OBJECT
 public:
     explicit Light(QObject *parent = nullptr);
-    Light(int id, QString name, int type, int deviceid, short bank);
+    Light(int id, QString name, int type, int deviceid, short bank, uint32 home_id);
     QString getName() const { return this->name; }
+    uint32 getHome_id() { return this->home_id; }
     int getType() const { return this->type ;}
     QString getColor() { return this->color; }
     int getId() { return this->id; }
@@ -33,7 +35,7 @@ public:
     int getLevel() { return this->level; }
     bool getState() { return this->level; }
     bool isLocal() {
-        if (this->deviceid == MY_DEVICE_ID)
+        if ((this->home_id == g_homeId || this->deviceid == MY_DEVICE_ID))
             return true;
         return false;
     }
@@ -83,12 +85,10 @@ private:
     bool localUpdate = false;
 
     QString name;
+    uint32 home_id;
     QString whiteLevel = "00";
     QString color = "000000";    
     QList<PresetTask*> *taskList;
-
-
-
 };
 
 #endif // LIGHT_H

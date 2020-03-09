@@ -18,8 +18,9 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     this->lblSunrise = new QLabel("");
     this->lblSunset = new QLabel("");
     this->lblPath = new QLabel(name);
-    this->btnHome = new QPushButton("");
-    this->btnInfo = new QPushButton("");
+    this->btnHome = new QPushButton("\uF015");
+    this->btnInfo = new QPushButton("\uF0AD");
+    this->btnWeather = new QPushButton("\uF0E9");
     this->spcHeader = new QSpacerItem(1,1);
     QGridLayout *grid = new QGridLayout();
     this->topWidgetLayout->addLayout(grid);
@@ -33,21 +34,24 @@ TopHeaderWidget::TopHeaderWidget(QWidget *parent, const char *name) : QWidget(pa
     this->topWidgetLayout->addStretch(1);
     this->topWidgetLayout->addSpacerItem(spcHeader);
     topWidgetLayout->addWidget(btnInfo);
+    topWidgetLayout->addWidget(btnWeather);
     topWidgetLayout->addWidget(btnHome);
     topWidgetLayout->setContentsMargins(0,0,0,0);
     topWidget->setFixedHeight(75);
     grid->setObjectName("headerGrid");
     btnHome->setObjectName("btnTopZones");
-    btnInfo->setObjectName("btnTopSystem");
+    btnInfo->setObjectName("btnTopSystem");    
+    btnWeather->setObjectName("btnTopWeather");
     topWidget->setObjectName("header");
     lblClock->setObjectName("clock");
-    lblDate->setObjectName("date");
+    lblDate->setObjectName("date");   
 
     topWidget->setAutoFillBackground(true);
 
     MainWindow* myParent = dynamic_cast<MainWindow*>(parent);
     connect(btnHome,SIGNAL(clicked(bool)),myParent,SLOT(showZoneChooser()));
     connect(btnInfo,SIGNAL(clicked(bool)),myParent,SLOT(showSystemWidget()));
+    connect(btnWeather,SIGNAL(clicked(bool)),myParent,SLOT(showWeatherWidget()));
 
     //timer for clock
     QTimer *timer = new QTimer(this);
@@ -62,7 +66,7 @@ void TopHeaderWidget::showTime()
     this->lblClock->setText(QTime::currentTime().toString("hh:mm:ss"));
     this->lblDate->setText(QDate::currentDate().toString("ddd, MMMM dd yyyy"));
 
-    time_t t = time(NULL);
+    time_t t = time(nullptr);
     struct tm tm = *localtime(&t);
     char buf[16];
     strftime(buf, sizeof(buf), "%z", &tm);

@@ -26,7 +26,7 @@ class LightControlContainerWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit LightControlContainerWidget(Zone zone, Light *light, QWidget *parent = nullptr);
+    explicit LightControlContainerWidget(Zone *zone, Light *light, QWidget *parent = nullptr);
     LightControlContainerWidget() {}
     ~LightControlContainerWidget();
     QWidget *topWidget;
@@ -49,7 +49,7 @@ public slots:
 private:
     Ui::LightControlWidget *ui;
     QGraphicsScene *scene;
-    Zone zone;
+    Zone *zone;
     Light *light;
     QCheckBox *chkWhiteEnabled;
     QSlider *sl_whitelevel;

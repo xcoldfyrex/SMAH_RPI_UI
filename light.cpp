@@ -13,6 +13,7 @@ extern int MY_DEVICE_ID;
 extern smah_i2c bus;
 extern TCPConnectionFactory tcpServer;
 
+//Q_DECLARE_METATYPE(Light)
 
 Light::Light(QObject *parent) : QObject(parent)
 {

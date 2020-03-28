@@ -6,13 +6,28 @@
 #include <QList>
 #include <QDataStream>
 #include <QObject>
-#include <QWidget>
+#include <QVariantList>
 
 #include "rpidevice.h"
 #include "light.h"
 #include "sensor.h"
 
-class Zone {
+//typedef QList<Light*> LightListMap;
+typedef QMap<QString, Sensor*> SensorListMap;
+
+//Q_DECLARE_METATYPE(LightListMap)
+Q_DECLARE_METATYPE(SensorListMap)
+
+class Zone : public QObject
+{
+
+
+    Q_OBJECT
+    Q_PROPERTY(QString getName READ getName)
+    Q_PROPERTY(QVariantList getLightList READ getLightList)
+    Q_PROPERTY(SensorListMap getSensorList READ getSensorList)
+    Q_INVOKABLE
+
 
 public:
     Zone(int id, QString name);
@@ -26,7 +41,7 @@ public:
     }
     void addLight(Light *light)
     {
-            this->zoneLightList.insert(light->getName(), light);
+            this->zoneLightList.append(QVariant::fromValue(light));
     }
 
     void addSensor(Sensor *sensor)
@@ -37,7 +52,7 @@ public:
     QString getName() const { return this->name; }
     QMap<QString, RPIDevice*> getDeviceList() const { return this->deviceList; }
     QMap<QString, Sensor*> getSensorList() const { return this->sensorList; }
-    QMap <QString, Light*> getLightList() const { return this->zoneLightList; }
+    QVariantList getLightList() const { return this->zoneLightList; }
     Light *getLightById(int id);
     Sensor *getSensorById(int id);
     QList<QWidget*> pageStack;
@@ -48,7 +63,7 @@ private:
     QString name;
     QMap <QString, RPIDevice*> deviceList;
     QMap <QString, Sensor*> sensorList;
-    QMap <QString, Light*> zoneLightList;
+    QVariantList zoneLightList;
 };
 
 

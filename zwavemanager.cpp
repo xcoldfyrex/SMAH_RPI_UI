@@ -20,7 +20,7 @@
 
 #include <QDebug>
 
-extern QMap<QString, Zone> gZoneMap;
+extern QMap<QString, Zone*> gZoneMap;
 extern QMap <int, int> g_nodeValues;
 extern bool zwave_ready;
 extern uint32 g_homeId;
@@ -131,12 +131,12 @@ void OnNotification
                     pthread_mutex_unlock( &g_criticalSection );
                     g_nodeValues.insert(nodeInfo->m_nodeId, static_cast<int>(value));
                     //qDebug() << "Node state changed:" << nodeInfo->m_nodeId << value;
-                    for (Zone zone : gZoneMap.values())
+                    for (Zone *zone : gZoneMap.values())
                     {
-                        if (zone.getLightById(nodeInfo->m_nodeId) != nullptr)
+                        if (zone->getLightById(nodeInfo->m_nodeId) != nullptr)
                         {
-                            zone.getLightById(nodeInfo->m_nodeId)->updateLevel(value);
-                            zone.getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
+                            zone->getLightById(nodeInfo->m_nodeId)->updateLevel(value);
+                            zone->getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
                         }
                     }
 
@@ -162,12 +162,12 @@ void OnNotification
                         Manager::Get()->GetValueAsByte(v, &value);
                         if (v.GetIndex() == 0) {
                             g_nodeValues.insert(nodeInfo->m_nodeId, (int) value);
-                            for (Zone zone : gZoneMap.values())
+                            for (Zone *zone : gZoneMap.values())
                             {
-                                if (zone.getLightById(nodeInfo->m_nodeId) != nullptr)
+                                if (zone->getLightById(nodeInfo->m_nodeId) != nullptr)
                                 {
-                                    zone.getLightById(nodeInfo->m_nodeId)->updateLevel(value);
-                                    zone.getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
+                                    zone->getLightById(nodeInfo->m_nodeId)->updateLevel(value);
+                                    zone->getLightById(nodeInfo->m_nodeId)->setLastUpdateLocal(true);
                                 }
                             }
                             qDebug() << nodeInfo->m_nodeId << value << v.GetIndex() << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
@@ -206,11 +206,11 @@ void OnNotification
                     {
                         string value;
                         Manager::Get()->GetValueAsString(v, &value);
-                        for (Zone zone : gZoneMap.values())
+                        for (Zone *zone : gZoneMap.values())
                         {
-                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                            if (zone->getSensorById(nodeInfo->m_nodeId) != nullptr)
                             {
-                                zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), QString::fromStdString(value).toFloat());
+                                zone->getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), QString::fromStdString(value).toFloat());
 
                             }
                         }
@@ -238,11 +238,11 @@ void OnNotification
 
                         //if (v.GetIndex() == 10)
                         //{
-                        for (Zone zone : gZoneMap.values())
+                        for (Zone *zone : gZoneMap.values())
                         {
-                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                            if (zone->getSensorById(nodeInfo->m_nodeId) != nullptr)
                             {
-                                zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
+                                zone->getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
 
                             }
                         }
@@ -258,11 +258,11 @@ void OnNotification
 
                         //if (v.GetIndex() == 10)
                         //{
-                        for (Zone zone : gZoneMap.values())
+                        for (Zone *zone : gZoneMap.values())
                         {
-                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                            if (zone->getSensorById(nodeInfo->m_nodeId) != nullptr)
                             {
-                                zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
+                                zone->getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
 
                             }
                         }
@@ -294,9 +294,9 @@ void OnNotification
 
                         //if (v.GetIndex() == 10)
                         //{
-                        for (Zone zone : gZoneMap.values())
+                        for (Zone *zone : gZoneMap.values())
                         {
-                            if (zone.getSensorById(nodeInfo->m_nodeId) != nullptr)
+                            if (zone->getSensorById(nodeInfo->m_nodeId) != nullptr)
                             {
                                 //zone.getSensorById(nodeInfo->m_nodeId)->setValue(v.GetIndex(), value);
 

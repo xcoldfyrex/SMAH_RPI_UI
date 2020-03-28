@@ -4,12 +4,12 @@ Zone::Zone(int id, QString name)
 {
     this->id = id;
     this->name = name;
-    qRegisterMetaType<Zone>("Zone");
+    //qRegisterMetaType<Zone>("Zone");
 }
 
 Zone::Zone()
 {
-    qRegisterMetaType<Zone>("Zone");
+    //qRegisterMetaType<Zone>("Zone");
 }
 
 void Zone::addDevice(RPIDevice *device)
@@ -21,7 +21,12 @@ void Zone::addDevice(RPIDevice *device)
 
 Light* Zone::getLightById(int id)
 {
-    for (Light *light : this->getLightList())
+    QList<Light*> tempIterator;
+    foreach (QVariant v, this->getLightList())
+    {
+        tempIterator << v.value<Light*>();
+    }
+    for (Light *light : tempIterator)
     {
         if (light->getId() == id)
             return light;

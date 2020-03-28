@@ -2,7 +2,7 @@
 
 #include "w_powercontrol.h"
 
-PowerControlWidget::PowerControlWidget(Zone zone, QWidget *parent) : QWidget(parent)
+PowerControlWidget::PowerControlWidget(Zone *zone, QWidget *parent) : QWidget(parent)
 {
     this->zone = zone;
     this->topWidget = new QWidget;
@@ -45,6 +45,6 @@ void PowerControlWidget::togglePower(int id) {
     QJsonObject jsonPayload;
     jsonPayload["type"] = 03;
     jsonPayload["value"] = QString::number(id);
-    jsonPayload["zone"] = zone.getId();
+    jsonPayload["zone"] = zone->getId();
     emit(requestingNetworkOut("SET", jsonPayload, ""));
 }

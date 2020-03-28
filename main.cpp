@@ -9,10 +9,9 @@
 #include <QHostAddress>
 
 #include <QGuiApplication>
-#include <QtQml/QQmlApplicationEngine>
-#include <QtQml/QQmlContext>
-#include <QtQml/QQmlComponent>
-#include <QtQml/QQmlEngine>
+#include <QQmlApplicationEngine>
+#include <QQmlComponent>
+#include <QQuickView>
 
 #include "zone.h"
 #include "light.h"
@@ -28,7 +27,7 @@
 #include "eventfilter.h"
 #include "sensor.h"
 
-QMap<QString, Zone> gZoneMap;
+QMap<QString, Zone*> gZoneMap;
 QMap<int, Preset> gColorPresetMap;
 QList<ClientSocket*> g_clientMap;
 QMap <QString, RPIDevice*> g_deviceList;
@@ -67,7 +66,7 @@ void loadZones()
         if (itemnode.isElement()) {
             QDomElement element = itemnode.toElement();
 
-            Zone zone(
+            Zone *zone = new Zone(
                         element.attribute("id").toInt(),
                         element.attribute("name")
                         );
@@ -82,7 +81,7 @@ void loadZones()
                                 powerElement.attribute("name"),
                                 powerElement.attribute("hw")
                                 );
-                    zone.addDevice(rpidevice);
+                    zone->addDevice(rpidevice);
                     g_deviceList.insert(powerElement.attribute("hw"),rpidevice);
                     if (rpidevice->getHwAddress() == MY_HW_ADDR)
                         /* probably unused now from home_id */
@@ -104,7 +103,7 @@ void loadZones()
                                              lightElement.attribute("bank").toShort(),
                                              lightElement.attribute("home_id").toUInt(&ok, 16)
                                              );
-                    zone.addLight(light);
+                    zone->addLight(light);
                     g_lightMap.insert(lightElement.attribute("id").toInt(), light);
                 }
             }
@@ -123,13 +122,13 @@ void loadZones()
                                 sensorElement.attribute("farenheit").toShort(),
                                 sensorElement.attribute("home_id").toUInt(&ok, 16)
                                 );
-                    zone.addSensor(sensor);
+                    zone->addSensor(sensor);
                     g_sensorList.append(sensor);
 
 
                 }
             }
-            gZoneMap.insert(zone.getName(),zone);
+            gZoneMap.insert(zone->getName(),zone);
         }
     }
 }
@@ -220,22 +219,7 @@ void loadPresets()
 }
 int main(int argc, char *argv[])
 {
-    QQmlEngine *engine = new QQmlEngine(Q_NULLPTR);
-    QQmlComponent component(engine, "Main.qml");
-    QObject *object = component.create();
-
-    QString returnedValue;
-    QString msg = "Hello from C++";
-    QMetaObject::invokeMethod(object, "myQmlFunction",
-            Q_RETURN_ARG(QString, returnedValue),
-            Q_ARG(QString, msg));
-
-    qDebug() << "QML function returned:" << returnedValue;
-    delete object;
-
-
-    QGuiApplication a(argc, argv);
-    //QQmlApplicationEngine engine;
+    QApplication a(argc, argv);
 
     EventFilter filter;
     qInstallMessageHandler(systemlogHandler);
@@ -299,7 +283,7 @@ int main(int argc, char *argv[])
     QFile File("main.css");
     File.open(QFile::ReadOnly);
     QString StyleSheet = QLatin1String(File.readAll());
-    qApp->setStyleSheet(StyleSheet);
+    //qApp->setStyleSheet(StyleSheet);
 
     QFontDatabase::addApplicationFont("Crescent-Regular.ttf");
     QFontDatabase::addApplicationFont("Roboto-Thin.ttf");
@@ -310,14 +294,14 @@ int main(int argc, char *argv[])
 
 
     tcpServer.startListen();
-    //MainWindow mainWindow(Q_NULLPTR);
-    //mainWindow.setStyleSheet(StyleSheet);
+    MainWindow mainWindow(Q_NULLPTR);
+    /////////mainWindow.setStyleSheet(StyleSheet);
 
     DatagramHandler broadcaster;
     //QObject::connect(&broadcaster, SIGNAL(initiate(QHostAddress*)), &tcpServer, SLOT(initiateConnection(QHostAddress*)));
 
-    //mainWindow.show();
+    mainWindow.show();
     a.installEventFilter(&filter);
-    //QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
+    QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
     return a.exec();
 }

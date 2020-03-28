@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network widgets xml
+QT       += core gui network widgets xml quick quickwidgets
 CONFIG += console
 CONFIG     += debug
 
@@ -15,6 +15,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    commandrouter.cpp \
     mainwindow.cpp \
     rpidevice.cpp \
     w_weatherlistwidget.cpp \
@@ -26,10 +27,7 @@ SOURCES += main.cpp\
     widgets/w_scheduledactions.cpp \
     widgets/w_systemsettings.cpp \
     widgets/w_topheader.cpp \
-    widgets/w_zonechooser.cpp \
-    widgets/w_zonecontainer.cpp \
     widgets/w_zoneenvironment.cpp \
-    widgets/w_zoneoverview.cpp \
     logger.cpp \
     preset.cpp \
     datagramhandler.cpp \
@@ -40,12 +38,10 @@ SOURCES += main.cpp\
     zone.cpp \
     pca9685.cpp \
     i2c/i2c.cpp \
-    commandrouter.cpp \
     zwavemanager.cpp \
     sunriseset.cpp \
     widgets/w_screensaver.cpp \
     sensor.cpp \
-    widgets/w_zonefunctionsbasewidget.cpp \
     ui_mainwindow.cpp \
     rsslisting.cpp \
     tcpconnectionfactory.cpp \
@@ -65,10 +61,7 @@ HEADERS  += \
     widgets/w_scheduledactions.h \
     widgets/w_systemsettings.h \
     widgets/w_topheader.h \
-    widgets/w_zonechooser.h \
-    widgets/w_zonecontainer.h \
     widgets/w_zoneenvironment.h \
-    widgets/w_zoneoverview.h \
     build_number.h \
     logger.h \
     preset.h \
@@ -93,7 +86,6 @@ HEADERS  += \
     sensor.h \
     commandrouter.h \
     widgets/qengravedlabel.h \
-    widgets/w_zonefunctionsbasewidget.h \
     ui_mainwindow.h \
     rsslisting.h \
     tcpconnectionfactory.h \
@@ -135,6 +127,13 @@ INCLUDEPATH += $$PWD/../../../../../usr/local/include
 DEPENDPATH += $$PWD/../../../../../usr/local/include
 
 DISTFILES += \
-    ../../../../../usr/local/include/openzwave/aes/aes.txt \
-    Main.qml \
-    MainForm.ui.qml
+    ../../../../../usr/local/include/openzwave/aes/aes.txt
+
+
+RESOURCES += qml.qrc
+
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH =
+
+# Additional import path used to resolve QML modules just for Qt Quick Designer
+QML_DESIGNER_IMPORT_PATH =

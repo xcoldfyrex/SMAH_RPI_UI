@@ -15,11 +15,11 @@ class PowerControlWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PowerControlWidget(Zone zone, QWidget *parent = nullptr);
+    explicit PowerControlWidget(Zone *zone, QWidget *parent = nullptr);
     QWidget *topWidget;
 
 private:
-    Zone zone;
+    Zone *zone;
     QGridLayout *contentLayout;
 
 signals:

@@ -15,19 +15,19 @@ class ZoneLightsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ZoneLightsWidget(Zone zone, QWidget *parent = nullptr);
+    explicit ZoneLightsWidget(Zone *zone, QWidget *parent = nullptr);
     ZoneLightsWidget() {}
     QStackedWidget *topWidget;
 
 private:
-    Zone zone;
+    Zone *zone;
     QGridLayout *contentLayout;
     QStackedWidget *topLayout;
     LightControlContainerWidget *colorLightControlWidget;    
 
 
 signals:
-    void setCustomLight(QString color, Zone zone, int id);
+    void setCustomLight(QString color, Zone *zone, int id);
 
 public slots:
 

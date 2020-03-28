@@ -8,11 +8,9 @@
 #include <QPainter>
 
 #include "zone.h"
-
-#include "widgets/w_zonechooser.h"
+#include "light.h"
 #include "widgets/w_topheader.h"
 #include "widgets/w_systemsettings.h"
-#include "widgets/w_zonecontainer.h"
 #include "widgets/w_screensaver.h"
 
 class MainWindow : public QWidget
@@ -33,7 +31,7 @@ private:
 protected:
 
 signals:
-    void zoneChanged(Zone);
+    //void zoneChanged(Zone*);
     void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:

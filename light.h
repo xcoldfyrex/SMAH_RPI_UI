@@ -20,9 +20,17 @@ const int LIGHT_MACICLIGHT = 100;
 extern int MY_DEVICE_ID;
 extern uint32 g_homeId;
 
+
 class Light : public QObject
 {
+
     Q_OBJECT
+    Q_PROPERTY(QString getName READ getName)
+    Q_PROPERTY(QString getColor READ getColor)
+    Q_PROPERTY(int getType READ getType)
+    Q_PROPERTY(int getLevel READ getLevel WRITE setLevel NOTIFY levelChanged)
+
+
 public:
     explicit Light(QObject *parent = nullptr);
     Light(int id, QString name, int type, int deviceid, short bank, uint32 home_id);
@@ -90,5 +98,8 @@ private:
     QString color = "000000";    
     QList<PresetTask*> *taskList;
 };
+
+//Q_DECLARE_METATYPE(Light)
+
 
 #endif // LIGHT_H

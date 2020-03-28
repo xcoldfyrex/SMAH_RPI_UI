@@ -4,7 +4,7 @@
 #include "w_screensaver.h"
 #include "w_zoneenvironment.h"
 
-extern QMap<QString, Zone> gZoneMap;
+extern QMap<QString, Zone*> gZoneMap;
 
 ScreenSaverWidget::ScreenSaverWidget(QWidget *parent) : QWidget(parent)
 {
@@ -20,11 +20,11 @@ ScreenSaverWidget::ScreenSaverWidget(QWidget *parent) : QWidget(parent)
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(showTime()));
     timer->start(1000);
-    foreach (Zone zone, gZoneMap) {
-        if (zone.getName() == "Outside") {
-            if (zone.getSensorList().size() != 0)
+    foreach (Zone *zone, gZoneMap) {
+        if (zone->getName() == "Outside") {
+            if (zone->getSensorList().size() != 0)
             {
-                ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone.getSensorList().value("Outside"), true);
+                ZoneEnvironmentPanel *zenv = new ZoneEnvironmentPanel(this, zone->getSensorList().value("Outside"), true);
                 zenv->topWidget->setObjectName("lblSaverTemp");
                 topWidgetLayout->addWidget(zenv->topWidget,1,0);
             }

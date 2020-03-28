@@ -10,7 +10,7 @@
 
 extern QMap <int, Light*> g_lightMap;
 
-ZoneLightsWidget::ZoneLightsWidget(Zone zone, QWidget *parent) : QWidget(parent)
+ZoneLightsWidget::ZoneLightsWidget(Zone *zone, QWidget *parent) : QWidget(parent)
 {
     this->zone = zone;
     this->topWidget = new QStackedWidget();
@@ -24,9 +24,9 @@ ZoneLightsWidget::ZoneLightsWidget(Zone zone, QWidget *parent) : QWidget(parent)
 
 void ZoneLightsWidget::addToggleFunctions()
 {
-
+/*
     int x = 1;
-    foreach (Light *light, this->zone.getLightList())
+    foreach (Light *light, this->zone->getLightList())
     {
         //light->initState();
 
@@ -97,11 +97,12 @@ void ZoneLightsWidget::addToggleFunctions()
     QPushButton *allOff = new QPushButton("All Off");
     this->contentLayout->addWidget(allOn,x+2,0);
     this->contentLayout->addWidget(allOff,x+2,1);
+    */
 }
 
 void ZoneLightsWidget::showCustomLights(QWidget *widget)
 {
-    this->zone.pageStack.append(widget);
+    this->zone->pageStack.append(widget);
     // THIS NEEDS TO GO TO THE ZONE FUNCTIONS STACK
     this->topWidget->setCurrentWidget(widget);
 }

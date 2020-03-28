@@ -5,10 +5,9 @@
 #include "w_lightcontrolcontainer.h"
 //#include "ui_lightcontrolwidget.h"
 #include "w_hsvpalette.h"
-#include "w_zonecontainer.h"
 #include "mainwindow.h"
 
-LightControlContainerWidget::LightControlContainerWidget(Zone zone, Light *light, QWidget *parent) :
+LightControlContainerWidget::LightControlContainerWidget(Zone *zone, Light *light, QWidget *parent) :
     QWidget(parent)//,
     //ui(new Ui::LightControlWidget)
 

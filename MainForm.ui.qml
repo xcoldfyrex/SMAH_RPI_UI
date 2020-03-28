@@ -1,6 +1,8 @@
-import QtQuick 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.5
 
-Item {
-    width: 400
-    height: 400
+Page {
+    width: window.width
+    height: window.height
+    title: qsTr("Home")
 }

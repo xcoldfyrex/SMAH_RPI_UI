@@ -17,14 +17,14 @@ class PresetChooser : public QWidget
 {
     Q_OBJECT
 public:
-    PresetChooser(Zone zone, Light *light, QWidget *parent = nullptr);
+    PresetChooser(Zone *zone, Light *light, QWidget *parent = nullptr);
     QWidget *topWidget;
     QListWidget *presetList;
     QListWidget *presetButtons;
     QEngravedPushButton *btnBack;
     QVBoxLayout *contentLayout;
 private:
-    Zone zone;
+    Zone *zone;
     Light *light;
 
 public slots:

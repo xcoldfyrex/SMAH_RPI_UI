@@ -14,10 +14,14 @@ extern int MY_DEVICE_ID;
 extern TCPConnectionFactory tcpServer;
 extern uint32  g_homeId;
 
-
 class Sensor : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(int getLux READ getLux NOTIFY getLux)
+    //Q_PROPERTY(QMap getValues READ getValues NOTIFY getValues)
+    Q_PROPERTY(QString getName READ getName)
+    Q_PROPERTY(bool isFarenheit READ isFarenheit)
+
 public:
     Sensor(QString name, int node_id, int device_id, bool farenheit=false, uint32 home_id = 0);
     explicit Sensor(QObject *parent = nullptr);

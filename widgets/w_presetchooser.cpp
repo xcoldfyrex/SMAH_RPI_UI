@@ -6,7 +6,7 @@
 
 extern QMap<int, Preset> gColorPresetMap;
 
-PresetChooser::PresetChooser(Zone zone, Light *light, QWidget *parent) : QWidget(parent)
+PresetChooser::PresetChooser(Zone *zone, Light *light, QWidget *parent) : QWidget(parent)
 {
 
     presetButtons = new QListWidget(this);

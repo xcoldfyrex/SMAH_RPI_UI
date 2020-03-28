@@ -6,7 +6,7 @@
 #include <QNetworkInterface>
 
 extern QList<ClientSocket*> g_clientMap;
-extern QMap<QString, Zone> gZoneMap;
+extern QMap<QString, Zone*> gZoneMap;
 extern QMap<QString, RPIDevice*> g_deviceList;
 extern QMap<int, Light*> g_lightMap;
 extern QMap<int, Preset> gColorPresetMap;
@@ -307,11 +307,11 @@ void ClientSocket::processPayload(QByteArray buffer){
         // sensor
         if (type == 1)
         {
-            for (Zone zone : gZoneMap.values())
+            for (Zone *zone : gZoneMap.values())
             {
-                if (zone.getSensorById(id) != nullptr)
+                if (zone->getSensorById(id) != nullptr)
                 {
-                    zone.getSensorById(id)->setValue(index,static_cast<float>(value));
+                    zone->getSensorById(id)->setValue(index,static_cast<float>(value));
                     /* DEPRECATE THIS */
                     //if (index == 0)
                         //zone.getSensorById(id)->setTemperature(value);

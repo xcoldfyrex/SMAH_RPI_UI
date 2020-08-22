@@ -10,7 +10,7 @@
 extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
-extern smah_i2c bus;
+extern I2C bus;
 extern TCPConnectionFactory tcpServer;
 
 //Q_DECLARE_METATYPE(Light)
@@ -166,24 +166,27 @@ void Light::setColorInPWM(QString color, bool keepActive = true)
     } else {
         // well, it's on a fucking i2c bus.
         // also matt is a fucking wanker and sj is a troglodite
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 0, r );
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 1, g );
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 2, b );
-        PCA9685_setDutyCycle(bus, (this->pwmbank - 1) * 4 + 3, w );
+        PCA9685 pca(1, 0x40);
+        pca.setPWMFreq(1000);
+        pca.setPWM((this->pwmbank - 1) * 4 + 1, r * 10);
+        pca.setPWM((this->pwmbank - 1) * 4 + 2, g * 10);
+        pca.setPWM((this->pwmbank - 1) * 4 + 3, b * 10);
+        pca.setPWM((this->pwmbank - 1) * 4 + 4, w * 10);
     }
 }
 
 //read the pwm values for led strip
-QString Light::getColorFromPWM()
+QList<int> Light::getColorFromPWM()
 {
-    int r = gpioGetPWMdutycycle(GPIO_PIN_RED);
-    int g = gpioGetPWMdutycycle(GPIO_PIN_GREEN);
-    int b = gpioGetPWMdutycycle(GPIO_PIN_BLUE);
-    int w = gpioGetPWMdutycycle(GPIO_PIN_WHITE);
-    return Q_NULLPTR;
+    QList<int> vals;
+    vals.append(gpioGetPWMdutycycle(GPIO_PIN_RED));
+    vals.append(gpioGetPWMdutycycle(GPIO_PIN_GREEN));
+    vals.append(gpioGetPWMdutycycle(GPIO_PIN_BLUE));
+    vals.append(gpioGetPWMdutycycle(GPIO_PIN_WHITE));
+    return vals;
 }
 
-void Light::setActivePreset(Preset preset)
+void Light::setActivePreset(Preset *preset)
 {
     // a new preset and it's local. kill any tasks
     if (this->isLocal()) {
@@ -196,26 +199,26 @@ void Light::setActivePreset(Preset preset)
         this->taskList->clear();
     }
 
-    if (!preset.dynamic)
+    if (!preset->dynamic)
     {
-        if (preset.type == 2){
+        if (preset->type == 2){
 
         } else {
-            setColor(preset.getHex());
+            setColor(preset->getHex());
         }
     } else {
         if (this->isLocal()) {
-            PresetTask *task = new PresetTask(&preset);
+            PresetTask *task = new PresetTask(preset);
             this->taskList->append(task);
             task->start();
             connect(task,SIGNAL(colorStepChanged(QColor)), this,SLOT(colorStepAction(QColor)));
-            qDebug() << preset.getName();
+            qDebug() << preset->getName();
         } else{
             ClientSocket *sock = determineZone(this);
             if (!sock)
                 return;
             QJsonObject jsonPayload;
-            jsonPayload["value"] = preset.getID();
+            jsonPayload["value"] = preset->getID();
             jsonPayload["id"] = this->id;
             sock->prepareToSend("PRESET", jsonPayload);
         }

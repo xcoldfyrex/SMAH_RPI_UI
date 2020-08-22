@@ -3,12 +3,15 @@
         <file>Main.qml</file>
         <file>MainForm.ui.qml</file>
         <file>LightControls.qml</file>
-        <file>zoneCreation.js</file>
+        <file>zoneManagement.js</file>
         <file>ZoneOptions.qml</file>
         <file>SMAHLabel.qml</file>
         <file>SMAHBackground.qml</file>
         <file>Clock.qml</file>
         <file>ZoneItem.qml</file>
         <file>System.qml</file>
+        <file>DeviceView.qml</file>
+        <file>ZoneOverview.qml</file>
+        <file>LightOverviewElement.js</file>
     </qresource>
 </RCC>

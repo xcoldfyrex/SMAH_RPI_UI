@@ -9,7 +9,7 @@ extern QList<ClientSocket*> g_clientMap;
 extern QMap<QString, Zone*> gZoneMap;
 extern QMap<QString, RPIDevice*> g_deviceList;
 extern QMap<int, Light*> g_lightMap;
-extern QMap<int, Preset> gColorPresetMap;
+extern QMap<int, Preset*> gColorPresetMap;
 extern QString MY_HW_ADDR;
 extern uint32 g_homeId;
 
@@ -239,11 +239,14 @@ void ClientSocket::processPayload(QByteArray buffer){
     if (command == "RGBW" )
     {
         QString value = incomingPayload["value"].toString();
-        int id = incomingPayload["id"].toInt();
-
-        if (g_lightMap.contains(id))
+        const int id = incomingPayload["id"].toInt();
+        for (int key : g_lightMap.keys())
         {
-            g_lightMap.value(id)->setColorInPWM(value, false);
+            if (key == id)
+            {
+                g_lightMap.value(id)->setColorInPWM(value, false);
+            }
+
         }
     }
 
@@ -314,11 +317,11 @@ void ClientSocket::processPayload(QByteArray buffer){
                     zone->getSensorById(id)->setValue(index,static_cast<float>(value));
                     /* DEPRECATE THIS */
                     //if (index == 0)
-                        //zone.getSensorById(id)->setTemperature(value);
+                    //zone.getSensorById(id)->setTemperature(value);
                     //if (index == 1)
-                      //  zone.getSensorById(id)->setHumidity(value);
+                    //  zone.getSensorById(id)->setHumidity(value);
                     //if (index == 2)
-                      //  zone.getSensorById(id)->setLux(static_cast<short>(value));
+                    //  zone.getSensorById(id)->setLux(static_cast<short>(value));
 
                 }
             }

@@ -64,7 +64,7 @@ public:
         bool checkstate = getZWaveState(this->id);
         updateLevel(checkstate);
     }
-    QString getColorFromPWM();
+    QList<int> getColorFromPWM();
     void setColorInPWM(QString color, bool keepActive);
     void updateLevel(int level);
     void setLevel(int level);
@@ -79,7 +79,7 @@ public slots:
     void setColor(QString color, bool keepActive);
     QString getWhiteLevel() { return this->whiteLevel; }
     void toggleState();
-    void setActivePreset(Preset preset);
+    void setActivePreset(Preset *preset);
 
 private slots:
     void colorStepAction(QColor color);

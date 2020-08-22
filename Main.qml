@@ -4,12 +4,9 @@ import smah.light 1.0
 import smah.zone 1.0
 import QtQuick.Controls.Material 2.12
 
-import "zoneCreation.js" as ZoneCreation
+import "zoneManagement.js" as ZoneCreation
 
-MainForm {    
-    SMAHBackground {}
-
-    //signal zoneChanged(string zoneName)
+MainForm {
 
     id: window
     visible: true
@@ -17,22 +14,11 @@ MainForm {
     height: 800
     title: qsTr("Stack")
     objectName: "toolBar";
-    Component.onCompleted: {
-        //console.log(lightList.size)
-
-        for (var i=0; i<zoneList.length; i++) {
-            //console.log(zoneList[i].getLightList[1].getName)
-            //ZoneCreation.createZoneOptions(zoneList[i], i)
-            var component= Qt.createComponent("ZoneItem.qml")
-            var loadwin = component.createObject(mainMenu, {id: i, zoneName: zoneList[i].getName, drawerID: "zoneDrawer" + i, lights: zoneList[i].getLightList })
-            //stackView.push(loadwin)
-        }
-    }
-
 
     header: ToolBar {
+        z: 2000
         id: toolBar
-        opacity: 0.9
+        //opacity: 0.9
         padding: 0
         topPadding: 0
         contentHeight: toolButton.implicitHeight
@@ -43,7 +29,6 @@ MainForm {
                     position: 0
                     color: "#000024"
                 }
-
                 GradientStop {
                     position: 1
                     color: "#000000"
@@ -58,11 +43,8 @@ MainForm {
             text: "\u2630"
             font.pixelSize: Qt.application.font.pixelSize * 1.6
             onClicked: {
-                if (stackView.depth > 1) {
-                    stackView.pop()
-                } else {
-                    drawer.open()
-                }
+                drawer.open()
+
             }
         }
 
@@ -83,47 +65,49 @@ MainForm {
         }
     }
 
-
     Drawer {
         id: drawer
         width: window.width * 0.25
         height: window.height
         font.family: "Tahoma"
-
-        Column {
-            anchors.fill: parent
-            objectName: "mainMenu";
-            id: mainMenu
-            ItemDelegate {
-                text: qsTr("Weather")
-                width: parent.width
-                onClicked: {
-                    //stackView.push("Page1Form.ui.qml")
-                    drawer.close()
+        Rectangle {
+            width: drawer.width
+            height: drawer.height
+            color: "#08111d"
+            Column {
+                anchors.fill: parent
+                objectName: "mainMenu";
+                id: mainMenu
+                ItemDelegate {
+                    text: qsTr("Weather")
+                    width: parent.width
+                    onClicked: {
+                        //stackView.push("Page1Form.ui.qml")
+                        drawer.close()
+                    }
                 }
-            }
-            ItemDelegate {
-                text: qsTr("System")
-                width: parent.width
-                onClicked: {
-                    //stackView.push("Page2Form.ui.qml")
-                    drawer.close()
-                    stackView
+                ItemDelegate {
+                    text: qsTr("System")
+                    width: parent.width
+                    onClicked: {
+                        stackView.push("System.qml")
+                        drawer.close()
+                        stackView
+                    }
                 }
-            }
-            Label {
-                text: ".\n"
-            }
+                Label {
+                    text: ".\n"
+                }
 
+            }
         }
     }
 
     function changeZone(zoneName)
     {
-        console.log(zoneName)
-        var component= Qt.createComponent("ZoneOptions.qml")
-        var loadwin = component.createObject(mainMenu)
-        stackView.push(loadwin)
+        stackView.clear()
+        stackView.push(ZoneCreation.zoneFunctions[zoneName])
+        drawer.close()
     }
 
     StackView {
@@ -131,12 +115,36 @@ MainForm {
         anchors.rightMargin: -222
         //initialItem: "MainForm.ui.qml"
         anchors.fill: parent
+
+        Component.onCompleted: {
+            for (var i=0; i<zoneList.length; i++) {
+                ZoneCreation.zoneLightList[zoneList[i].getName] = zoneList[i].getLightList
+
+                //console.log(zoneList[i].getLightList[1].getName)
+                //ZoneCreation.createZoneOptions(zoneList[i], i)
+                var component= Qt.createComponent("ZoneItem.qml")
+                var loadwin = component.createObject(mainMenu, {id: i, zoneName: zoneList[i].getName, drawerID: "zoneDrawer" + i, lights: zoneList[i].getLightList })
+
+                //for (var a=0; a<zoneList[i].getLightList.length; a++) {
+                //console.log(zoneList[i].getLightList[a].getName)
+                var zonecomponent= Qt.createComponent("ZoneOptions.qml")
+                var zoneloadwin = zonecomponent.createObject(mainMenu, {zoneName: zoneList[i].getName, lights: zoneList[i].getLightList} )
+                ZoneCreation.zoneFunctions[zoneList[i].getName] = zoneloadwin
+                //console.log(zoneList[i].getLightList)
+                //}
+                //stackView.push(loadwin)
+            }
+            console.log(ZoneCreation.zoneLightList.length)
+            stackView.clear()
+        }
     }
+    SMAHBackground {}
+
 }
 
 
 /*##^##
 Designer {
-    D{i:9;anchors_height:42;anchors_width:1280}
+    D{i:8;anchors_height:42;anchors_width:1280}
 }
 ##^##*/

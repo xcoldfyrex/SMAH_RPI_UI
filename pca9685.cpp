@@ -1,33 +1,81 @@
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
+#include <stdio.h>      /* Standard I/O functions */
+#include <fcntl.h>
+#include <syslog.h>		/* Syslog functionallity */
+#include <inttypes.h>
+#include <errno.h>
+#include <math.h>
+
 #include "pca9685.h"
-#include <QDebug>
 
-int PCA9685_init(smah_i2c bus) {
-    return smah_i2c_reg_write(bus, PCA9685_ADDRESS, PCA9685_MODE1, PCA9685_ALLCALL | PCA9685_AI)
-        + smah_i2c_reg_write(bus, PCA9685_ADDRESS, PCA9685_MODE2, PCA9685_OUTDRV);
+//! Constructor takes bus and address arguments
+/*!
+ \param bus the bus to use in /dev/i2c-%d.
+ \param address the device address on bus
+ */
+PCA9685::PCA9685(int bus, int address) {
+    i2c = new I2C(bus,address);
+    reset();
+    setPWMFreq(1000);
 }
 
-int PCA9685_setDutyCycle(smah_i2c bus, char channel, short value) {
-    // fuck this
-    //value = value < 0? 0:
-            //value > 100? PCA9685_MAX_DUTY_CICLE:
-            //(PCA9685_MAX_DUTY_CICLE * value) / 100;
-    value = value * ((1 << 12) - 1) / ((1 << 8) - 1);
-    unsigned char buf[5];
-    buf[0] = PCA9685_LED0_ON_L + (PCA9685_REGISTERS_PER_CHANNEL * channel);
-    buf[1] = buf[2] = 0x00;
-    buf[3] = value & 0xFF;
-    buf[4] = (value >> 8) & 0xF;
-    return smah_i2c_write(bus, PCA9685_ADDRESS, buf, 5);
+PCA9685::~PCA9685() {
+    delete i2c;
+}
+//! Sets PCA9685 mode to 00
+void PCA9685::reset() {
+
+        i2c->write_byte(MODE1, 0x00); //Normal mode
+        i2c->write_byte(MODE2, 0x04); //totem pole
+
+}
+//! Set the frequency of PWM
+/*!
+ \param freq desired frequency. 40Hz to 1000Hz using internal 25MHz oscillator.
+ */
+void PCA9685::setPWMFreq(int freq) {
+
+        uint8_t prescale_val = (CLOCK_FREQ / 4096 / freq)  - 1;
+        i2c->write_byte(MODE1, 0x10); //sleep
+        i2c->write_byte(PRE_SCALE, prescale_val); // multiplyer for PWM frequency
+        i2c->write_byte(MODE1, 0x80); //restart
+        i2c->write_byte(MODE2, 0x04); //totem pole (default)
 }
 
-int PCA9685_setFreq(smah_i2c bus, unsigned short freq) {
-    freq = freq < 24? 0xFF:
-            freq > 1526? 0x03:
-            25000000 / (4096 * freq);
-
-    return smah_i2c_reg_write(bus, PCA9685_ADDRESS, PCA9685_PRE_SCALE, freq);
+//! PWM a single channel
+/*!
+ \param led channel (1-16) to set PWM value for
+ \param value 0-4095 value for PWM
+ */
+void PCA9685::setPWM(int led, int value) {
+    setPWM(led, 0, value);
+}
+//! PWM a single channel with custom on time
+/*!
+ \param led channel (1-16) to set PWM value for
+ \param on_value 0-4095 value to turn on the pulse
+ \param off_value 0-4095 value to turn off the pulse
+ */
+void PCA9685::setPWM(uint8_t led, int on_value, int off_value) {
+        i2c->write_byte(LED0_ON_L + LED_MULTIPLYER * (led - 1), on_value & 0xFF);
+        i2c->write_byte(LED0_ON_H + LED_MULTIPLYER * (led - 1), on_value >> 8);
+        i2c->write_byte(LED0_OFF_L + LED_MULTIPLYER * (led - 1), off_value & 0xFF);
+        i2c->write_byte(LED0_OFF_H + LED_MULTIPLYER * (led - 1), off_value >> 8);
 }
 
-int PCA9685_stop(smah_i2c bus) {
-    return smah_i2c_reg_write(bus, PCA9685_ADDRESS, PCA9685_MODE1, PCA9685_SLEEP);
+//! Get current PWM value
+/*!
+ \param led channel (1-16) to get PWM value from
+ */
+int PCA9685::getPWM(uint8_t led){
+    int ledval = 0;
+    ledval = i2c->read_byte(LED0_OFF_H + LED_MULTIPLYER * (led-1));
+    ledval = ledval & 0xf;
+    ledval <<= 8;
+    ledval += i2c->read_byte(LED0_OFF_L + LED_MULTIPLYER * (led-1));
+    return ledval;
 }

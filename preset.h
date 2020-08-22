@@ -7,8 +7,11 @@
 #include <QPainter>
 #include <QImage>
 
-class Preset
+class Preset : public QObject
 {
+    Q_OBJECT
+    Q_INVOKABLE
+
 public:
     Preset(QString name, short id, bool dynamic = false, int fade = 0, int delay = 10, int type = 1);
     Preset();

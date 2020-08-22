@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     ui_mainwindow.cpp \
     rsslisting.cpp \
     tcpconnectionfactory.cpp \
-    w_weatherwidget.cpp
+    w_weatherwidget.cpp \
+    zwaveworker.cpp
 
 
 
@@ -69,13 +70,11 @@ HEADERS  += \
     widgets/w_zone_lights.h \
     light.h \
     gpio_defs.h \
-    zone.h \
     pca9685.h \
     i2c/i2c.h \
     build_number.h \
     logger.h \
     pca9685.h \
-    preset.h \
     presettask.h \
     tcpsocket.h \
     zone.h \
@@ -89,7 +88,8 @@ HEADERS  += \
     ui_mainwindow.h \
     rsslisting.h \
     tcpconnectionfactory.h \
-    w_weatherwidget.h
+    w_weatherwidget.h \
+    zwaveworker.h
 
 
 FORMS    += \
@@ -131,7 +131,7 @@ DISTFILES += \
 
 
 RESOURCES += qml.qrc
-
+# QMAKE_CXXFLAGS += "-fno-sized-deallocation"
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 

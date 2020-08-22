@@ -26,9 +26,11 @@
 #include "i2c/i2c.h"
 #include "eventfilter.h"
 #include "sensor.h"
+#include "zwaveworker.h"
+
 
 QMap<QString, Zone*> gZoneMap;
-QMap<int, Preset> gColorPresetMap;
+QMap<int, Preset*> gColorPresetMap;
 QList<ClientSocket*> g_clientMap;
 QMap <QString, RPIDevice*> g_deviceList;
 QList <Sensor*> g_sensorList;
@@ -38,7 +40,8 @@ QString MY_HW_ADDR;
 QString MY_IP_ADDR;
 bool zwave_ready = false;
 bool g_PCA9685_ready = false;
-smah_i2c bus;
+///smah_i2c bus;
+I2C bus(1, 0x40);
 QString homeLocation;
 uint32 g_homeId = -32767;
 QString g_zwaveDriver = "0";
@@ -161,12 +164,12 @@ void loadPresets()
             bool ok;
             type = presetElement.attribute("type").toInt(&ok, 10);
 
-            Preset preset(presetElement.attribute("name"),presetID,false);
+            Preset *preset = new Preset(presetElement.attribute("name"),presetID,false);
             presetID++;
-            preset.type = type;
+            preset->type = type;
             if (type == 0)
             {
-                preset.setColor(staticCode);
+                preset->setColor(staticCode);
             }
             if (type == 2)
             {
@@ -180,7 +183,7 @@ void loadPresets()
                         offset->start = offsetElement.attribute("start").toInt();
                         offset->end = offsetElement.attribute("end").toInt();
                         offset->skip = offsetElement.attribute("skip").toInt();
-                        preset.addOffset(offset, a);
+                        preset->addOffset(offset, a);
                     }
                 }
             }
@@ -195,7 +198,7 @@ void loadPresets()
         if (itemnode.isElement()) {
             QDomElement presetElement = itemnode.toElement();
 
-            Preset preset(presetElement.attribute("name"),presetID, true, presetElement.attribute("fade").toInt(), presetElement.attribute("delay").toInt());
+            Preset *preset = new Preset(presetElement.attribute("name"),presetID, true, presetElement.attribute("fade").toInt(), presetElement.attribute("delay").toInt());
             QDomNodeList stepItems = presetElement.elementsByTagName("step");
             for (int a = 0; a < stepItems.count(); a++) {
                 QDomNode stepNode = stepItems.at(a);
@@ -209,7 +212,7 @@ void loadPresets()
                     step->h = h;
                     step->s = s;
                     step->v = v;
-                    preset.addStep(step, a);
+                    preset->addStep(step, a);
                 }
             }
             presetID++;
@@ -231,13 +234,14 @@ int main(int argc, char *argv[])
         qInfo() << "GPIO Ready";
     }
 
-    bus = smah_i2c_open("/dev/i2c-1");
-    if (bus == nullptr)
-    {
-        qInfo() << "I2C init failed";
-    } else {
-        qInfo() << "I2C init successful";
-        if (PCA9685_setFreq(bus, 1000) == 0)
+    /*
+    //bus = smah_i2c_open("/dev/i2c-1");
+    //if (bus == nullptr)
+    //{
+        //qInfo() << "I2C init failed";
+    //} else {
+      //  qInfo() << "I2C init successful";
+        /if (PCA9685_setFreq(bus, 1000) == 0)
         {
             PCA9685_init(bus);
             qInfo() << "PCA init successful";
@@ -246,7 +250,7 @@ int main(int argc, char *argv[])
             qInfo() << "PCA init failed";
         }
     }
-
+*/
 
 
     // determine our MAC addy
@@ -302,6 +306,8 @@ int main(int argc, char *argv[])
 
     mainWindow.show();
     a.installEventFilter(&filter);
+    ZWaveWorker *worker = new ZWaveWorker(a);
+    worker->start();
     QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
     return a.exec();
 }

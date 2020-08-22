@@ -31,7 +31,7 @@ public slots:
     void setPreset();
 
 signals:
-    void presetActivation(Preset preset);
+    //void presetActivation(Preset preset);
 };
 
 #endif // W_PRESETCHOOSER_H

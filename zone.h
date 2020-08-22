@@ -12,16 +12,12 @@
 #include "light.h"
 #include "sensor.h"
 
-//typedef QList<Light*> LightListMap;
 typedef QMap<QString, Sensor*> SensorListMap;
 
-//Q_DECLARE_METATYPE(LightListMap)
 Q_DECLARE_METATYPE(SensorListMap)
 
 class Zone : public QObject
 {
-
-
     Q_OBJECT
     Q_PROPERTY(QString getName READ getName)
     Q_PROPERTY(QVariantList getLightList READ getLightList)

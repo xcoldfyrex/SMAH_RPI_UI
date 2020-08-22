@@ -18,7 +18,7 @@ public:
     bool abortFlag;
 
 private:
-    Preset preset;
+    Preset *preset;
 
 signals:
     void colorStepChanged(QColor color);

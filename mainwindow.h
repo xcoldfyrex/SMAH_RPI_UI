@@ -35,10 +35,6 @@ signals:
     void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
-    void showZoneChooser();
-    void showSystemWidget();
-    void showWeatherWidget();
-    void addPreset(Preset preset);
     void hideSaver();
     void showSaver();
     void resetIdle(QEvent *ev);

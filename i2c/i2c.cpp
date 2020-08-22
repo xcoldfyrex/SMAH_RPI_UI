@@ -1,80 +1,86 @@
-#include "i2c.h"
-#include <QDebug>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <stdio.h>      /* Standard I/O functions */
+#include <fcntl.h>
+#include <unistd.h>
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
+#include <syslog.h>		/* Syslog functionality */
+#include "i2c/i2c.h"
 
-extern bool g_PCA9685_ready;
-
-struct smah_i2c_t {
-    int fd;
-    pthread_mutex_t mutex;
-};
-
-smah_i2c smah_i2c_open(const char *filename) {
-    smah_i2c bus = (smah_i2c)malloc(sizeof(struct smah_i2c_t));
-
-    // Open I2C file
-    if((bus->fd = open(filename, O_RDWR)) < 0) {
-        free(bus);
-        return NULL;
-    }
-
-    // create bus mutex
-    if(pthread_mutex_init(&bus->mutex, NULL)) {
-        close(bus->fd);
-        free(bus);
-        return NULL;
-    }
-
-    return bus;
+I2C::I2C(int bus, int address) {
+    _i2cbus = bus;
+    _i2caddr = address;
+    snprintf(busfile, sizeof(busfile), "/dev/i2c-%d", bus);
+    openfd();
 }
 
-int smah_i2c_write(smah_i2c bus, int addr, unsigned char *buffer, int buffersize) {
-    if (!g_PCA9685_ready)
-    {
-        qCritical() << "Tried to write to I2C bus, but it's not ready: " << &buffer;
-        return 0;
+I2C::~I2C() {
+    close(fd);
+}
+//! Read a single byte from I2C Bus
+/*!
+ \param address register address to read from
+ */
+uint8_t I2C::read_byte(uint8_t address) {
+    if (fd != -1) {
+        uint8_t buff[BUFFER_SIZE];
+        buff[0] = address;
+        if (write(fd, buff, BUFFER_SIZE) != BUFFER_SIZE) {
+            syslog(LOG_ERR,
+                    "I2C slave 0x%x failed to go to register 0x%x [read_byte():write %d]",
+                    _i2caddr, address, errno);
+            return (-1);
+        } else {
+            if (read(fd, dataBuffer, BUFFER_SIZE) != BUFFER_SIZE) {
+                syslog(LOG_ERR,
+                        "Could not read from I2C slave 0x%x, register 0x%x [read_byte():read %d]",
+                        _i2caddr, address, errno);
+                return (-1);
+            } else {
+                return dataBuffer[0];
+            }
+        }
+    } else {
+        syslog(LOG_ERR, "Device File not available. Aborting read");
+        return (-1);
     }
-    /* Lock mutex */
-    pthread_mutex_lock(&bus->mutex);
 
-    /* Join I2C. */
-    if(ioctl(bus->fd, I2C_SLAVE, addr) < 0)
-        return -1;
-
-    /* Write to device */
-    if(write(bus->fd, buffer, buffersize) != buffersize)
-        return -1;
-
-    /* Unlock mutex */
-    pthread_mutex_unlock(&bus->mutex);
-
+}
+//! Write a single byte from a I2C Device
+/*!
+ \param address register address to write to
+ \param data 8 bit data to write
+ */
+uint8_t I2C::write_byte(uint8_t address, uint8_t data) {
+    if (fd != -1) {
+        uint8_t buff[2];
+        buff[0] = address;
+        buff[1] = data;
+        if (write(fd, buff, sizeof(buff)) != 2) {
+            syslog(LOG_ERR,
+                    "Failed to write to I2C Slave 0x%x @ register 0x%x [write_byte():write %d]",
+                    _i2caddr, address, errno);
+            return (-1);
+        } else {
+            syslog(LOG_INFO, "Wrote to I2C Slave 0x%x @ register 0x%x [0x%x]",
+                    _i2caddr, address, data);
+            return (-1);
+        }
+    } else {
+        syslog(LOG_INFO, "Device File not available. Aborting write");
+        return (-1);
+    }
     return 0;
 }
-
-int smah_i2c_reg_write(smah_i2c bus, int addr, int reg, int data) {
-    unsigned char buffer[] = {reg, data};
-
-    return smah_i2c_write(bus, addr, buffer, 2);
-}
-
-int smah_i2c_read(smah_i2c bus, int addr, unsigned char *buffer, int buffersize) {
-    /* Lock mutex */
-    pthread_mutex_lock(&bus->mutex);
-
-    /* Join I2C. */
-    if(ioctl(bus->fd, I2C_SLAVE, addr) < 0)
-        return -1;
-
-    /* Read from device */
-    if(read(bus->fd, buffer, buffersize) != buffersize)
-        return -1;
-
-    /* Unlock mutex */
-    pthread_mutex_unlock(&bus->mutex);
-
-    return 0;
-}
-
-void smah_i2c_close(smah_i2c bus) {
-    pthread_mutex_destroy(&bus->mutex);
-    close(bus->fd);
+//! Open device file for I2C Device
+void I2C::openfd() {
+    if ((fd = open(busfile, O_RDWR)) < 0) {
+        syslog(LOG_ERR, "Couldn't open I2C Bus %d [openfd():open %d]", _i2cbus,
+                errno);
+    }
+    if (ioctl(fd, I2C_SLAVE, _i2caddr) < 0) {
+        syslog(LOG_ERR, "I2C slave %d failed [openfd():ioctl %d]", _i2caddr,
+                errno);
+    }
 }

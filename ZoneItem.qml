@@ -1,23 +1,32 @@
+// menu item for each zone in main drawer
+
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 
 Rectangle {
-    //property int id: 0
+    id: zoneMenu
+
     property string zoneName: "_DEF"
-    property string drawerID: "_DEF"
     ItemDelegate {
         id: zd
         objectName: "zd";
         parent: mainMenu
-        text: qsTr(zoneName)
+        Rectangle {
+            color: "#08111d"
+            width: parent.width
+            height: parent.height
+
+            Text {
+                color: "#aeaeae"
+                text: qsTr(zoneName)
+                styleColor: "#e21414"
+            }
+        }
         width: mainMenu.width
         onClicked: {
             changeZone(zoneName)
-            //window.zone
         }
     }
-
-
 }
 
 

@@ -9,6 +9,7 @@ extern QMap<int, Preset> gColorPresetMap;
 PresetChooser::PresetChooser(Zone *zone, Light *light, QWidget *parent) : QWidget(parent)
 {
 
+    /*
     presetButtons = new QListWidget(this);
     presetButtons->setObjectName("presetButtons");
     QListWidgetItem *itemBack = new QListWidgetItem("> Back");
@@ -44,15 +45,18 @@ PresetChooser::PresetChooser(Zone *zone, Light *light, QWidget *parent) : QWidge
 
     presetList->setObjectName("presetList");    
     connect(presetList,SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(setPreset()));
+    */
 }
 
 void PresetChooser::setPreset()
 {
+    /*
     int presetInt = this->presetList->currentItem()->data(Qt::UserRole).toInt();
 
     foreach (Preset preset, gColorPresetMap) {
         if(presetInt == preset.id)
             light->setActivePreset(preset);
     }
+    */
 }
 

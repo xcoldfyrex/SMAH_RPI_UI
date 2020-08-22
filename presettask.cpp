@@ -7,13 +7,13 @@
 
 PresetTask::PresetTask(Preset *preset) : QThread(Q_NULLPTR)
 {
-    this->preset = *preset;
+    this->preset = preset;
     this->abortFlag = false;
 }
 
 void PresetTask::run()
 {
-    QImage canvas = preset.drawPreview();
+    QImage canvas = preset->drawPreview();
     int offset = 0;
     while (!abortFlag)
     {
@@ -22,7 +22,7 @@ void PresetTask::run()
         QRgb qrgb = canvas.pixel(offset,0);
         QColor color(qrgb);
         emit colorStepChanged(color);
-        this->msleep(preset.getDelay());
+        this->msleep(preset->getDelay());
         offset++;
     }
 }

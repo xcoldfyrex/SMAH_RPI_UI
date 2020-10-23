@@ -3,7 +3,6 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QWidget>
 #include <QBuffer>
 #include <QXmlStreamReader>
 #include <QUrl>

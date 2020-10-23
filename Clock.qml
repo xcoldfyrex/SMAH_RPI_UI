@@ -4,35 +4,35 @@ import QtQuick 2.0
 Item {
     id : clock
 
-    property int hours
-    property int minutes
-    property int seconds
-    property real shift
-    property bool night: false
-    property bool internationalTime: false //Unset for local time
+    property var locale: Qt.locale()
+    property string dateString
+
 
     function timeChanged() {
-        var date = new Date;
-        hours = internationalTime ? date.getUTCHours() + Math.floor(clock.shift) : date.getHours()
-        night = ( hours < 7 || hours > 19 )
-        minutes = internationalTime ? date.getUTCMinutes() + ((clock.shift % 1) * 60) : date.getMinutes()
-        seconds = date.getUTCSeconds();
+        currentDate = new Date()
+
+        dateString = Date.fromLocaleString(locale, currentDate, "ddd yyyy-MM-dd hh:mm:ss")
     }
 
     Timer {
         interval: 100; running: true; repeat: true;
-        onTriggered: clock.timeChanged()
+        onTriggered: timeText.text =  Qt.formatTime(new Date(),"hh:mm:ss")
     }
 
     Text {
+        id: timeText
         fontSizeMode: Text.Fit
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignRight
-        text: hours + ":" + minutes + ":" + seconds
+        text: {
+            updatesEnabled: timeText.time
+            Qt.formatTime(new Date(), "hh:mm:ss") + "\n dfgdf"
+        }
         color: "white"
         font.family: "Helvetica"
         font.bold: true; font.pixelSize: 16
         style: Text.Raised; styleColor: "black"
+        anchors.right: parent.right
     }
 }
 

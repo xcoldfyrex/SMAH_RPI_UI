@@ -51,7 +51,7 @@ public:
     QVariantList getLightList() const { return this->zoneLightList; }
     Light *getLightById(int id);
     Sensor *getSensorById(int id);
-    QList<QWidget*> pageStack;
+    //QList<QWidget*> pageStack;
     void addDevice(RPIDevice *device);
 
 private:

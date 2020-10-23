@@ -28,10 +28,10 @@ void TCPConnectionFactory::cleanSocket(ClientSocket *socket)
             //if (!sock->isHID)
             //zoneStatusChanged(clientMap.value(i)->clientID, 0);
             g_clientMap.removeAt(i);
-            for (ClientSocket *sock : g_clientMap)
-            {
-                qDebug() << sock->getPeerAddress();
-            }
+            //for (ClientSocket *sock : g_clientMap)
+            //{
+                qDebug() << "CLOSED TCPConnectionFactory " << sock->getPeerAddress();
+            //}
             return;
         }
         i++;

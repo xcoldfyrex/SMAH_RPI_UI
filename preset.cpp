@@ -69,7 +69,7 @@ QImage Preset::drawPreview()
 {
     if (dynamic)
     {
-        QImage canvas(getSteps().size() * 256, 100, QImage::Format_RGB888);
+        QImage canvas(getSteps().size() * 256, 30, QImage::Format_RGB888);
         QPainter canvasPainter(&canvas);
 
         for (int currentStep = 0; currentStep < getSteps().size(); currentStep++) {
@@ -86,14 +86,15 @@ QImage Preset::drawPreview()
             fade.setColorAt(0, QColor(baseStep->h, baseStep->s, baseStep->v));
             fade.setColorAt(1, QColor(targetStep->h, targetStep->s, targetStep->v));
 
-            QImage image(256, 100, QImage::Format_RGB888);
+            QImage image(256, 30, QImage::Format_RGB888);
             QPainter painter(&image);
             painter.fillRect(image.rect(),fade);
             canvasPainter.drawImage(currentStep*256, 0, image);
         }
-        return canvas;
+
+        return canvas.scaled(256,30);
     } else {
-        QImage canvas(256, 100, QImage::Format_RGB888);
+        QImage canvas(256, 30, QImage::Format_RGB888);
         canvas.fill(QColor::fromRgb(r,g,b));
         return canvas;
     }

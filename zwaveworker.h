@@ -18,6 +18,7 @@ public:
         {
             qInfo() << "INIT ZWave";
             init_zwave();
+            qInfo() << "ZWave Polling Complete";
         } else {
             qInfo() << "ZWave device not found. Skipping.";
         }

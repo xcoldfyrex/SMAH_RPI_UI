@@ -4,10 +4,9 @@
 #include "w_zone_lights.h"
 #include "zwavemanager.h"
 #include "w_presetchooser.h"
-#include "qengravedlabel.h"
 
 #include <QDebug>
-
+/*
 extern QMap <int, Light*> g_lightMap;
 
 ZoneLightsWidget::ZoneLightsWidget(Zone *zone, QWidget *parent) : QWidget(parent)
@@ -24,7 +23,7 @@ ZoneLightsWidget::ZoneLightsWidget(Zone *zone, QWidget *parent) : QWidget(parent
 
 void ZoneLightsWidget::addToggleFunctions()
 {
-/*
+
     int x = 1;
     foreach (Light *light, this->zone->getLightList())
     {
@@ -97,14 +96,14 @@ void ZoneLightsWidget::addToggleFunctions()
     QPushButton *allOff = new QPushButton("All Off");
     this->contentLayout->addWidget(allOn,x+2,0);
     this->contentLayout->addWidget(allOff,x+2,1);
-    */
+
 }
 
 void ZoneLightsWidget::showCustomLights(QWidget *widget)
 {
-    this->zone->pageStack.append(widget);
+    //this->zone->pageStack.append(widget);
     // THIS NEEDS TO GO TO THE ZONE FUNCTIONS STACK
-    this->topWidget->setCurrentWidget(widget);
+    //this->topWidget->setCurrentWidget(widget);
 }
 
 void ZoneLightsWidget::togglePower(Light *light) {
@@ -158,3 +157,4 @@ void ZoneLightsWidget::buttonListClicked(int id)
     //contentLayout->setCurrentIndex(zoneButtons->currentItem()->data(Qt::UserRole).toInt());
     //this->zone.pageStack.append(contentLayout->currentWidget());
 }
+*/

@@ -2,8 +2,7 @@
 #include <QTime>
 #include <zone.h>
 #include "w_screensaver.h"
-#include "w_zoneenvironment.h"
-
+/*
 extern QMap<QString, Zone*> gZoneMap;
 
 ScreenSaverWidget::ScreenSaverWidget(QWidget *parent) : QWidget(parent)
@@ -38,3 +37,4 @@ void ScreenSaverWidget::showTime()
 }
 
 
+/*

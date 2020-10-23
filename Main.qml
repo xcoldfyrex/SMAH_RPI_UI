@@ -2,19 +2,24 @@ import QtQuick 2.12
 import QtQuick.Controls 2.5
 import smah.light 1.0
 import smah.zone 1.0
+import smah.sensor 1.0
+
 import QtQuick.Controls.Material 2.12
+import QtQuick.Window 2.3
 
 import "zoneManagement.js" as ZoneCreation
 
-MainForm {
-
+ApplicationWindow {
     id: window
     visible: true
     width: 1280
     height: 800
-    title: qsTr("Stack")
+    minimumWidth: 1280
+    maximumWidth: 1280
+    minimumHeight: 800
+    maximumHeight: 800
+    title: qsTr("SMAH")
     objectName: "toolBar";
-
     header: ToolBar {
         z: 2000
         id: toolBar
@@ -44,11 +49,12 @@ MainForm {
             font.pixelSize: Qt.application.font.pixelSize * 1.6
             onClicked: {
                 drawer.open()
-
             }
         }
 
         Label {
+            font.pixelSize: 16
+            color: "#ffffff"
             text: stackView.currentItem.title
             verticalAlignment: Text.AlignTop
             anchors.centerIn: parent
@@ -79,7 +85,10 @@ MainForm {
                 objectName: "mainMenu";
                 id: mainMenu
                 ItemDelegate {
-                    text: qsTr("Weather")
+                    SMAHLabel {
+                        text: qsTr("Weather");
+                        font.pixelSize: 32
+                    }
                     width: parent.width
                     onClicked: {
                         //stackView.push("Page1Form.ui.qml")
@@ -87,12 +96,15 @@ MainForm {
                     }
                 }
                 ItemDelegate {
-                    text: qsTr("System")
+                    SMAHLabel {
+                        text: qsTr("System");
+                        font.pixelSize: 32
+                    }
                     width: parent.width
                     onClicked: {
                         stackView.push("System.qml")
                         drawer.close()
-                        stackView
+                        //stackView
                     }
                 }
                 Label {
@@ -130,12 +142,8 @@ MainForm {
                 var zonecomponent= Qt.createComponent("ZoneOptions.qml")
                 var zoneloadwin = zonecomponent.createObject(mainMenu, {zoneName: zoneList[i].getName, lights: zoneList[i].getLightList} )
                 ZoneCreation.zoneFunctions[zoneList[i].getName] = zoneloadwin
-                //console.log(zoneList[i].getLightList)
-                //}
-                //stackView.push(loadwin)
             }
-            console.log(ZoneCreation.zoneLightList.length)
-            stackView.clear()
+            //stackView.push(1)
         }
     }
     SMAHBackground {}

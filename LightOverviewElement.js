@@ -15,6 +15,7 @@ function createLightList(lights, gridParent, id) {
                 'id: nameReapeter;' +
                 'model: lightTitles;' +
                     'Label {' +
+                        'color: "#ffffff";' +
                         'height: 480;' +
                         'Layout.row: index;' +
                         'Layout.column: 0;' +

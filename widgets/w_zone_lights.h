@@ -10,7 +10,7 @@
 #include "w_lightcontrolcontainer.h"
 #include "zone.h"
 #include "preset.h"
-
+/*
 class ZoneLightsWidget : public QWidget
 {
     Q_OBJECT
@@ -39,4 +39,5 @@ private slots:
     void hidePresetChooser();
     void buttonListClicked(int id);
 };
+*/
 #endif // ZONELIGHTWIDGET_H

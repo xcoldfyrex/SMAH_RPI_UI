@@ -14,19 +14,27 @@ extern int MY_DEVICE_ID;
 extern TCPConnectionFactory tcpServer;
 extern uint32  g_homeId;
 
+typedef QMap<int, float> SensorValueMap;
+
+Q_DECLARE_METATYPE(SensorValueMap)
+
 class Sensor : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int getLux READ getLux NOTIFY getLux)
-    //Q_PROPERTY(QMap getValues READ getValues NOTIFY getValues)
-    Q_PROPERTY(QString getName READ getName)
-    Q_PROPERTY(bool isFarenheit READ isFarenheit)
+    Q_PROPERTY(int getLux READ getLux NOTIFY luxChanged)
+    Q_PROPERTY(QVariant temperature READ getTemperature NOTIFY valueChanged)
+    Q_PROPERTY(QVariant rh READ getHumidity NOTIFY valueChanged)
+    Q_PROPERTY(QVariant lux READ getLux NOTIFY valueChanged)
+    Q_PROPERTY(QVariant uv READ getUV NOTIFY valueChanged)
+    Q_PROPERTY(SensorValueMap values READ getValues NOTIFY valueChanged)
+    Q_PROPERTY(QString name READ getName CONSTANT)
+    Q_PROPERTY(bool isFarenheit READ isFarenheit CONSTANT)
 
 public:
-    Sensor(QString name, int node_id, int device_id, bool farenheit=false, uint32 home_id = 0);
+    Sensor(QString name, int node_id, int device_id, bool farenheit=false, uint32 home_id = 0, QObject *parent = nullptr);
     explicit Sensor(QObject *parent = nullptr);
     bool isFarenheit() { return this->farenheit; }
-    float getTemperature() {
+    QVariant getTemperature() {
         if (this->isFarenheit())
             return this->getValue(1);
         return this->getValue(1) * 9/5 + 32;
@@ -51,6 +59,7 @@ public:
         if (this->getHome_id() == g_homeId)
             tcpServer.broadcastMessage(this->getNodeId(), 1, value, index);
         setLastUpdate(QDateTime::currentSecsSinceEpoch());
+        emit(valueChanged());
     }
     float getValue(int index) {
         if (this->values.contains(index))
@@ -59,9 +68,13 @@ public:
     }
     void setBattery(int level) { this->battery = level; }
 
+signals:
+    void valueChanged();
+    void temperatureChanged(float const temperature);
+    void luxChanged(const float &lux);
+
 private:
     bool farenheit = false;
-    float temperature = 0; /* DEPRECATE THIS */
     float humidity = 0; /* DEPRECATE THIS */
     //float raw_temperature = 0; /* DEPRECATE THIS */
     //float raw_humidity = 0;

@@ -129,6 +129,7 @@ void ClientSocket::disconnected() {
     //qInfo("Client disconnect(%s)", tcpSocket->peerAddress().toString().toStdString().c_str());
     if (g_deviceList.contains(this->devid))
     {
+        qDebug() << "CLOSED ClientSocket " << this->getPeerAddress();
         qInfo() << "Device LEFT: " << this->rpidevice->getHwAddress() << this->rpidevice->getName() << tcpSocket->errorString().toStdString().c_str();
         this->rpidevice->setVersion(0);
         this->rpidevice->setIP("-");
@@ -315,17 +316,9 @@ void ClientSocket::processPayload(QByteArray buffer){
                 if (zone->getSensorById(id) != nullptr)
                 {
                     zone->getSensorById(id)->setValue(index,static_cast<float>(value));
-                    /* DEPRECATE THIS */
-                    //if (index == 0)
-                    //zone.getSensorById(id)->setTemperature(value);
-                    //if (index == 1)
-                    //  zone.getSensorById(id)->setHumidity(value);
-                    //if (index == 2)
-                    //  zone.getSensorById(id)->setLux(static_cast<short>(value));
 
                 }
             }
         }
-
     }
 }

@@ -1,5 +1,6 @@
 #include "w_colorpreview.h"
 
+/*
 ColorPreview::ColorPreview(QWidget *parent) : QWidget(parent)
 {
     this->repaint();
@@ -25,3 +26,4 @@ void ColorPreview::paintEvent(QPaintEvent *)
     painter.setPen(penHText);
     painter.drawText(0,20, color.name().replace("#",""));
 }
+*/

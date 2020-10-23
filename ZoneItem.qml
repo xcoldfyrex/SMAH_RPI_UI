@@ -5,7 +5,6 @@ import QtQuick.Controls 2.5
 
 Rectangle {
     id: zoneMenu
-
     property string zoneName: "_DEF"
     ItemDelegate {
         id: zd
@@ -15,17 +14,21 @@ Rectangle {
             color: "#08111d"
             width: parent.width
             height: parent.height
-
-            Text {
-                color: "#aeaeae"
-                text: qsTr(zoneName)
-                styleColor: "#e21414"
+            ItemDelegate {
+                width: parent.width
+                SMAHLabel {
+                    text: qsTr(zoneName)
+                    font.pixelSize: 32
+                    styleColor: "#e21414"
+                    width: parent.width
+                }
+                onClicked: {
+                    changeZone(zoneName)
+                }
             }
         }
         width: mainMenu.width
-        onClicked: {
-            changeZone(zoneName)
-        }
+
     }
 }
 

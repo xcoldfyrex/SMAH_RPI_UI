@@ -27,7 +27,6 @@ SOURCES += main.cpp\
     widgets/w_scheduledactions.cpp \
     widgets/w_systemsettings.cpp \
     widgets/w_topheader.cpp \
-    widgets/w_zoneenvironment.cpp \
     logger.cpp \
     preset.cpp \
     datagramhandler.cpp \
@@ -40,7 +39,6 @@ SOURCES += main.cpp\
     i2c/i2c.cpp \
     zwavemanager.cpp \
     sunriseset.cpp \
-    widgets/w_screensaver.cpp \
     sensor.cpp \
     ui_mainwindow.cpp \
     rsslisting.cpp \
@@ -51,6 +49,7 @@ SOURCES += main.cpp\
 
 
 HEADERS  += \
+    imageprovider.h \
     mainwindow.h \
     rpidevice.h \
     w_weatherlistwidget.h \
@@ -62,7 +61,6 @@ HEADERS  += \
     widgets/w_scheduledactions.h \
     widgets/w_systemsettings.h \
     widgets/w_topheader.h \
-    widgets/w_zoneenvironment.h \
     build_number.h \
     logger.h \
     preset.h \
@@ -84,7 +82,6 @@ HEADERS  += \
     eventfilter.h \
     sensor.h \
     commandrouter.h \
-    widgets/qengravedlabel.h \
     ui_mainwindow.h \
     rsslisting.h \
     tcpconnectionfactory.h \

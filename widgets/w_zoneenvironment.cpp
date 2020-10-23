@@ -1,7 +1,6 @@
-#include "w_zoneenvironment.h"
 #include "math.h"
 #define ZeroPercentVoltage 0.958
-
+/*
 ZoneEnvironmentPanel::ZoneEnvironmentPanel(QWidget *parent, Sensor *sensor, bool compact) : QWidget(parent)
 {
 
@@ -58,3 +57,4 @@ float ZoneEnvironmentPanel::rawVoltage(int reading)
     float ref = 4.95;
     return (reading * ref) / float(4096);
 }
+/*

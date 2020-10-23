@@ -30,7 +30,7 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
     //statusList->setEnabled(false);
     //deviceList->setObjectName("labelList");
     //deviceList->setEnabled(false);
-
+/*
     QTimer *refreshTimer = new QTimer(this);
     QWidget *devStatus = new QWidget(this);
     QVBoxLayout *vboxDevStatus = new QVBoxLayout(devStatus);
@@ -183,6 +183,7 @@ SystemSettings::SystemSettings(QWidget *parent) : QWidget(parent)
 
     //connect(&tcpServer,SIGNAL(deviceReady(RPIDevice)),this,SLOT(addDevice(RPIDevice)));
     //connect(&tcpServer,SIGNAL(deviceLost(RPIDevice)),this,SLOT(removeDevice(RPIDevice)));
+    */
 }
 
 void SystemSettings::reloadStyles()

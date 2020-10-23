@@ -1,6 +1,6 @@
 #ifndef W_SCREENSAVER_H
 #define W_SCREENSAVER_H
-
+/*
 #include <QObject>
 #include <QWidget>
 #include <QLabel>
@@ -22,5 +22,5 @@ private slots:
     void showTime();
 };
 
-
+*/
 #endif // W_SCREENSAVER_H

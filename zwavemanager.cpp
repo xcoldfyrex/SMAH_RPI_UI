@@ -283,7 +283,8 @@ void OnNotification
                         {
                             if (valuelist[x] == 0x08)
                             {
-                                qDebug() << "ALARM"  << nodeInfo->m_nodeId;
+                                // // 08/22/2020 - disable
+                                //qDebug() << "ALARM"  << nodeInfo->m_nodeId;
 
                             }
                         //qDebug() << "AL V V I" << v.GetIndex() << QString::fromStdString(s) << QString::fromStdString(Manager::Get()->GetValueLabel(v)) << valuelist[x];
@@ -322,7 +323,8 @@ void OnNotification
                         // battery level
                         if (v.GetIndex() == 0)
                         {
-                            qDebug() << "BAT" << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
+                            // 08/22/2020 - disable
+                            //qDebug() << "BAT" << nodeInfo->m_nodeId << value << v.GetType() << QString::fromStdString(Manager::Get()->GetValueLabel(v));
                         }
                         break;
                     }

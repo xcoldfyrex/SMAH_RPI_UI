@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QPaintEvent>
 #include <QPainter>
-
+/*
 class ColorPreview : public QWidget
 {
     Q_OBJECT
@@ -24,5 +24,5 @@ signals:
 
 public slots:
 };
-
+*/
 #endif // COLORPREVIEW_H

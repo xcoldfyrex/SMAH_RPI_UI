@@ -9,6 +9,8 @@
 #include "presettask.h"
 #include "zwavemanager.h"
 
+#include <QDebug>
+
 const int LIGHT_ZWAVE = 0;
 const int LIGHT_ZWAVE_DIMMABLE = 1;
 const int LIGHT_RGB_LED = 10;
@@ -25,24 +27,24 @@ class Light : public QObject
 {
 
     Q_OBJECT
-    Q_PROPERTY(QString getName READ getName)
+    Q_PROPERTY(QString getName READ getName CONSTANT)
     Q_PROPERTY(QString getColor READ getColor)
-    Q_PROPERTY(int getType READ getType)
-    Q_PROPERTY(int getLevel READ getLevel WRITE setLevel NOTIFY levelChanged)
-
+    Q_PROPERTY(int getType READ getType CONSTANT)
+    Q_PROPERTY(int getLevel READ getLevel WRITE setLevel NOTIFY levelChanged)    
 
 public:
     explicit Light(QObject *parent = nullptr);
     Light(int id, QString name, int type, int deviceid, short bank, uint32 home_id);
+    Q_INVOKABLE int getType() const { return this->type ;}
     QString getName() const { return this->name; }
     uint32 getHome_id() { return this->home_id; }
-    int getType() const { return this->type ;}
     QString getColor() { return this->color; }
     int getId() { return this->id; }
     int getGetDeviceId() { return this->deviceid; }
     int getLevel() { return this->level; }
     bool getState() { return this->level; }
     bool isLocal() {
+        qDebug() << this->home_id << g_homeId << this->deviceid << MY_DEVICE_ID;
         if ((this->home_id == g_homeId || this->deviceid == MY_DEVICE_ID))
             return true;
         return false;
@@ -58,7 +60,6 @@ public:
         this->localUpdate = wasit;
     }
 
-    QLabel *statusLabel;
     void initState()
     {
         bool checkstate = getZWaveState(this->id);
@@ -67,19 +68,19 @@ public:
     QList<int> getColorFromPWM();
     void setColorInPWM(QString color, bool keepActive);
     void updateLevel(int level);
-    void setLevel(int level);
     void sendUpdate();
-    QWidget *lcwWidget;
 
 
 signals:
     bool levelChanged(Light *light);
+    void nameChanged();
 
 public slots:
-    void setColor(QString color, bool keepActive);
-    QString getWhiteLevel() { return this->whiteLevel; }
-    void toggleState();
-    void setActivePreset(Preset *preset);
+    Q_INVOKABLE void setColor(QString color, bool keepActive);
+    Q_INVOKABLE QString getWhiteLevel() { return this->whiteLevel; }
+    Q_INVOKABLE void toggleState();
+    Q_INVOKABLE void setActivePreset(Preset *preset);
+    Q_INVOKABLE void setLevel(int level);
 
 private slots:
     void colorStepAction(QColor color);

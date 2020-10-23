@@ -14,9 +14,8 @@
 #include "w_colorpreview.h"
 #include "light.h"
 #include "zone.h"
-#include "qengravedlabel.h"
 
-
+/*
 namespace Ui {
 class LightControlWidget;
 }
@@ -55,5 +54,5 @@ private:
     QSlider *sl_whitelevel;
 
 };
-
+*/
 #endif // LIGHTCONTROLWIDGET_H

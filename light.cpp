@@ -17,7 +17,6 @@ extern TCPConnectionFactory tcpServer;
 
 Light::Light(QObject *parent) : QObject(parent)
 {
-    this->statusLabel = new QLabel("N/A");
 }
 
 Light::Light(int id, QString name, int type, int deviceid, short bank, uint32 home_id)
@@ -25,7 +24,6 @@ Light::Light(int id, QString name, int type, int deviceid, short bank, uint32 ho
     this->id = id;
     this->name = name;
     this->type = type;
-    this->statusLabel = new QLabel("N/A");
     this->deviceid = deviceid;
     this->taskList = new QList<PresetTask*>();
     this->pwmbank = bank;
@@ -89,13 +87,13 @@ void Light::updateLevel(int level)
     {
         if (level == 1)
             text = "ON";
-        this->statusLabel->setText(text);
+        //this->statusLabel = text;
     }
 
     if (this->type == LIGHT_ZWAVE_DIMMABLE)
     {
         text = QString::number(level) + '%';
-        this->statusLabel->setText(text);
+        //this->statusLabel = text;
     }
 
     if (this->localUpdate)
@@ -128,7 +126,7 @@ void Light::setLevel(int level)
 
 void Light::sendUpdate()
 {
-    this->statusLabel->setText(QString::number(this->level));
+    //this->statusLabel = QString::number(this->level);
     tcpServer.broadcastMessage(this->id, 0, this->level, 0);
     emit levelChanged(this);
 }

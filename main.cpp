@@ -7,11 +7,15 @@
 #include <QDir>
 #include <QNetworkInterface>
 #include <QHostAddress>
-
+#include <QString>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QQuickView>
+#include <QQmlEngine>
+#include <QQuickWidget>
+#include <QQmlContext>
+#include <QQmlApplicationEngine>
 
 #include "zone.h"
 #include "light.h"
@@ -27,7 +31,8 @@
 #include "eventfilter.h"
 #include "sensor.h"
 #include "zwaveworker.h"
-
+#include "build_number.h"
+#include "imageprovider.h"
 
 QMap<QString, Zone*> gZoneMap;
 QMap<int, Preset*> gColorPresetMap;
@@ -93,6 +98,7 @@ void loadZones()
                 }
             }
             /* each light in the zone */
+
             QDomNodeList lightItems = element.elementsByTagName("light");
             for (int a = 0; a < lightItems.count(); a++) {
                 QDomNode lightNode = lightItems.at(a);
@@ -222,10 +228,26 @@ void loadPresets()
 }
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QGuiApplication a(argc, argv);
+    QGuiApplication::setApplicationName("SMAH");
+    QCommandLineParser parser;
+    QCommandLineOption nogui("nogui", QCoreApplication::translate("main", "Start headless"));
+    parser.addOption(nogui);
+    QCommandLineOption nocursor("nocursor", QCoreApplication::translate("main", "Hide cursor"));
+    parser.addOption(nocursor);
+    parser.process(a);
+
+    const QStringList args = parser.positionalArguments();
+
+    bool hideGui = parser.isSet(nogui);
+    bool hideCursor = parser.isSet(nocursor);
+
 
     EventFilter filter;
+    a.installEventFilter(&filter);
     qInstallMessageHandler(systemlogHandler);
+
+    // try to setup GPIO
     if (gpioInitialise() < 0)
     {
         qWarning() << "Failed to open GPIO";
@@ -234,32 +256,18 @@ int main(int argc, char *argv[])
         qInfo() << "GPIO Ready";
     }
 
-    /*
-    //bus = smah_i2c_open("/dev/i2c-1");
-    //if (bus == nullptr)
-    //{
-        //qInfo() << "I2C init failed";
-    //} else {
-      //  qInfo() << "I2C init successful";
-        /if (PCA9685_setFreq(bus, 1000) == 0)
-        {
-            PCA9685_init(bus);
-            qInfo() << "PCA init successful";
-            g_PCA9685_ready = true;
-        } else {
-            qInfo() << "PCA init failed";
-        }
-    }
-*/
-
-
     // determine our MAC addy
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
         if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack))
             foreach (QNetworkAddressEntry entry, interface.addressEntries())
             {
-                if (interface.name() == "wlp5s0" || interface.name() == "wlan0" || interface.name() == "eth0")
+                if (
+                        interface.name() == "wlp5s0"
+                        || interface.name() == "wlan0"
+                        || interface.name() == "eth0"
+                        || interface.name() == "enp4s0"
+                        )
                 {
                     MY_HW_ADDR = interface.hardwareAddress();
                     break;
@@ -277,37 +285,78 @@ int main(int argc, char *argv[])
     }
 
     homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
+    tcpServer.startListen();
+
+    DatagramHandler broadcaster;
+    ZWaveWorker *worker = new ZWaveWorker(a);
+    worker->start();
 
     QDir::setCurrent(homeLocation + "/.smah/");
     loadZones();
     loadPresets();
 
-    QDir::setCurrent(homeLocation + "/.smah/assets");
+    // headless mode, since qml won't even work without a screen attached
+    // setup QML bits
+    QVariantList qmlZones;
+    QVariantList qmlPresets;
+    QVariantList qmlSensors;
+    const auto screens = QGuiApplication::screens();
+    for (QScreen *screen : screens)
+        screen->setOrientationUpdateMask(Qt::LandscapeOrientation | Qt::PortraitOrientation |
+                                         Qt::InvertedLandscapeOrientation | Qt::InvertedPortraitOrientation);
+    QQmlEngine engine;
 
-    QFile File("main.css");
-    File.open(QFile::ReadOnly);
-    QString StyleSheet = QLatin1String(File.readAll());
-    //qApp->setStyleSheet(StyleSheet);
+    QQmlComponent component(&engine);
+    QQuickWindow::setDefaultAlphaBuffer(true);
+    if (hideCursor)
+        QGuiApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
 
-    QFontDatabase::addApplicationFont("Crescent-Regular.ttf");
-    QFontDatabase::addApplicationFont("Roboto-Thin.ttf");
-    QFontDatabase::addApplicationFont("NotoSans-Regular.ttf");
-    QFontDatabase::addApplicationFont("fa.otf");
-    QFontDatabase::addApplicationFont("Vera.ttf");
-    QFontDatabase::addApplicationFont("basic_sans_serif_7.ttf");
+    qmlRegisterType<Light>("smah.light", 1, 0, "Light");
+    qmlRegisterType<Zone>("smah.zone", 1, 0, "Zone");
+    qmlRegisterType<Zone>("smah.preset", 1, 0, "Preset");
+    qmlRegisterType<Sensor>("smah.sensor", 1, 0, "Sensor");
 
+    foreach (QString key, gZoneMap.keys())
+    {
+        qmlZones.append(QVariant::fromValue(gZoneMap.value(key)));
+    }
 
-    tcpServer.startListen();
-    MainWindow mainWindow(Q_NULLPTR);
-    /////////mainWindow.setStyleSheet(StyleSheet);
+    foreach (Sensor *key, g_sensorList)
+    {
+        qmlSensors.append(QVariant::fromValue(key));
+        //QObject::connect(key, &Sensor::valueChanged, [&engine, qmlSensors]()
+        //{
+        //    engine.rootContext()->setContextProperty("sensorList", QVariant::fromValue(qmlSensors));
+        //});
 
-    DatagramHandler broadcaster;
-    //QObject::connect(&broadcaster, SIGNAL(initiate(QHostAddress*)), &tcpServer, SLOT(initiateConnection(QHostAddress*)));
+    }
 
-    mainWindow.show();
-    a.installEventFilter(&filter);
-    ZWaveWorker *worker = new ZWaveWorker(a);
-    worker->start();
-    QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
+    foreach (Preset *preset, gColorPresetMap)
+    {
+        qmlPresets.append(QVariant::fromValue(preset));
+    }
+    if (!hideGui) {
+
+        ImageProvider *imageProvider = new ImageProvider;
+        engine.addImageProvider("images", imageProvider);
+        engine.rootContext()->setContextProperty("sensorList", QVariant::fromValue(qmlSensors));
+        engine.rootContext()->setContextProperty("presetList", QVariant::fromValue(qmlPresets));
+        engine.rootContext()->setContextProperty("zoneList", QVariant::fromValue(qmlZones));
+        engine.rootContext()->setContextProperty("z_homeid", QString::number(g_homeId, 16));
+        engine.rootContext()->setContextProperty("z_driver", g_zwaveDriver);
+        engine.rootContext()->setContextProperty("net_ip", MY_IP_ADDR);
+        engine.rootContext()->setContextProperty("net_mac", MY_HW_ADDR);
+        engine.rootContext()->setContextProperty("b_date", DATE);
+        engine.rootContext()->setContextProperty("b_build", BUILD);
+        engine.rootContext()->setContextProperty("applicationDirPath", QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory));
+        QObject::connect(&engine, &QQmlApplicationEngine::quit, &QGuiApplication::quit);
+        component.loadUrl(QUrl(QStringLiteral("qrc:/Main.qml")));
+        if (component.isReady()) {
+            component.create();
+        } else {
+            qWarning() << "Can't create main window!" << component.errorString();
+        }
+    }
+    //QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
     return a.exec();
 }

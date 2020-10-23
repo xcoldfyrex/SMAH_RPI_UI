@@ -21,16 +21,17 @@ Page {
     Rectangle {
         id: frame
         color: "#08111d"
-        border.color: "#5b5b5b"
-        width: 200
+        opacity: 0.9
+        border.color: "#00000000"
+        width: 300
         height:parent.height
         Column {
             parent: frame
             anchors.fill: parent
             ItemDelegate {
-                Text {
-                    color: "#aeaeae"
+                SMAHLabel {
                     text: qsTr("Overview")
+                    font.pixelSize: 32
                 }
                 width: parent.width
                 onClicked: {
@@ -40,20 +41,21 @@ Page {
                 }
             }
             ItemDelegate {
-                Text {
-                    color: "#aeaeae"
+                SMAHLabel {
                     text: qsTr("Devices")
+                    font.pixelSize: 32
                 }
                 width: parent.width
                 onClicked: {
                     stackViewZoneOptions.clear()
                     stackViewZoneOptions.push(ZoneCreation.zoneDeviceMap[zoneName])
+                    //ZoneCreation.zoneDeviceMap[zoneName]
                 }
             }
             ItemDelegate {
-                Text {
-                    color: "#aeaeae"
+                SMAHLabel {
                     text: qsTr("Climate Control")
+                    font.pixelSize: 32
                 }
                 width: parent.width
                 onClicked: {

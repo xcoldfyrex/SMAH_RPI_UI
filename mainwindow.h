@@ -25,7 +25,6 @@ public:
 private:
     TopHeaderWidget *hcheader;
     QStackedLayout *mainWidgetLayout;
-    ScreenSaverWidget *screensaverHolder;
     QTimer *idleTimer;
 
 protected:

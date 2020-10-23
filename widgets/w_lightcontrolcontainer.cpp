@@ -6,7 +6,7 @@
 //#include "ui_lightcontrolwidget.h"
 #include "w_hsvpalette.h"
 #include "mainwindow.h"
-
+/*
 LightControlContainerWidget::LightControlContainerWidget(Zone *zone, Light *light, QWidget *parent) :
     QWidget(parent)//,
     //ui(new Ui::LightControlWidget)
@@ -87,3 +87,4 @@ void LightControlContainerWidget::sliderChanged(int val)
     QString color = light->getColor();
     light->setColor(color + white, false);
 }
+*/

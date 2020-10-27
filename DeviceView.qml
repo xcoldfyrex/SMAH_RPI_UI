@@ -20,12 +20,16 @@ Page {
     {
         if (lights.length !== 0) {
             for (var i=0; i<lights.length; i++) {
-                var zonecomponent = Qt.createComponent("Presets.qml")
-                var zoneloadwin = zonecomponent.createObject(page, {device: lights[i]})
-                presetPages[lights[i]] = zoneloadwin
-                var zonecomponentPicker = Qt.createComponent("ColorPicker.qml")
-                var zoneloadwinPicker = zonecomponentPicker.createObject(page, {device: lights[i]})
-                pickerPages[lights[i]] = zoneloadwinPicker
+                if (lights[i].getType >= 10) {
+                    var zonecomponent = Qt.createComponent("Presets.qml")
+                    var zoneloadwin = zonecomponent.createObject(page, {device: lights[i]})
+                    presetPages[lights[i]] = zoneloadwin
+                }
+                if (lights[i].getType >= 10) {
+                    var zonecomponentPicker = Qt.createComponent("ColorPicker.qml")
+                    var zoneloadwinPicker = zonecomponentPicker.createObject(page, {device: lights[i]})
+                    pickerPages[lights[i]] = zoneloadwinPicker
+                }
             }
         }
     }
@@ -42,10 +46,8 @@ Page {
         interactive: false
         delegate: Row {
             //anchors.fill: parent
-
             spacing: 10
-            Text {
-                color: "#fefdfd"
+            SMAHLabel {
                 text: lights[index].getName
                 font.pixelSize: 20
                 width: 200
@@ -54,14 +56,13 @@ Page {
             Slider {
                 function determine_vis()
                 {
-                    //console.log(lights[index].getType)
                     if (lights[index].getType === 1){
                         return true
                     } else {
                         return false
                     }
                 }
-                visible: determine_vis
+                visible: determine_vis()
                 id: level
                 x: 179
                 y: 10
@@ -74,18 +75,25 @@ Page {
             }
 
             Text {
+                function determine_val()
+                {
+                    if (lights[index].getType >= 10)
+                    {
+                        return lights[index].getColor
+                    }
+                    return lights[index].getLevel
+                }
                 id: txtValue
                 x: 517
                 width: 45
                 height: 15
                 color: "#ffffff"
-                text: lights[index].getLevel
+                text: determine_val()
                 font.pixelSize: 20
             }
             Switch {
                 function determine_vis()
                 {
-                    //console.log(lights[index].getType)
                     if (lights[index].getType === 0){
                         return true
                     } else {
@@ -96,11 +104,19 @@ Page {
                 checked: false
                 text: qsTr("Off")
                 onClicked: {
-                    //lights[index].toggleState()
+                    lights[index].toggleState()
                 }
             }
 
             Button {
+                function determine_vis()
+                {
+                    if (lights[index].getType >= 10){
+                        return true
+                    } else {
+                        return false
+                    }
+                }
                 id: button
                 x: 694
                 y: 10
@@ -109,8 +125,26 @@ Page {
                     var zoneloadwin = presetPages[lights[index]]
                     zoneloadwin.visible = true
                 }
-
-                //right: parent.width - button.width
+                visible: determine_vis()
+            }
+            Button {
+                function determine_vis()
+                {
+                    if (lights[index].getType >= 10){
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+                id: pickerButton
+                x: 694
+                y: 10
+                text: qsTr("Color Picker")
+                onClicked: {
+                    var zoneloadwin = pickerPages[lights[index]]
+                    zoneloadwin.visible = true
+                }
+                visible: determine_vis()
             }
         }
         snapMode: ListView.SnapToItem

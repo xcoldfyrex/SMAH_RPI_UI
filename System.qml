@@ -3,9 +3,13 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.13
 import smah.sensor 1.0
 
+//test
+import QtQuick.Controls.Styles 1.4
+
 Page {
     id: page
     title: "System"
+    visible: true
     SMAHBackground {}
     property var z_sensornames: []
     property var z_sensortitles: [ "Device Name", "Temperature", "RH", "Lux", "UV", "Updated" ]
@@ -198,6 +202,19 @@ Page {
             anchors.bottom: parent.bottom
             onClicked: Qt.quit()
             text: "Restart"
+
+                    background: Rectangle {
+                        implicitWidth: 100
+                        implicitHeight: 25
+                        border.width: activeFocus ? 2 : 1
+                        border.color: "#888"
+                        radius: 4
+                        gradient: Gradient {
+                            GradientStop { position: 0 ; color: "#ccc" }
+                            GradientStop { position: 1 ; color: "#aaa" }
+                        }
+
+                }
         }
 
 

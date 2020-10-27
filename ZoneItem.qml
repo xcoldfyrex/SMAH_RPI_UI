@@ -6,6 +6,7 @@ import QtQuick.Controls 2.5
 Rectangle {
     id: zoneMenu
     property string zoneName: "_DEF"
+    property int index: 0
     ItemDelegate {
         id: zd
         objectName: "zd";
@@ -23,7 +24,7 @@ Rectangle {
                     width: parent.width
                 }
                 onClicked: {
-                    changeZone(zoneName)
+                    changeZone(index)
                 }
             }
         }

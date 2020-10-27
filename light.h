@@ -28,7 +28,7 @@ class Light : public QObject
 
     Q_OBJECT
     Q_PROPERTY(QString getName READ getName CONSTANT)
-    Q_PROPERTY(QString getColor READ getColor)
+    Q_PROPERTY(QString getColor READ getColor WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(int getType READ getType CONSTANT)
     Q_PROPERTY(int getLevel READ getLevel WRITE setLevel NOTIFY levelChanged)    
 
@@ -73,10 +73,12 @@ public:
 
 signals:
     bool levelChanged(Light *light);
+    bool colorChanged();
     void nameChanged();
 
 public slots:
-    Q_INVOKABLE void setColor(QString color, bool keepActive);
+    void setColor(QString color, bool keepActive);
+    void setColor(QString color);
     Q_INVOKABLE QString getWhiteLevel() { return this->whiteLevel; }
     Q_INVOKABLE void toggleState();
     Q_INVOKABLE void setActivePreset(Preset *preset);

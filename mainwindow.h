@@ -9,7 +9,6 @@
 
 #include "zone.h"
 #include "light.h"
-#include "widgets/w_topheader.h"
 #include "widgets/w_systemsettings.h"
 #include "widgets/w_screensaver.h"
 
@@ -23,7 +22,6 @@ public:
     QStackedLayout *contentLayout;
 
 private:
-    TopHeaderWidget *hcheader;
     QStackedLayout *mainWidgetLayout;
     QTimer *idleTimer;
 

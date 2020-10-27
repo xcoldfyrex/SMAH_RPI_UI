@@ -15,5 +15,8 @@
         <file>LightOverviewElement.js</file>
         <file>Presets.qml</file>
         <file>ColorPicker.qml</file>
+        <file>ScreenSaver.qml</file>
+        <file>Home.qml</file>
+        <file>Weather.qml</file>
     </qresource>
 </RCC>

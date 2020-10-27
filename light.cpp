@@ -58,7 +58,12 @@ void Light::toggleState()
 }
 
 //set an RGBW device
-void Light::setColor(QString color, bool keepActive = false)
+void Light::setColor(QString color)
+{
+    setColor(color, false);
+}
+
+void Light::setColor(QString color, bool keepActive)
 {
     this->color = color.mid(0,6);
     this->whiteLevel = color.mid(6,2);
@@ -76,6 +81,7 @@ void Light::setColor(QString color, bool keepActive = false)
         jsonPayload["id"] = this->id;
         sock->prepareToSend("RGBW", jsonPayload);
     }
+    emit colorChanged();
 }
 
 // callback for when something happened

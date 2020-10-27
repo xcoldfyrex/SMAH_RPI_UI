@@ -8,6 +8,7 @@ QT       += core gui network widgets xml quick quickwidgets
 CONFIG += console
 CONFIG     += debug
 
+
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 TARGET = SMAH_RPI_UI
@@ -19,18 +20,14 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     rpidevice.cpp \
     w_weatherlistwidget.cpp \
-    widgets/w_colorpreview.cpp \
     widgets/w_hsvwheel.cpp \
-    widgets/w_lightcontrolcontainer.cpp \
     widgets/w_powercontrol.cpp \
     widgets/w_presetchooser.cpp \
     widgets/w_scheduledactions.cpp \
     widgets/w_systemsettings.cpp \
-    widgets/w_topheader.cpp \
     logger.cpp \
     preset.cpp \
     datagramhandler.cpp \
-    widgets/w_zone_lights.cpp \
     light.cpp \
     tcpsocket.cpp \
     presettask.cpp \
@@ -53,19 +50,15 @@ HEADERS  += \
     mainwindow.h \
     rpidevice.h \
     w_weatherlistwidget.h \
-    widgets/w_colorpreview.h \
     widgets/w_hsvpalette.h \
-    widgets/w_lightcontrolcontainer.h \
     widgets/w_powercontrol.h \
     widgets/w_presetchooser.h \
     widgets/w_scheduledactions.h \
     widgets/w_systemsettings.h \
-    widgets/w_topheader.h \
     build_number.h \
     logger.h \
     preset.h \
     datagramhandler.h \
-    widgets/w_zone_lights.h \
     light.h \
     gpio_defs.h \
     pca9685.h \

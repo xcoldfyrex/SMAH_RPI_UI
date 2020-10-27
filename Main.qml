@@ -4,8 +4,8 @@ import smah.light 1.0
 import smah.zone 1.0
 import smah.sensor 1.0
 
-import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.3
+ import QtMultimedia 5.12
 
 import "zoneManagement.js" as ZoneCreation
 
@@ -66,7 +66,7 @@ ApplicationWindow {
             anchors.bottom: parent.bottom
             //anchors.bottomMargin: 40
             anchors.right: parent.right
-            anchors.rightMargin: 50
+            //anchors.rightMargin: 50
             anchors.top: parent.top
         }
     }
@@ -84,6 +84,18 @@ ApplicationWindow {
                 anchors.fill: parent
                 objectName: "mainMenu";
                 id: mainMenu
+
+                ItemDelegate {
+                    SMAHLabel {
+                        text: qsTr("Home");
+                        font.pixelSize: 32
+                    }
+                    width: parent.width
+                    onClicked: {
+                        stackView.setCurrentIndex(0)
+                        drawer.close()
+                    }
+                }
                 ItemDelegate {
                     SMAHLabel {
                         text: qsTr("Weather");
@@ -91,7 +103,7 @@ ApplicationWindow {
                     }
                     width: parent.width
                     onClicked: {
-                        //stackView.push("Page1Form.ui.qml")
+                        stackView.setCurrentIndex(1)
                         drawer.close()
                     }
                 }
@@ -102,11 +114,11 @@ ApplicationWindow {
                     }
                     width: parent.width
                     onClicked: {
-                        stackView.push("System.qml")
+                        stackView.setCurrentIndex(2)
                         drawer.close()
-                        //stackView
                     }
                 }
+
                 Label {
                     text: ".\n"
                 }
@@ -115,39 +127,34 @@ ApplicationWindow {
         }
     }
 
-    function changeZone(zoneName)
+    function changeZone(index)
     {
-        stackView.clear()
-        stackView.push(ZoneCreation.zoneFunctions[zoneName])
+        stackView.setCurrentIndex(index)
         drawer.close()
     }
 
-    StackView {
+    SwipeView {
         id: stackView
         anchors.rightMargin: -222
-        //initialItem: "MainForm.ui.qml"
         anchors.fill: parent
 
+        Home { }
+        Weather { }
+        System { }
         Component.onCompleted: {
+            var offset = stackView.count
             for (var i=0; i<zoneList.length; i++) {
                 ZoneCreation.zoneLightList[zoneList[i].getName] = zoneList[i].getLightList
-
-                //console.log(zoneList[i].getLightList[1].getName)
-                //ZoneCreation.createZoneOptions(zoneList[i], i)
-                var component= Qt.createComponent("ZoneItem.qml")
-                var loadwin = component.createObject(mainMenu, {id: i, zoneName: zoneList[i].getName, drawerID: "zoneDrawer" + i, lights: zoneList[i].getLightList })
-
-                //for (var a=0; a<zoneList[i].getLightList.length; a++) {
-                //console.log(zoneList[i].getLightList[a].getName)
+                var component = Qt.createComponent("ZoneItem.qml")
+                var loadwin = component.createObject(mainMenu, {id: i, zoneName: zoneList[i].getName, drawerID: "zoneDrawer" + i, lights: zoneList[i].getLightList, index: i+offset })
                 var zonecomponent= Qt.createComponent("ZoneOptions.qml")
                 var zoneloadwin = zonecomponent.createObject(mainMenu, {zoneName: zoneList[i].getName, lights: zoneList[i].getLightList} )
                 ZoneCreation.zoneFunctions[zoneList[i].getName] = zoneloadwin
+                stackView.insertItem(i+offset, zoneloadwin)
             }
-            //stackView.push(1)
         }
     }
     SMAHBackground {}
-
 }
 
 

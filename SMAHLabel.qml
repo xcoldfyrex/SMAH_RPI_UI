@@ -9,11 +9,11 @@ Label {
     Material.accent: Material.Purple
     FontLoader {
         id: noto;
-        source: "file:/home/lenny/.smah/assets/NotoSans-Regular.ttf"
+        source: "file:" + applicationDirPath + ".smah/assets/NotoSans-Regular.ttf"
     }
     FontLoader {
         id: crescent;
-        source: "file:/home/lenny/.smah/assets/Crescent-Regular.ttf"
+        source: "file:" + applicationDirPath + ".smah/assets/Crescent-Regular.ttf"
     }
     color:" lightsteelblue"
     font.family: crescent.name

@@ -5,12 +5,12 @@ import smah.light 1.0
 import smah.zone 1.0
 
 Page {
-    property var device: "_DEF"
-    property var rgb_palette: 'file://home/lenny/.smah/assets/palette.png'
+    property Light device
+    property var rgb_palette: "file:" + applicationDirPath + ".smah/assets/palette.png"
     property var previewReady: false
     width: 800
     height: 800
-    visible: true
+    visible: false
     id: page
 
     SMAHBackground {}
@@ -22,7 +22,7 @@ Page {
         anchors.left: parent.left
         anchors.leftMargin: 0
         width: 720
-        height: 720
+        height: 663
         onPaint: {
             var ctx = getContext("2d")
             if (canvas.isImageLoaded(rgb_palette)) {
@@ -37,6 +37,10 @@ Page {
             id: mouseArea
             anchors.fill: canvas
             onClicked: {
+                function toHex(d) {
+                    return  ("0"+(Number(d).toString(16))).slice(-2).toUpperCase()
+                }
+
                 previewReady = true
                 var ctx = canvas.getContext("2d")
                 var ctx_preview = preview.getContext("2d")
@@ -48,17 +52,22 @@ Page {
                 ctx_preview.strokeStyle = "#24d12e";
 
                 ctx_preview.fillText("Canvas!",0,0);
-                //preview.requestPaint()
-                console.log(id.data[0], id.data[1], id.data[2])
+                preview.requestPaint();
+                var r = toHex(id.data[0]);
+                var g = toHex(id.data[1]);
+                var b = toHex(id.data[2]);
+                device.setColor(r+g+b+"00")
+                console.log(r+g+b+"00")
             }
         }
     }
+
     Canvas {
         id: preview
         height: 200
         contextType: qsTr("")
         width: 200
-        anchors.top: parent.top
+        anchors.top: deviceName.top
         anchors.topMargin: 0
         anchors.left: canvas.right
         anchors.leftMargin: 0
@@ -66,18 +75,29 @@ Page {
             if (previewReady === false)
             {
                 var ctx = getContext("2d")
-                ctx.fillStyle = Qt.rgba(0, 0, 0, 1)
-                ctx.fillRect(0, 0, preview.width, preview.height)
+                //ctx.fillStyle = Qt.rgba(0, 0, 0, 1)
+                //ctx.fillRect(0, 0, preview.width, preview.height)
             }
         }
     }
+
+    SMAHLabel {
+        id: deviceName
+        text: device.getName
+        font.pixelSize: 18
+        anchors {
+            left: canvas.right
+            top: canvas.top
+        }
+    }
+
     Button {
         y: 691
         text: "Close"
         anchors.bottomMargin: 76
         anchors.leftMargin: 0
         onClicked: page.visible = false
-        anchors{
+        anchors {
             left: parent.left
             bottom: parent.bottom
         }

@@ -3,31 +3,19 @@ import QtQuick 2.0
 
 Item {
     id : clock
-
-    property var locale: Qt.locale()
-    property string dateString
-
-
-    function timeChanged() {
-        currentDate = new Date()
-
-        dateString = Date.fromLocaleString(locale, currentDate, "ddd yyyy-MM-dd hh:mm:ss")
-    }
-
     Timer {
         interval: 100; running: true; repeat: true;
-        onTriggered: timeText.text =  Qt.formatTime(new Date(),"hh:mm:ss")
+        onTriggered: {
+            var ts = Qt.formatTime(new Date(),"hh:mm:ss")
+            var ds = Qt.formatDate(new Date(),"MM/dd/yyyy")
+            timeText.text = ts  + "\n" + ds
+        }
     }
-
     Text {
         id: timeText
         fontSizeMode: Text.Fit
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignRight
-        text: {
-            updatesEnabled: timeText.time
-            Qt.formatTime(new Date(), "hh:mm:ss") + "\n dfgdf"
-        }
         color: "white"
         font.family: "Helvetica"
         font.bold: true; font.pixelSize: 16

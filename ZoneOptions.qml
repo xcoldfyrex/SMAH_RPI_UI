@@ -14,7 +14,7 @@ Page {
     property string zoneName: "_DEF"
     property var deviceView: ""
     property var lights: ({})
-    visible: false
+    visible: true
     title: qsTr(zoneName)
     id: zoneOptions
 

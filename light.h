@@ -44,7 +44,7 @@ public:
     int getLevel() { return this->level; }
     bool getState() { return this->level; }
     bool isLocal() {
-        qDebug() << this->home_id << g_homeId << this->deviceid << MY_DEVICE_ID;
+        //qDebug() << this->home_id << g_homeId << this->deviceid << MY_DEVICE_ID;
         if ((this->home_id == g_homeId || this->deviceid == MY_DEVICE_ID))
             return true;
         return false;
@@ -77,8 +77,8 @@ signals:
     void nameChanged();
 
 public slots:
-    void setColor(QString color, bool keepActive);
-    void setColor(QString color);
+    Q_INVOKABLE void setColor(QString color, bool keepActive);
+    Q_INVOKABLE void setColor(QString color);
     Q_INVOKABLE QString getWhiteLevel() { return this->whiteLevel; }
     Q_INVOKABLE void toggleState();
     Q_INVOKABLE void setActivePreset(Preset *preset);

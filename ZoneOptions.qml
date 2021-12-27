@@ -37,7 +37,6 @@ Page {
                 onClicked: {
                     stackViewZoneOptions.clear()
                     stackViewZoneOptions.push(ZoneCreation.zoneOverviewMap[zoneName])
-                    console.log(zoneName)
                 }
             }
             ItemDelegate {

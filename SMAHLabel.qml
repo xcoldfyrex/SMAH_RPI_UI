@@ -15,6 +15,6 @@ Label {
         id: crescent;
         source: "file:" + applicationDirPath + ".smah/assets/Crescent-Regular.ttf"
     }
-    color:" lightsteelblue"
+    color: "lightsteelblue"
     font.family: crescent.name
 }

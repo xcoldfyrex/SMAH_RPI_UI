@@ -4,10 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network widgets xml quick quickwidgets
-CONFIG += console
-CONFIG     += debug
-
+QT       += core gui network widgets xml quick quickwidgets sql
+CONFIG   += console
+CONFIG   += debug
 
 greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
@@ -17,6 +16,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     commandrouter.cpp \
+    dbmanager.cpp \
     mainwindow.cpp \
     rpidevice.cpp \
     w_weatherlistwidget.cpp \
@@ -46,6 +46,7 @@ SOURCES += main.cpp\
 
 
 HEADERS  += \
+    dbmanager.h \
     imageprovider.h \
     mainwindow.h \
     rpidevice.h \

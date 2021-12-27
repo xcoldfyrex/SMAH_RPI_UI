@@ -2,12 +2,15 @@ import QtQuick 2.0
 import QtQuick.Controls.Material 2.12
 
 Rectangle {
-    z: -2000
+    z: -9000
     visible: true
     Material.theme: Material.Dark
     Material.accent: Material.DeepOrange
     id: rectangle
     objectName: "background"
+    //left: 0
+    x: 0
+    y: 0
     width: window.width
     height: window.height
     color: "#868f96"

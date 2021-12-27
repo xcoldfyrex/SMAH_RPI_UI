@@ -11,7 +11,7 @@ class EventFilter : public QObject
 protected:
     bool eventFilter(QObject *obj, QEvent *ev)
     {
-        if(ev->type() == QEvent::KeyPress || ev->type() == QEvent::MouseButtonPress)
+        if(ev->type() == QEvent::KeyPress || ev->type() == QEvent::MouseButtonRelease || ev->type() == QEvent::TouchEnd)
             emit userActivity(ev);
         return QObject::eventFilter(obj, ev);
     }

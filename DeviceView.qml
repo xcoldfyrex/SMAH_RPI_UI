@@ -44,71 +44,82 @@ Page {
         height: 200
         model: lights
         interactive: false
-        delegate: Row {
+        delegate: RowLayout {
+            height: 75
             //anchors.fill: parent
             spacing: 10
-            SMAHLabel {
-                text: lights[index].getName
-                font.pixelSize: 20
-                width: 200
-            }
-
-            Slider {
-                function determine_vis()
-                {
-                    if (lights[index].getType === 1){
-                        return true
-                    } else {
-                        return false
-                    }
-                }
-                visible: determine_vis()
-                id: level
-                x: 179
-                y: 10
-                width: 302
-                height: 22
-                value: 0.0
-                onMoved: {
-                    lights[index].setLevel(level.value * 100)
+            Column {
+                SMAHLabel {
+                    //Layout.alignment: Qt.AlignVCenter
+                    text: lights[index].getName
+                    font.pixelSize: 20
+                    width: 200
                 }
             }
 
-            Text {
-                function determine_val()
-                {
-                    if (lights[index].getType >= 10)
+            Column {
+                Text {
+                    function determine_val()
                     {
-                        return lights[index].getColor
+                        if (lights[index].getType >= 10)
+                        {
+                            return lights[index].getColor
+                        }
+                        return lights[index].getLevel
                     }
-                    return lights[index].getLevel
-                }
-                id: txtValue
-                x: 517
-                width: 45
-                height: 15
-                color: "#ffffff"
-                text: determine_val()
-                font.pixelSize: 20
-            }
-            Switch {
-                function determine_vis()
-                {
-                    if (lights[index].getType === 0){
-                        return true
-                    } else {
-                        return false
-                    }
-                }
-                visible: determine_vis()
-                checked: false
-                text: qsTr("Off")
-                onClicked: {
-                    lights[index].toggleState()
+                    id: txtValue
+                    //x: 517
+                    //width: 45
+                    //height: 15
+                    color: "#ffffff"
+                    text: determine_val()
+                    font.pixelSize: 20
                 }
             }
 
-            Button {
+            Column {
+
+                Slider {
+                    function determine_vis()
+                    {
+                        if (lights[index].getType === 1){
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                    visible: determine_vis()
+                    id: level
+                    x: 179
+                    y: 10
+                    width: 302
+                    height: 22
+                    value: 0.0
+                    onMoved: {
+                        lights[index].setLevel(level.value * 100)
+                    }
+                }
+
+
+                Switch {
+                    function determine_vis()
+                    {
+                        if (lights[index].getType === 0){
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                    visible: determine_vis()
+                    checked: false
+                    text: qsTr("Off")
+                    onClicked: {
+                        lights[index].toggleState()
+                    }
+                }
+            }
+            SMAHButton {
+                id: button
                 function determine_vis()
                 {
                     if (lights[index].getType >= 10){
@@ -117,9 +128,6 @@ Page {
                         return false
                     }
                 }
-                id: button
-                x: 694
-                y: 10
                 text: qsTr("Presets")
                 onClicked: {
                     var zoneloadwin = presetPages[lights[index]]
@@ -127,7 +135,9 @@ Page {
                 }
                 visible: determine_vis()
             }
-            Button {
+
+            SMAHButton {
+                id: pickerButton
                 function determine_vis()
                 {
                     if (lights[index].getType >= 10){
@@ -136,13 +146,27 @@ Page {
                         return false
                     }
                 }
-                id: pickerButton
-                x: 694
-                y: 10
                 text: qsTr("Color Picker")
                 onClicked: {
                     var zoneloadwin = pickerPages[lights[index]]
                     zoneloadwin.visible = true
+                }
+                visible: determine_vis()
+            }
+
+            SMAHButton {
+                id: offButton
+                function determine_vis()
+                {
+                    if (lights[index].getType >= 10){
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+                text: qsTr("Off")
+                onClicked: {
+                    lights[index].setColor("00000000")
                 }
                 visible: determine_vis()
             }

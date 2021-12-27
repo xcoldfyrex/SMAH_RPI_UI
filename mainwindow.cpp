@@ -24,7 +24,7 @@ extern TCPConnectionFactory tcpServer;
 extern QMap<QString, Zone*> gZoneMap;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
-{
+{   
     this->setFixedSize(1280,800);
     this->move(0,0);
     this->setObjectName("MainWindow");
@@ -78,6 +78,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent)
     container->resize(this->width(),500);
     mainLayout->addWidget(container);
     mainLayout->setContentsMargins(0,0,0,0);
+
+
 }
 
 void MainWindow::paintEvent(QPaintEvent *)

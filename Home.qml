@@ -1,8 +1,8 @@
 import QtQuick 2.0
-import QtMultimedia 5.12
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.13
 import QtQuick.Dialogs.qml 1.0
+import QtQuick.Controls.Styles 1.4
 
 Page {
     id: page
@@ -10,53 +10,64 @@ Page {
     height: 800
     title: "Home"
     SMAHBackground {}
-    TabBar {
-        id: bar
-        width: 837
-        height: 28
-        TabButton {
-            SMAHLabel {
-                font.pixelSize: 20
-                text: "Front Porch"
+    Rectangle {
+        id: frame
+        color: "#08111d"
+        opacity: 0.9
+        border.color: "#00000000"
+        width: 300
+        height:parent.height
+        Column {
+            parent: frame
+            anchors.fill: parent
+            ItemDelegate {
+                SMAHLabel {
+                    text: qsTr("Perimeter")
+                    font.pixelSize: 40
+                }
+                width: parent.width
+                onClicked: {
+                    stackOptions.setCurrentIndex(0)
+                }
             }
-        }
-
-        TabButton {
-            SMAHLabel {
-                font.pixelSize: 20
-                text:  "Back Porch"
+            ItemDelegate {
+                SMAHLabel {
+                    text: qsTr("Environment")
+                    font.pixelSize: 40
+                }
+                width: parent.width
+                onClicked: {
+                    stackOptions.setCurrentIndex(1)
+                }
+            }
+            ItemDelegate {
+                SMAHLabel {
+                    text: qsTr("Climate Control")
+                    font.pixelSize: 40
+                }
+                width: parent.width
+                onClicked: {
+                    //stackView.push("Page1Form.ui.qml")
+                }
             }
         }
     }
-    StackLayout {
-        id: stackLayout
-        currentIndex: bar.currentIndex
-        x: 0
-        width: 837
-        height: 549
-        anchors.top: bar.bottom
-        anchors.topMargin: 25
+    SwipeView
+    {
+        Perimeter {}
+        Environment {}
 
-        Video {
-            id: cam1Stream
-            width: 640
-            height: 480
-            source: "rtsp://10.1.10.220/ch01/0"
-            autoPlay: true
-            opacity: 1.0
-            fillMode: Image.Stretch
-            muted: true
-        }
-        Video {
-            id: cam2Stream
-            width: 640
-            height: 480
-            source: "rtsp://10.1.10.221/h264"
-            autoPlay: true
-            opacity: 1.0
-            fillMode: Image.Stretch
-            muted: true
-        }
+        //parent: zoneOptions
+        id: stackOptions
+        interactive: false
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.left: frame.right
+        anchors.leftMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
     }
 }
 

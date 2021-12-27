@@ -6,14 +6,19 @@
 #include <QDateTime>
 #include <QDate>
 
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+
 #include "tcpconnectionfactory.h"
 #include "zwavemanager.h"
-
+#include "dbmanager.h"
 
 extern int MY_DEVICE_ID;
 extern TCPConnectionFactory tcpServer;
 extern uint32  g_homeId;
-
+static const QString path = "smah.db";
 typedef QMap<int, float> SensorValueMap;
 
 Q_DECLARE_METATYPE(SensorValueMap)
@@ -26,6 +31,7 @@ class Sensor : public QObject
     Q_PROPERTY(QVariant rh READ getHumidity NOTIFY valueChanged)
     Q_PROPERTY(QVariant lux READ getLux NOTIFY valueChanged)
     Q_PROPERTY(QVariant uv READ getUV NOTIFY valueChanged)
+    Q_PROPERTY(QVariant updated READ getLastUpdate NOTIFY valueChanged)
     Q_PROPERTY(SensorValueMap values READ getValues NOTIFY valueChanged)
     Q_PROPERTY(QString name READ getName CONSTANT)
     Q_PROPERTY(bool isFarenheit READ isFarenheit CONSTANT)
@@ -55,10 +61,12 @@ public:
     //void setHumidityFromRaw(float humidity);
     QMap<int, float> getValues() { return  this->values; }
     void setValue(int index, float value) {
+        DbManager db(path);
         this->values[index] = value;
         if (this->getHome_id() == g_homeId)
             tcpServer.broadcastMessage(this->getNodeId(), 1, value, index);
         setLastUpdate(QDateTime::currentSecsSinceEpoch());
+        db.addValue(index, value, this->getLastUpdate());
         emit(valueChanged());
     }
     float getValue(int index) {
@@ -73,7 +81,7 @@ signals:
     void temperatureChanged(float const temperature);
     void luxChanged(const float &lux);
 
-private:
+private:        
     bool farenheit = false;
     float humidity = 0; /* DEPRECATE THIS */
     //float raw_temperature = 0; /* DEPRECATE THIS */

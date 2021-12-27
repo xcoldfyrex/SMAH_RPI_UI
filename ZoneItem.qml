@@ -19,7 +19,7 @@ Rectangle {
                 width: parent.width
                 SMAHLabel {
                     text: qsTr(zoneName)
-                    font.pixelSize: 32
+                    font.pixelSize: 40
                     styleColor: "#e21414"
                     width: parent.width
                 }

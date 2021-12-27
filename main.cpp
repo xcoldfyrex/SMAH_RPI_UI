@@ -246,6 +246,7 @@ int main(int argc, char *argv[])
     EventFilter filter;
     a.installEventFilter(&filter);
     qInstallMessageHandler(systemlogHandler);
+    qInfo() << "SMAH Verion " << BUILD << DATE;
 
     // try to setup GPIO
     if (gpioInitialise() < 0)
@@ -324,11 +325,6 @@ int main(int argc, char *argv[])
     foreach (Sensor *key, g_sensorList)
     {
         qmlSensors.append(QVariant::fromValue(key));
-        //QObject::connect(key, &Sensor::valueChanged, [&engine, qmlSensors]()
-        //{
-        //    engine.rootContext()->setContextProperty("sensorList", QVariant::fromValue(qmlSensors));
-        //});
-
     }
 
     foreach (Preset *preset, gColorPresetMap)
@@ -349,6 +345,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("b_date", DATE);
         engine.rootContext()->setContextProperty("b_build", BUILD);
         engine.rootContext()->setContextProperty("applicationDirPath", QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory));
+        engine.rootContext()->setContextProperty("idleDetection", &filter);
         QObject::connect(&engine, &QQmlApplicationEngine::quit, &QGuiApplication::quit);
         component.loadUrl(QUrl(QStringLiteral("qrc:/Main.qml")));
         if (component.isReady()) {
@@ -357,6 +354,5 @@ int main(int argc, char *argv[])
             qWarning() << "Can't create main window!" << component.errorString();
         }
     }
-    //QObject::connect(&filter,SIGNAL(userActivity(QEvent*)), &mainWindow,SLOT(resetIdle(QEvent*)));
     return a.exec();
 }

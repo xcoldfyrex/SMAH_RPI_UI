@@ -22,7 +22,7 @@ Page {
         property var titles: [ "BUILD NUMBER", "BUILD DATE", "IP", "MAC", "Z-WAVE DRIVER", "Z-WAVE ID" ]
         property var values: [ b_build, b_date, net_ip, net_mac, z_driver, z_homeid ]
         anchors.leftMargin: 5
-        anchors.top: rectangle.bottom
+        anchors.top: header1.bottom
         anchors.topMargin: 16
         anchors.bottom: parent.top
         anchors.bottomMargin: -168
@@ -64,7 +64,7 @@ Page {
         height: 100
         columns: 10
         rows: 15
-        anchors.top: rectangle1.bottom
+        anchors.top: header2.bottom
         anchors.topMargin: 16
 
         Repeater {
@@ -131,7 +131,6 @@ Page {
             model: sensorList
             SMAHLabel {
                 Layout.column: 3
-                color: "#fdfdfd"
                 Layout.row: index + 2
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -147,7 +146,6 @@ Page {
             model: sensorList
             SMAHLabel {
                 Layout.column: 4
-                color: "#fdfdfd"
                 Layout.row: index + 2
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -158,18 +156,29 @@ Page {
                 font.pixelSize: 16
             }
         }
+        Repeater {
+            model: sensorList
+            SMAHLabel {
+                Layout.column: 5
+                Layout.row: index + 2
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                text: Qt.formatDateTime(new Date(sensorList[index].updated * 1000), "MM/dd/yyyy hh:mm:ss")
+                leftPadding: 5
+                verticalAlignment: Text.AlignTop
+                horizontalAlignment: Text.AlignLeft
+                font.pixelSize: 16
+            }
+        }
 
     }
 
-    Rectangle {
-        id: rectangle
+    SMAHHeader {
+        id: header1
+        x: 0
         y: 0
         width: 404
         height: 37
-        color: "#08111d"
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-
         Text {
             id: element
             color: "#ffffff"
@@ -181,14 +190,12 @@ Page {
         }
     }
 
-    Rectangle {
-        id: rectangle1
+    SMAHHeader {
+        id: header2
+        x: 0
         y: 188
         width: 404
         height: 37
-        color: "#08111d"
-        anchors.left: parent.left
-        anchors.leftMargin: 0
         Text {
             id: element1
             color: "#ffffff"
@@ -198,24 +205,24 @@ Page {
         }
     }
 
-        Button {
-            anchors.bottom: parent.bottom
-            onClicked: Qt.quit()
-            text: "Restart"
+    Button {
+        anchors.bottom: parent.bottom
+        onClicked: Qt.quit()
+        text: "Restart"
 
-                    background: Rectangle {
-                        implicitWidth: 100
-                        implicitHeight: 25
-                        border.width: activeFocus ? 2 : 1
-                        border.color: "#888"
-                        radius: 4
-                        gradient: Gradient {
-                            GradientStop { position: 0 ; color: "#ccc" }
-                            GradientStop { position: 1 ; color: "#aaa" }
-                        }
+        background: Rectangle {
+            implicitWidth: 100
+            implicitHeight: 25
+            border.width: activeFocus ? 2 : 1
+            border.color: "#888"
+            radius: 4
+            gradient: Gradient {
+                GradientStop { position: 0 ; color: "#ccc" }
+                GradientStop { position: 1 ; color: "#aaa" }
+            }
 
-                }
         }
+    }
 
 
 }

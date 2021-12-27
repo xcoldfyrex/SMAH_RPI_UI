@@ -214,7 +214,7 @@ void ClientSocket::processPayload(QByteArray buffer){
         {
             this->rpidevice = g_deviceList.value(devid);
             this->devid = this->rpidevice->getHwAddress();
-            qInfo() << "Device connected: " << this->rpidevice->getHwAddress() << this->rpidevice->getName();
+            qInfo() << "Device connected: " << this->rpidevice->getHwAddress() << this->rpidevice->getName() << this->remoteAddress.toString();
             this->rpidevice->setVersion(incomingPayload["version"].toInt());
             this->rpidevice->setIP(this->remoteAddress.toString());
             QJsonObject data;

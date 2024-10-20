@@ -31,6 +31,7 @@ public slots:
     void disconnected();
     void socketError();
     void prepareToSend(QString command, QJsonObject jsonPayload);
+    void stateChanged(QAbstractSocket::SocketState socketState);
 
 signals:
     void error(QTcpSocket::SocketError socketError);
@@ -52,6 +53,7 @@ private:
     void sendData(QJsonObject data);
     void processPayload(QByteArray buffer);
     bool hasSentID = false;
+    void sendLatestValues();
 
     QJsonObject buildPayload();
 

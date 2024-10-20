@@ -21,7 +21,7 @@ Page {
             while (s.length < (size || 2)) {s = "0" + s;}
             return s;
         }
-        for (var i=0; i< 30; i++) {
+        for (var i=0; i< 40; i++) {
             var offset = 86400000 * i
             var prevday = new Date(now.getTime() + offset - 86400000)
             var day = new Date(now.getTime() + offset)
@@ -47,8 +47,15 @@ Page {
         }
     }
 
+    Timer { //single shot
+        interval: 100; running: true; repeat: false;
+        onTriggered: {
+            updateModel()
+        }
+    }
+
     Timer {
-        interval: 1000 * 6; running: true; repeat: true;
+        interval: 10000 * 6 * 60 * 12; running: true; repeat: true;
         onTriggered: {
             updateModel()
         }
@@ -109,7 +116,8 @@ Page {
             model: sunTimes
             SMAHLabel {
                 Layout.column: 0
-                Layout.row: index + 3
+                Layout.columnSpan: 1
+                Layout.row: index + 4
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: ts
@@ -125,7 +133,8 @@ Page {
             model: sunTimes
             SMAHLabel {
                 Layout.column: 1
-                Layout.row: index + 3
+                Layout.columnSpan: 1
+                Layout.row: index + 4
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: sr
@@ -141,7 +150,8 @@ Page {
             model: sunTimes
             SMAHLabel {
                 Layout.column: 2
-                Layout.row: index + 3
+                Layout.columnSpan: 1
+                Layout.row: index + 4
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: ss
@@ -157,7 +167,8 @@ Page {
             model: sunTimes
             SMAHLabel {
                 Layout.column: 3
-                Layout.row: index + 3
+                Layout.columnSpan: 1
+                Layout.row: index + 4
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: dl
@@ -173,7 +184,8 @@ Page {
             model: sunTimes
             SMAHLabel {
                 Layout.column: 4
-                Layout.row: index + 3
+                Layout.columnSpan: 1
+                Layout.row: index + 4
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: dd
@@ -187,7 +199,8 @@ Page {
             model: sunTimes
             SMAHLabel {
                 Layout.column: 5
-                Layout.row: index + 3
+                Layout.columnSpan: 1
+                Layout.row: index + 4
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: sn + " (" + sa +"°)"

@@ -19,10 +19,8 @@ SOURCES += main.cpp\
     dbmanager.cpp \
     mainwindow.cpp \
     rpidevice.cpp \
-    w_weatherlistwidget.cpp \
     widgets/w_hsvwheel.cpp \
     widgets/w_powercontrol.cpp \
-    widgets/w_presetchooser.cpp \
     widgets/w_scheduledactions.cpp \
     widgets/w_systemsettings.cpp \
     logger.cpp \
@@ -40,7 +38,6 @@ SOURCES += main.cpp\
     ui_mainwindow.cpp \
     rsslisting.cpp \
     tcpconnectionfactory.cpp \
-    w_weatherwidget.cpp \
     zwaveworker.cpp
 
 
@@ -50,10 +47,8 @@ HEADERS  += \
     imageprovider.h \
     mainwindow.h \
     rpidevice.h \
-    w_weatherlistwidget.h \
     widgets/w_hsvpalette.h \
     widgets/w_powercontrol.h \
-    widgets/w_presetchooser.h \
     widgets/w_scheduledactions.h \
     widgets/w_systemsettings.h \
     build_number.h \
@@ -79,7 +74,6 @@ HEADERS  += \
     ui_mainwindow.h \
     rsslisting.h \
     tcpconnectionfactory.h \
-    w_weatherwidget.h \
     zwaveworker.h
 
 

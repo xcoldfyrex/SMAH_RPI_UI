@@ -90,7 +90,7 @@ Page {
                     anchors.fill: parent
                     onClicked: {
                         presetListView.currentIndex = index
-                        device.setColor(presetList[index].hex)
+                        device.setActivePreset(presetList[index])
                     }
                 }
             }

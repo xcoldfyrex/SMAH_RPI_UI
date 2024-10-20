@@ -203,7 +203,7 @@ void loadPresets()
         QDomNode itemnode = dynamicItems.at(i);
         if (itemnode.isElement()) {
             QDomElement presetElement = itemnode.toElement();
-
+            qDebug() << presetElement.attribute("name");
             Preset *preset = new Preset(presetElement.attribute("name"),presetID, true, presetElement.attribute("fade").toInt(), presetElement.attribute("delay").toInt());
             QDomNodeList stepItems = presetElement.elementsByTagName("step");
             for (int a = 0; a < stepItems.count(); a++) {

@@ -192,6 +192,7 @@ QList<int> Light::getColorFromPWM()
 
 void Light::setActivePreset(Preset *preset)
 {
+    //gColorPresetMap.value(value)
     // a new preset and it's local. kill any tasks
     if (this->isLocal()) {
         if (this->taskList->length() > 0){
@@ -216,7 +217,6 @@ void Light::setActivePreset(Preset *preset)
             this->taskList->append(task);
             task->start();
             connect(task,SIGNAL(colorStepChanged(QColor)), this,SLOT(colorStepAction(QColor)));
-            qDebug() << preset->getName();
         } else{
             ClientSocket *sock = determineZone(this);
             if (!sock)

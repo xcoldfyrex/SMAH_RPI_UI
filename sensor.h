@@ -20,6 +20,8 @@ extern TCPConnectionFactory tcpServer;
 extern uint32  g_homeId;
 static const QString path = "smah.db";
 typedef QMap<int, float> SensorValueMap;
+extern int MY_DEVICE_ID;
+
 
 Q_DECLARE_METATYPE(SensorValueMap)
 
@@ -61,12 +63,12 @@ public:
     //void setHumidityFromRaw(float humidity);
     QMap<int, float> getValues() { return  this->values; }
     void setValue(int index, float value) {
-        DbManager db(path);
+        ///DbManager db(path);
         this->values[index] = value;
         if (this->getHome_id() == g_homeId)
             tcpServer.broadcastMessage(this->getNodeId(), 1, value, index);
         setLastUpdate(QDateTime::currentSecsSinceEpoch());
-        db.addValue(index, value, this->getLastUpdate());
+        ///db.addValue(index, value, this->getLastUpdate());
         emit(valueChanged());
     }
     float getValue(int index) {
@@ -75,6 +77,12 @@ public:
         return 0;
     }
     void setBattery(int level) { this->battery = level; }
+    bool isLocal() {
+        //qDebug() << this->home_id << g_homeId << this->deviceid << MY_DEVICE_ID;
+        if ((this->home_id == g_homeId || this->device_id == MY_DEVICE_ID))
+            return true;
+        return false;
+    }
 
 signals:
     void valueChanged();

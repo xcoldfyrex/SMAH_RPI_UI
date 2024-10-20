@@ -54,7 +54,7 @@ bool DbManager::addValue(const int id, float value,  quint64 ts)
         }
         else
         {
-            qDebug() << "add person failed: " << queryAdd.lastError();
+            ///////////qDebug() << "add person failed: " << queryAdd.lastError();
         }    
     return success;
 }

@@ -4,10 +4,12 @@
 #include "tcpconnectionfactory.h"
 
 #include <QNetworkInterface>
+#include <QJsonObject>
 
 extern QList<ClientSocket*> g_clientMap;
 extern QMap<QString, Zone*> gZoneMap;
 extern QMap<QString, RPIDevice*> g_deviceList;
+extern QList <Sensor*> g_sensorList;
 extern QMap<int, Light*> g_lightMap;
 extern QMap<int, Preset*> gColorPresetMap;
 extern QString MY_HW_ADDR;
@@ -16,6 +18,9 @@ extern uint32 g_homeId;
 extern TCPConnectionFactory tcpServer;
 
 
+void ClientSocket::stateChanged(QAbstractSocket::SocketState socketState){
+    qInfo() << socketState;
+}
 
 // spawned by the tcpserver
 ClientSocket::ClientSocket(QTcpSocket *ID, QObject *parent)
@@ -36,6 +41,7 @@ ClientSocket::ClientSocket(QTcpSocket *ID, QObject *parent)
     peer_address = this->tcpSocket->peerAddress().toString().toStdString();
     this->remoteAddress = this->tcpSocket->peerAddress();
     this->parent = parent;
+    tcpSocket->waitForConnected(10000);
     connect(tcpSocket, &QAbstractSocket::connected,[this]()
     {
         qDebug() << "SENDING INBOUND" << this->tcpSocket->peerAddress().toString();
@@ -68,6 +74,7 @@ ClientSocket::ClientSocket(QHostAddress address, QObject *parent)
     });
 
     tcpSocket->connectToHost(address,9002);
+    tcpSocket->waitForConnected(10000);
     connect(&tcpServer, SIGNAL(broadcastSignal(QString, QJsonObject)), this, SLOT(prepareToSend(QString,QJsonObject)));
 }
 
@@ -92,12 +99,20 @@ void ClientSocket::sendData(QJsonObject data)
         out.device()->seek(0);
         out << static_cast<quint16>(static_cast<unsigned long>(block.size()) - sizeof(quint16));
         tcpSocket->write(block);
+        tcpSocket->waitForBytesWritten(5000);
         tcpSocket->flush();
 
         // qDebug() << data;
 
-    } else {
-        qDebug() << "??" << tcpSocket->state() << this->remoteAddress << data;
+    //} else if (tcpSocket->state() == QAbstractSocket::cl) {
+
+    } else if (tcpSocket->state() == QAbstractSocket::ConnectingState) {
+        qDebug() << "DID NOT CONNECT YET" << tcpSocket->state() << this->remoteAddress << data;
+    } else  {
+        qDebug() << "BAD STATE" << tcpSocket->state() << this->remoteAddress << data;
+        g_clientMap.removeOne(this);
+        //tcpSocket->deleteLater();
+        //tcpSocket->close();
     }
 }
 
@@ -136,6 +151,7 @@ void ClientSocket::disconnected() {
     }
     g_clientMap.removeOne(this);
     tcpSocket->close();
+    tcpSocket->deleteLater();
 }
 
 void ClientSocket::socketError()
@@ -223,6 +239,7 @@ void ClientSocket::processPayload(QByteArray buffer){
                 send_id(data);
             }
             emit deviceArrived(this->rpidevice);
+            sendLatestValues();
         } else {
             qWarning() << "Unknown device connected: " << devid;
         }
@@ -319,6 +336,27 @@ void ClientSocket::processPayload(QByteArray buffer){
 
                 }
             }
+        }
+    }
+
+    /* request state of things */
+    if (command == "REFRESH" )
+    {
+        sendLatestValues();
+    }
+}
+
+void ClientSocket::sendLatestValues()
+{
+    for (Sensor *sensor : g_sensorList)
+    {
+        for (int key : sensor->getValues().keys()) {
+            QJsonObject jsonPayload;
+            jsonPayload["value"] = sensor->getValue(key);
+            jsonPayload["type"] = 1;
+            jsonPayload["index"] = key;
+            prepareToSend("UPDATE", jsonPayload);
+
         }
     }
 }

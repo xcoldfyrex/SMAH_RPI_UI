@@ -13,6 +13,7 @@ PresetTask::PresetTask(Preset *preset) : QThread(Q_NULLPTR)
 
 void PresetTask::run()
 {
+    qDebug() << "Starting task for " << preset->getName();
     QImage canvas = preset->drawPreview();
     int offset = 0;
     while (!abortFlag)
@@ -25,4 +26,5 @@ void PresetTask::run()
         this->msleep(preset->getDelay());
         offset++;
     }
+    qDebug() << "Stopping task for " << preset->getName();
 }

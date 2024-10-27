@@ -9,29 +9,23 @@
 #include <QHostAddress>
 #include <QString>
 #include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QQmlComponent>
-#include <QQuickView>
-#include <QQmlEngine>
-#include <QQuickWidget>
-#include <QQmlContext>
-#include <QQmlApplicationEngine>
+#include <QtQml/QQmlComponent>
+#include <QtQml/QQmlContext>
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlApplicationEngine>
+#include <QtQuick/QQuickWindow>
 
 #include "zone.h"
 #include "light.h"
 #include "preset.h"
 #include "logger.h"
-#include "datagramhandler.h"
-#include "tcpconnectionfactory.h"
 #include "eventfilter.h"
 #include "sensor.h"
-#include "zwaveworker.h"
 #include "build_number.h"
 #include "imageprovider.h"
 
 QMap<QString, Zone*> gZoneMap;
 QMap<int, Preset*> gColorPresetMap;
-QList<ClientSocket*> g_clientMap;
 QMap <QString, RPIDevice*> g_deviceList;
 QList <Sensor*> g_sensorList;
 QMap <int, Light*> g_lightMap;
@@ -40,10 +34,8 @@ QString MY_HW_ADDR;
 QString MY_IP_ADDR;
 bool zwave_ready = false;
 QString homeLocation;
-uint32 g_homeId = -32767;
 QString g_zwaveDriver = "0";
 
-TCPConnectionFactory tcpServer;
 int MY_DEVICE_ID;
 
 void loadZones()
@@ -96,12 +88,10 @@ void loadZones()
                 QDomNode lightNode = lightItems.at(a);
                 if (lightNode.isElement()) {
                     QDomElement lightElement = lightNode.toElement();
-                    bool ok;
                     Light *light = new Light(lightElement.attribute("id").toInt(),
                                              lightElement.attribute("name"),
                                              lightElement.attribute("type").toInt(),
-                                             lightElement.attribute("device").toInt(),
-                                             lightElement.attribute("home_id").toUInt(&ok, 16)
+                                             lightElement.attribute("device").toInt()
                                              );
                     zone->addLight(light);
                     g_lightMap.insert(lightElement.attribute("id").toInt(), light);
@@ -114,7 +104,6 @@ void loadZones()
                 QDomNode sensorNode = sensors.at(a);
                 if (sensorNode.isElement()) {
                     QDomElement sensorElement = sensorNode.toElement();
-                    bool ok;
                     Sensor *sensor = new Sensor(
                                 sensorElement.attribute("name"),
                                 sensorElement.attribute("id").toShort(),
@@ -267,11 +256,9 @@ int main(int argc, char *argv[])
     }
 
     homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
-    tcpServer.startListen();
+    //tcpServer.startListen();
 
-    DatagramHandler broadcaster;
-    ZWaveWorker *worker = new ZWaveWorker(a);
-    worker->start();
+    //DatagramHandler broadcaster;
 
     QDir::setCurrent(homeLocation + "/.smah/");
     loadZones();
@@ -282,10 +269,6 @@ int main(int argc, char *argv[])
     QVariantList qmlZones;
     QVariantList qmlPresets;
     QVariantList qmlSensors;
-    const auto screens = QGuiApplication::screens();
-    for (QScreen *screen : screens)
-        screen->setOrientationUpdateMask(Qt::LandscapeOrientation | Qt::PortraitOrientation |
-                                         Qt::InvertedLandscapeOrientation | Qt::InvertedPortraitOrientation);
     QQmlEngine engine;
 
     QQmlComponent component(&engine);
@@ -319,7 +302,6 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("sensorList", QVariant::fromValue(qmlSensors));
         engine.rootContext()->setContextProperty("presetList", QVariant::fromValue(qmlPresets));
         engine.rootContext()->setContextProperty("zoneList", QVariant::fromValue(qmlZones));
-        engine.rootContext()->setContextProperty("z_homeid", QString::number(g_homeId, 16));
         engine.rootContext()->setContextProperty("z_driver", g_zwaveDriver);
         engine.rootContext()->setContextProperty("net_ip", MY_IP_ADDR);
         engine.rootContext()->setContextProperty("net_mac", MY_HW_ADDR);

@@ -1,8 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.13
-import QtQuick.Dialogs.qml 1.0
-import QtQuick.Controls.Styles 1.4
+import QtQuick.Dialogs
+//import QtQuick.Controls.Styles
 
 Page {
     id: page
@@ -16,7 +16,7 @@ Page {
         opacity: 0.9
         border.color: "#00000000"
         width: 300
-        height:parent.height
+        height: parent.height
         Column {
             parent: frame
             anchors.fill: parent
@@ -26,6 +26,7 @@ Page {
                     font.pixelSize: 40
                 }
                 width: parent.width
+                height: 40
                 onClicked: {
                     stackOptions.setCurrentIndex(0)
                 }
@@ -36,6 +37,7 @@ Page {
                     font.pixelSize: 40
                 }
                 width: parent.width
+                height: 40
                 onClicked: {
                     stackOptions.setCurrentIndex(1)
                 }
@@ -46,6 +48,7 @@ Page {
                     font.pixelSize: 40
                 }
                 width: parent.width
+                height: 40
                 onClicked: {
                     //stackView.push("Page1Form.ui.qml")
                 }

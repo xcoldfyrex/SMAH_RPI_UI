@@ -4,12 +4,12 @@ import QtQuick.Layouts 1.0
 import smah.light 1.0
 import smah.zone 1.0
 
-import QtQuick.Extras 1.4
-import QtQuick.Controls.Styles 1.4
+//import QtQuick.Extras
+//import QtQuick.Controls.Styles
 
 Page {
     property Light device
-    property var rgb_palette: "file:" + applicationDirPath + ".smah/assets/palette.png"
+    property string rgb_palette: "file:" + applicationDirPath + ".smah/assets/palette.png"
     property var previewReady: false
     width: 800
     height: 800

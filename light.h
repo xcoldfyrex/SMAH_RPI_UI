@@ -7,7 +7,6 @@
 #include <QLabel>
 #include "preset.h"
 #include "presettask.h"
-#include "zwavemanager.h"
 
 #include <QDebug>
 
@@ -20,8 +19,6 @@ const int LIGHT_RGBW_INVIDIDUAL_ADDRESS = 13;
 const int LIGHT_MACICLIGHT = 100;
 
 extern int MY_DEVICE_ID;
-extern uint32 g_homeId;
-
 
 class Light : public QObject
 {
@@ -30,14 +27,14 @@ class Light : public QObject
     Q_PROPERTY(QString getName READ getName CONSTANT)
     Q_PROPERTY(QString getColor READ getColor WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(int getType READ getType CONSTANT)
-    Q_PROPERTY(int getLevel READ getLevel WRITE setLevel NOTIFY levelChanged)    
+    //Q_PROPERTY(int getLevel READ getLevel WRITE setLevel NOTIFY levelChanged)
 
 public:
+    Q_INVOKABLE
     explicit Light(QObject *parent = nullptr);
-    Light(int id, QString name, int type, int deviceid, uint32 home_id);
+    Light(int id, QString name, int type, int deviceid);
     Q_INVOKABLE int getType() const { return this->type ;}
     QString getName() const { return this->name; }
-    uint32 getHome_id() { return this->home_id; }
     QString getColor() { return this->color; }
     int getId() { return this->id; }
     int getGetDeviceId() { return this->deviceid; }
@@ -54,11 +51,6 @@ public:
         this->localUpdate = wasit;
     }
 
-    void initState()
-    {
-        bool checkstate = getZWaveState(this->id);
-        updateLevel(checkstate);
-    }
     QList<int> getColorFromPWM();
     void setColorShelly(QString color, bool keepActive);
     void updateLevel(int level);
@@ -76,7 +68,6 @@ public slots:
     Q_INVOKABLE QString getWhiteLevel() { return this->whiteLevel; }
     Q_INVOKABLE void toggleState();
     Q_INVOKABLE void setActivePreset(Preset *preset);
-    Q_INVOKABLE void setLevel(int level);
 
 private slots:
     void colorStepAction(QColor color);
@@ -89,7 +80,6 @@ private:
     bool localUpdate = false;
 
     QString name;
-    uint32 home_id;
     QString whiteLevel = "00";
     QString color = "000000";    
     QList<PresetTask*> *taskList;

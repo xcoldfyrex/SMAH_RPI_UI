@@ -12,8 +12,8 @@ Page {
     SMAHBackground {}
     z: -1000
     property string zoneName: "_DEF"
-    property var deviceView: ""
-    property var lights: ({})
+    property var deviceView
+    property var lights
     visible: true
     title: qsTr(zoneName)
     id: zoneOptions
@@ -78,11 +78,11 @@ Page {
         Component.onCompleted: {
             var component = Qt.createComponent("DeviceView.qml")
             var loadwin = component.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
-            ZoneCreation.zoneDeviceMap[zoneName] = loadwin
-            var component_o = Qt.createComponent("ZoneOverview.qml")
-            var loadwin_o = component_o.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
-            ZoneCreation.zoneOverviewMap[zoneName] = loadwin_o
-            stackViewZoneOptions.clear()
+            //ZoneCreation.zoneDeviceMap[zoneName] = loadwin
+            //var component_o = Qt.createComponent("ZoneOverview.qml")
+            //var loadwin_o = component_o.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
+            //ZoneCreation.zoneOverviewMap[zoneName] = loadwin_o
+            //stackViewZoneOptions.clear()
         }
     }
 }

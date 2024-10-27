@@ -33,8 +33,11 @@ Page {
             var dltoday = times.sunset.getTime() - times.sunrise.getTime();
             var dlh = Math.floor((dltoday / (1000*60*60)) % 24);
             var dlm = Math.ceil((dltoday / (1000*60)) % 60).pad();
-            var diff = dltoday - dlyesterday
-            var diffstr = Math.floor((diff / (1000*60)) % 60) + "m:" + Math.floor((diff / 1000) % 60) + "s";
+            var diff = Math.abs(Math.floor((dltoday - dlyesterday) / 1000));
+            var diffmin = Math.floor(diff / 60);
+            var diffsec = diff - diffmin * 60;
+            var diffstr = diffmin + "m:" + diffsec + "s";
+            console.log(dltoday,dlyesterday, diff, diffstr)
             sunTimes.append({
                                 "sr": times.sunrise.getHours().pad() + ':' + times.sunrise.getMinutes().pad(),
                                 "ss": times.sunset.getHours().pad() + ':' + times.sunset.getMinutes().pad(),

@@ -1,14 +1,16 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
-import smah.light 1.0
-import smah.zone 1.0
+import smah.light
+import smah.zone
 
 // shows a list of lights associated with the device
 Page {
     // create a single map of the objects ahead of time
     property var presetPages: ({})
     property var pickerPages: ({})
+    property var lights
+    property var zoneName
 
 
     SMAHBackground {}
@@ -56,7 +58,7 @@ Page {
                     width: 200
                 }
             }
-
+/*
             Column {
                 Text {
                     function determine_val()
@@ -76,7 +78,7 @@ Page {
                     font.pixelSize: 20
                 }
             }
-
+*/
             Column {
 
                 Slider {

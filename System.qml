@@ -4,7 +4,7 @@ import QtQuick.Controls 2.13
 import smah.sensor 1.0
 
 //test
-import QtQuick.Controls.Styles 1.4
+//import QtQuick.Controls.Styles 1.4
 
 Page {
     id: page
@@ -19,8 +19,8 @@ Page {
         columnSpacing: 0
         anchors.margins: 5
 
-        property var titles: [ "BUILD NUMBER", "BUILD DATE", "IP", "MAC", "Z-WAVE DRIVER", "Z-WAVE ID" ]
-        property var values: [ b_build, b_date, net_ip, net_mac, z_driver, z_homeid ]
+        property var titles: [ "BUILD NUMBER", "BUILD DATE", "IP", "MAC", "Z-WAVE STATUS" ]
+        property var values: [ b_build, b_date, net_ip, net_mac, z_driver ]
         anchors.leftMargin: 5
         anchors.top: header1.bottom
         anchors.topMargin: 16

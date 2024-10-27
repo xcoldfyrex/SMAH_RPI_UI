@@ -22,10 +22,10 @@ class Zone : public QObject
     Q_PROPERTY(QString getName READ getName);
     Q_PROPERTY(QVariantList getLightList READ getLightList);
     Q_PROPERTY(SensorListMap getSensorList READ getSensorList);
-    Q_INVOKABLE
 
 
 public:
+    Q_INVOKABLE
     Zone(int id, QString name);
     Zone();
     virtual ~Zone() {}

@@ -125,6 +125,7 @@ ApplicationWindow {
                         font.pixelSize: 40
                     }
                     width: parent.width
+                    height: 40
                     onClicked: {
                         stackView.setCurrentIndex(0)
                         drawer.close()
@@ -136,6 +137,7 @@ ApplicationWindow {
                         font.pixelSize: 40
                     }
                     width: parent.width
+                    height: 40
                     onClicked: {
                         stackView.setCurrentIndex(1)
                         drawer.close()
@@ -147,6 +149,7 @@ ApplicationWindow {
                         font.pixelSize: 40
                     }
                     width: parent.width
+                    height: 40
                     onClicked: {
                         stackView.setCurrentIndex(2)
                         drawer.close()
@@ -154,9 +157,8 @@ ApplicationWindow {
                 }
 
                 Label {
-                    text: ".\n"
+                    text: "\t\n"
                 }
-
             }
         }
     }

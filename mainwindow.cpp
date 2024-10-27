@@ -4,9 +4,8 @@
 */
 
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "tcpconnectionfactory.h"
-
+#include "zone.h"
+#include "preset.h"
 #include <QDebug>
 
 #include <QApplication>
@@ -20,7 +19,6 @@
 #include <QWindow>
 
 extern QMap<int, Preset*> gColorPresetMap;
-extern TCPConnectionFactory tcpServer;
 extern QMap<QString, Zone*> gZoneMap;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent)

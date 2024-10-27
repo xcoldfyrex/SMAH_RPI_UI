@@ -4,18 +4,17 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network widgets xml quick quickwidgets sql
+QT       += core gui network widgets xml qml quick quickwidgets sql websockets
 CONFIG   += console
 CONFIG   += debug
 
-greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 6): QT += widgets
 
 TARGET = SMAH_RPI_UI
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    commandrouter.cpp \
     dbmanager.cpp \
     mainwindow.cpp \
     rpidevice.cpp \
@@ -25,18 +24,13 @@ SOURCES += main.cpp\
     widgets/w_scheduledactions.cpp \
     logger.cpp \
     preset.cpp \
-    datagramhandler.cpp \
     light.cpp \
-    tcpsocket.cpp \
     presettask.cpp \
     zone.cpp \
-    zwavemanager.cpp \
     sunriseset.cpp \
     sensor.cpp \
     ui_mainwindow.cpp \
-    rsslisting.cpp \
-    tcpconnectionfactory.cpp \
-    zwaveworker.cpp
+    zwavesocket.cpp
 
 
 
@@ -52,23 +46,17 @@ HEADERS  += \
     build_number.h \
     logger.h \
     preset.h \
-    datagramhandler.h \
     light.h \
     build_number.h \
     logger.h \
     presettask.h \
-    tcpsocket.h \
     zone.h \
-    zwavemanager.h \
     sunriseset.h \
     widgets/w_screensaver.h \
     eventfilter.h \
     sensor.h \
-    commandrouter.h \
     ui_mainwindow.h \
-    rsslisting.h \
-    tcpconnectionfactory.h \
-    zwaveworker.h
+    zwavesocket.h
 
 
 FORMS    += \
@@ -92,22 +80,8 @@ build_nr.depends = FORCE
 QMAKE_EXTRA_TARGETS += build_nr
 PRE_TARGETDEPS += build_nr
 
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/arm/ -lopenzwave
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib64/ -lopenzwave
-
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib/arm/ -lpigpio
-unix:!macx: LIBS += -L$$PWD/../../../../../usr/local/lib64/ -lpigpio
-
-
-INCLUDEPATH += $$PWD/../../../../../usr/local/include/openzwave
-DEPENDPATH += $$PWD/../../../../../usr/local/include/openzwave
-
 INCLUDEPATH += $$PWD/../../../../../usr/local/include
 DEPENDPATH += $$PWD/../../../../../usr/local/include
-
-DISTFILES += \
-    ../../../../../usr/local/include/openzwave/aes/aes.txt
-
 
 RESOURCES += qml.qrc
 # QMAKE_CXXFLAGS += "-fno-sized-deallocation"

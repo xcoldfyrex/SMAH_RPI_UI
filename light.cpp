@@ -1,13 +1,10 @@
 #include "light.h"
-#include "commandrouter.h"
-#include "tcpconnectionfactory.h"
 
 #include <QDebug>
 
-extern QMap <QString, RPIDevice> g_deviceList;
+//extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
-extern TCPConnectionFactory tcpServer;
 
 //Q_DECLARE_METATYPE(Light)
 
@@ -15,14 +12,13 @@ Light::Light(QObject *parent) : QObject(parent)
 {
 }
 
-Light::Light(int id, QString name, int type, int deviceid, uint32 home_id)
+Light::Light(int id, QString name, int type, int deviceid)
 {
     this->id = id;
     this->name = name;
     this->type = type;
     this->deviceid = deviceid;
     this->taskList = new QList<PresetTask*>();
-    this->home_id = home_id;
 }
 
 //toggle a binary device
@@ -30,13 +26,12 @@ Light::Light(int id, QString name, int type, int deviceid, uint32 home_id)
 void Light::toggleState()
 {
     //do shit to send to network
-    QJsonObject jsonPayload;
-    jsonPayload["id"] = this->id;
+    //QJsonObject jsonPayload;
+    //jsonPayload["id"] = this->id;
     //ClientSocket *sock = determineZone(this);
     //if (!sock) {
     // pray and broadcast. need to send to proper home_id
-    jsonPayload["home_id"] = (int) this->home_id;
-    tcpServer.broadcastMessageJSON("TOGGLE", jsonPayload);
+    //tcpServer.broadcastMessageJSON("TOGGLE", jsonPayload);
     return;
     //}
     //sock->prepareToSend("TOGGLE", jsonPayload);
@@ -75,26 +70,6 @@ void Light::updateLevel(int level)
     }
 }
 
-// TODO 10-20-2024 - probably unused now
-void Light::setLevel(int level)
-{
-    if (this->type == LIGHT_ZWAVE_DIMMABLE)
-    {
-        //this->level = level;
-        setZWaveLevel(level, this->id);
-        QJsonObject jsonPayload;
-        jsonPayload["id"] = this->id;
-        //ClientSocket *sock = determineZone(this);
-        //if (!sock) {
-        // pray and broadcast. need to send to proper home_id
-        jsonPayload["home_id"] = (int) this->home_id;
-        jsonPayload["value"] = level;
-        tcpServer.broadcastMessageJSON("LEVEL", jsonPayload);
-        return;
-        //}
-    }
-    //sock->prepareToSend("LEVEL", jsonPayload);
-}
 
 // from an active preset - next color
 void Light::colorStepAction(QColor color)

@@ -7,10 +7,6 @@
 #include <QTimer>
 #include <QPainter>
 
-#include "zone.h"
-#include "light.h"
-#include "widgets/w_screensaver.h"
-
 class MainWindow : public QWidget
 {
     Q_OBJECT
@@ -28,7 +24,7 @@ protected:
 
 signals:
     //void zoneChanged(Zone*);
-    void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
+    //void requestingNetworkOut(QString command, QJsonObject jsonPayload, QString responseTo);
 
 public slots:
     void hideSaver();

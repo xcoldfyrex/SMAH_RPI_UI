@@ -1,7 +1,7 @@
 #ifndef IMAGEPROVIDER_H
 #define IMAGEPROVIDER_H
 
-#include <QQuickImageProvider>
+#include <QtQuick/QQuickImageProvider>
 #include <QImage>
 #include <QMap>
 #include <preset.h>

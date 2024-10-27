@@ -11,16 +11,12 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-#include "tcpconnectionfactory.h"
-#include "zwavemanager.h"
 #include "dbmanager.h"
+#include "qvariant.h"
 
 extern int MY_DEVICE_ID;
-extern TCPConnectionFactory tcpServer;
 static const QString path = "smah.db";
 typedef QMap<int, float> SensorValueMap;
-extern int MY_DEVICE_ID;
-
 
 Q_DECLARE_METATYPE(SensorValueMap)
 
@@ -56,7 +52,6 @@ public:
     void setLastUpdate(qint64 ts) { this->updated = ts; }
 
     QString getName() { return this->name; }
-    uint32 getHome_id() { return this->home_id; }
 
     //void setTemperatureFromRaw(float temperature);
     //void setHumidityFromRaw(float humidity);
@@ -92,7 +87,6 @@ private:
     int device_id;
     qint64 updated = 0;
     QString name;
-    uint32 home_id;
     QMap<int, float> values;
 };
 

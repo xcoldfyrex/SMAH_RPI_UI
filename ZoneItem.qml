@@ -7,16 +7,21 @@ Rectangle {
     id: zoneMenu
     property string zoneName: "_DEF"
     property int index: 0
+    property var lights
+    property var id
+    property var drawerID
     ItemDelegate {
         id: zd
         objectName: "zd";
         parent: mainMenu
+        height: 40
         Rectangle {
             color: "#08111d"
             width: parent.width
             height: parent.height
             ItemDelegate {
                 width: parent.width
+                height: 40
                 SMAHLabel {
                     text: qsTr(zoneName)
                     font.pixelSize: 40

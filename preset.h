@@ -6,6 +6,7 @@
 #include <QLinearGradient>
 #include <QPainter>
 #include <QImage>
+#include <QObject>
 
 class Preset : public QObject
 {
@@ -13,9 +14,10 @@ class Preset : public QObject
     Q_PROPERTY(QString name READ getName CONSTANT);
     Q_PROPERTY(QString hex READ getHex CONSTANT);
     Q_PROPERTY(QImage image READ drawPreview CONSTANT);
-    Q_INVOKABLE
+
 
 public:
+    Q_INVOKABLE
     Preset(QString name, short id, bool dynamic = false, int fade = 0, int delay = 10, int type = 1);
     Preset();
     class Step {

@@ -23,6 +23,7 @@
 #include "sensor.h"
 #include "build_number.h"
 #include "imageprovider.h"
+#include "zwavesocket.h"
 
 QMap<QString, Zone*> gZoneMap;
 QMap<int, Preset*> gColorPresetMap;
@@ -107,7 +108,6 @@ void loadZones()
                     Sensor *sensor = new Sensor(
                                 sensorElement.attribute("name"),
                                 sensorElement.attribute("id").toShort(),
-                                sensorElement.attribute("device").toInt(),
                                 sensorElement.attribute("farenheit").toShort()                                );
                     zone->addSensor(sensor);
                     g_sensorList.append(sensor);
@@ -263,6 +263,8 @@ int main(int argc, char *argv[])
     QDir::setCurrent(homeLocation + "/.smah/");
     loadZones();
     loadPresets();
+    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://localhost:4000"), true);
+
 
     // headless mode, since qml won't even work without a screen attached
     // setup QML bits

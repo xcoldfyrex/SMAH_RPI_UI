@@ -37,7 +37,6 @@ Page {
             var diffmin = Math.floor(diff / 60);
             var diffsec = diff - diffmin * 60;
             var diffstr = diffmin + "m:" + diffsec + "s";
-            console.log(dltoday,dlyesterday, diff, diffstr)
             sunTimes.append({
                                 "sr": times.sunrise.getHours().pad() + ':' + times.sunrise.getMinutes().pad(),
                                 "ss": times.sunset.getHours().pad() + ':' + times.sunset.getMinutes().pad(),

@@ -16,7 +16,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     dbmanager.cpp \
-    mainwindow.cpp \
     rpidevice.cpp \
     shellyrgbw.cpp \
     widgets/w_hsvwheel.cpp \
@@ -27,7 +26,6 @@ SOURCES += main.cpp\
     light.cpp \
     presettask.cpp \
     zone.cpp \
-    sunriseset.cpp \
     sensor.cpp \
     ui_mainwindow.cpp \
     zwavesocket.cpp
@@ -37,7 +35,6 @@ SOURCES += main.cpp\
 HEADERS  += \
     dbmanager.h \
     imageprovider.h \
-    mainwindow.h \
     rpidevice.h \
     shellyrgbw.h \
     widgets/w_hsvpalette.h \
@@ -51,7 +48,6 @@ HEADERS  += \
     logger.h \
     presettask.h \
     zone.h \
-    sunriseset.h \
     widgets/w_screensaver.h \
     eventfilter.h \
     sensor.h \

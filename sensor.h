@@ -34,7 +34,7 @@ class Sensor : public QObject
     Q_PROPERTY(bool isFarenheit READ isFarenheit CONSTANT)
 
 public:
-    Sensor(QString name, int node_id, int device_id, bool farenheit=false, QObject *parent = nullptr);
+    Sensor(QString name, int node_id, bool farenheit=false, QObject *parent = nullptr);
     explicit Sensor(QObject *parent = nullptr);
     bool isFarenheit() { return this->farenheit; }
     QVariant getTemperature() {
@@ -46,7 +46,6 @@ public:
     float getHumidity() { return this->getValue(5); }
     float getUV() { return this->getValue(27); }
     int getNodeId() { return this->node_id; }
-    int getDeviceId() { return this->device_id; }
     int getBattery() { return this->battery; }
     qint64 getLastUpdate() { return this->updated; }
     void setLastUpdate(qint64 ts) { this->updated = ts; }
@@ -84,7 +83,6 @@ private:
     //short motion_level = 0;
     int battery = 0;
     int node_id;
-    int device_id;
     qint64 updated = 0;
     QString name;
     QMap<int, float> values;

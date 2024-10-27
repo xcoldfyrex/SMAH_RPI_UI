@@ -652,7 +652,7 @@ void init_zwave()
     g_zwaveDriver = QString::fromStdString(Manager::Get()->getVersionAsString());
     qInfo() << "ZWave Driver version:" << g_zwaveDriver;
 
-    string port = "/dev/ttyACM0";
+    string port = "/dev/ttyUSB0";
 
     if (! Manager::Get()->AddDriver( port ))
     {
@@ -690,7 +690,7 @@ void zwave_destroy()
     printf("Reads: %d Writes: %d CAN: %d NAK: %d ACK: %d Out of Frame: %d\n", data.m_readCnt, data.m_writeCnt, data.m_CANCnt, data.m_NAKCnt, data.m_ACKCnt, data.m_OOFCnt);
     printf("Dropped: %d Retries: %d\n", data.m_dropped, data.m_retries);
 
-    Manager::Get()->RemoveDriver("/dev/ttyACM0");
+    Manager::Get()->RemoveDriver("/dev/ttyUSB");
     Manager::Get()->RemoveWatcher( OnNotification, nullptr );
     Manager::Destroy();
     Options::Destroy();

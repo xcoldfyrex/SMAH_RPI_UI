@@ -14,7 +14,7 @@ class ZWaveWorker : public QThread
 public:
     explicit ZWaveWorker(QObject &parent);
     void run() override {
-        if (QFileInfo::exists("/dev/ttyACM0"))
+        if (QFileInfo::exists("/dev/ttyUSB0"))
         {
             qInfo() << "INIT ZWave";
             init_zwave();

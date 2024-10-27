@@ -17,7 +17,6 @@
 
 extern int MY_DEVICE_ID;
 extern TCPConnectionFactory tcpServer;
-extern uint32  g_homeId;
 static const QString path = "smah.db";
 typedef QMap<int, float> SensorValueMap;
 extern int MY_DEVICE_ID;
@@ -39,7 +38,7 @@ class Sensor : public QObject
     Q_PROPERTY(bool isFarenheit READ isFarenheit CONSTANT)
 
 public:
-    Sensor(QString name, int node_id, int device_id, bool farenheit=false, uint32 home_id = 0, QObject *parent = nullptr);
+    Sensor(QString name, int node_id, int device_id, bool farenheit=false, QObject *parent = nullptr);
     explicit Sensor(QObject *parent = nullptr);
     bool isFarenheit() { return this->farenheit; }
     QVariant getTemperature() {
@@ -65,8 +64,6 @@ public:
     void setValue(int index, float value) {
         ///DbManager db(path);
         this->values[index] = value;
-        if (this->getHome_id() == g_homeId)
-            tcpServer.broadcastMessage(this->getNodeId(), 1, value, index);
         setLastUpdate(QDateTime::currentSecsSinceEpoch());
         ///db.addValue(index, value, this->getLastUpdate());
         emit(valueChanged());
@@ -77,12 +74,6 @@ public:
         return 0;
     }
     void setBattery(int level) { this->battery = level; }
-    bool isLocal() {
-        //qDebug() << this->home_id << g_homeId << this->deviceid << MY_DEVICE_ID;
-        if ((this->home_id == g_homeId || this->device_id == MY_DEVICE_ID))
-            return true;
-        return false;
-    }
 
 signals:
     void valueChanged();

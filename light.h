@@ -34,7 +34,7 @@ class Light : public QObject
 
 public:
     explicit Light(QObject *parent = nullptr);
-    Light(int id, QString name, int type, int deviceid, short bank, uint32 home_id);
+    Light(int id, QString name, int type, int deviceid, uint32 home_id);
     Q_INVOKABLE int getType() const { return this->type ;}
     QString getName() const { return this->name; }
     uint32 getHome_id() { return this->home_id; }
@@ -43,12 +43,6 @@ public:
     int getGetDeviceId() { return this->deviceid; }
     int getLevel() { return this->level; }
     bool getState() { return this->level; }
-    bool isLocal() {
-        //qDebug() << this->home_id << g_homeId << this->deviceid << MY_DEVICE_ID;
-        if ((this->home_id == g_homeId || this->deviceid == MY_DEVICE_ID))
-            return true;
-        return false;
-    }
 
     bool wasLastUpdateLocal()
     {
@@ -66,7 +60,7 @@ public:
         updateLevel(checkstate);
     }
     QList<int> getColorFromPWM();
-    void setColorInPWM(QString color, bool keepActive);
+    void setColorShelly(QString color, bool keepActive);
     void updateLevel(int level);
     void sendUpdate();
 
@@ -91,7 +85,6 @@ private:
 
     int id, type, deviceid;
     int level = 0;
-    short pwmbank = -1;
     bool state = 0;
     bool localUpdate = false;
 

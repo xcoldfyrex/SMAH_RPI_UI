@@ -19,9 +19,9 @@ Q_DECLARE_METATYPE(SensorListMap)
 class Zone : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString getName READ getName)
-    Q_PROPERTY(QVariantList getLightList READ getLightList)
-    Q_PROPERTY(SensorListMap getSensorList READ getSensorList)
+    Q_PROPERTY(QString getName READ getName);
+    Q_PROPERTY(QVariantList getLightList READ getLightList);
+    Q_PROPERTY(SensorListMap getSensorList READ getSensorList);
     Q_INVOKABLE
 
 
@@ -37,12 +37,12 @@ public:
     }
     void addLight(Light *light)
     {
-            this->zoneLightList.append(QVariant::fromValue(light));
+        this->zoneLightList.append(QVariant::fromValue(light));
     }
 
     void addSensor(Sensor *sensor)
     {
-            this->sensorList.insert(sensor->getName(), sensor);
+        this->sensorList.insert(sensor->getName(), sensor);
     }
 
     QString getName() const { return this->name; }

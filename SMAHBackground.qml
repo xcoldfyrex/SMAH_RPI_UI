@@ -13,11 +13,11 @@ Rectangle {
     y: 0
     width: window.width
     height: window.height
-    color: "#868f96"
-    Image {
-        visible: true
-        fillMode: Image.Stretch
-        source: "file:///" + applicationDirPath + "/.smah/assets/background.png";
-        anchors.fill: parent;
-    }
+    color: "#1c2028"
+    //Image {
+//        visible: true
+//        fillMode: Image.Stretch
+//        source: "file:///" + applicationDirPath + "/.smah/assets/background.png";
+//        anchors.fill: parent;
+//    }
 }

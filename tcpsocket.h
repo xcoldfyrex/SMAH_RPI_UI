@@ -23,14 +23,14 @@ public:
     //RPIDevice *getDevice() { return this->rpidevice; }
     QString getDeviceID() { return this->devid; }
     int getRPIDeviceID() { return this->rpidevice->getId(); }
-    void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
+    //void prepareToSend(QString command, QJsonObject jsonPayload, QString responseTo);
 
 
 public slots:
     void readyRead();
     void disconnected();
     void socketError();
-    void prepareToSend(QString command, QJsonObject jsonPayload);
+    //void prepareToSend(QString command, QJsonObject jsonPayload);
     void stateChanged(QAbstractSocket::SocketState socketState);
 
 signals:
@@ -42,18 +42,14 @@ private:
     int socketDescriptor;
     QTcpSocket *tcpSocket;
     long lastPong;
-    QTimer *pingTimer;
     std::string peer_address;
     quint16 blockSize;
     QObject *parent;
     QString devid = "";
     QHostAddress remoteAddress;
     RPIDevice *rpidevice;
-    void send_id(QJsonObject data);
     void sendData(QJsonObject data);
     void processPayload(QByteArray buffer);
-    bool hasSentID = false;
-    void sendLatestValues();
 
     QJsonObject buildPayload();
 

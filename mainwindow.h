@@ -9,7 +9,6 @@
 
 #include "zone.h"
 #include "light.h"
-#include "widgets/w_systemsettings.h"
 #include "widgets/w_screensaver.h"
 
 class MainWindow : public QWidget

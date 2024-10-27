@@ -19,15 +19,10 @@
 
 #include "zone.h"
 #include "light.h"
-#include "mainwindow.h"
 #include "preset.h"
 #include "logger.h"
 #include "datagramhandler.h"
-#include "pigpio.h"
-#include "gpio_defs.h"
 #include "tcpconnectionfactory.h"
-#include "pca9685.h"
-#include "i2c/i2c.h"
 #include "eventfilter.h"
 #include "sensor.h"
 #include "zwaveworker.h"
@@ -44,9 +39,6 @@ QMap <int, int> g_nodeValues;
 QString MY_HW_ADDR;
 QString MY_IP_ADDR;
 bool zwave_ready = false;
-bool g_PCA9685_ready = false;
-///smah_i2c bus;
-I2C bus(1, 0x40);
 QString homeLocation;
 uint32 g_homeId = -32767;
 QString g_zwaveDriver = "0";
@@ -109,7 +101,6 @@ void loadZones()
                                              lightElement.attribute("name"),
                                              lightElement.attribute("type").toInt(),
                                              lightElement.attribute("device").toInt(),
-                                             lightElement.attribute("bank").toShort(),
                                              lightElement.attribute("home_id").toUInt(&ok, 16)
                                              );
                     zone->addLight(light);
@@ -128,9 +119,7 @@ void loadZones()
                                 sensorElement.attribute("name"),
                                 sensorElement.attribute("id").toShort(),
                                 sensorElement.attribute("device").toInt(),
-                                sensorElement.attribute("farenheit").toShort(),
-                                sensorElement.attribute("home_id").toUInt(&ok, 16)
-                                );
+                                sensorElement.attribute("farenheit").toShort()                                );
                     zone->addSensor(sensor);
                     g_sensorList.append(sensor);
 
@@ -248,19 +237,10 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(systemlogHandler);
     qInfo() << "SMAH Verion " << BUILD << DATE;
 
-    // try to setup GPIO
-    if (gpioInitialise() < 0)
-    {
-        qWarning() << "Failed to open GPIO";
-
-    } else {
-        qInfo() << "GPIO Ready";
-    }
-
     // determine our MAC addy
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
-        if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack))
+        if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack)) {
             foreach (QNetworkAddressEntry entry, interface.addressEntries())
             {
                 if (
@@ -274,6 +254,7 @@ int main(int argc, char *argv[])
                     break;
                 }
             }
+        }
     }
 
     // determine our IP addy

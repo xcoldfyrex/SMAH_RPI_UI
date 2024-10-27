@@ -19,10 +19,10 @@ SOURCES += main.cpp\
     dbmanager.cpp \
     mainwindow.cpp \
     rpidevice.cpp \
+    shellyrgbw.cpp \
     widgets/w_hsvwheel.cpp \
     widgets/w_powercontrol.cpp \
     widgets/w_scheduledactions.cpp \
-    widgets/w_systemsettings.cpp \
     logger.cpp \
     preset.cpp \
     datagramhandler.cpp \
@@ -30,8 +30,6 @@ SOURCES += main.cpp\
     tcpsocket.cpp \
     presettask.cpp \
     zone.cpp \
-    pca9685.cpp \
-    i2c/i2c.cpp \
     zwavemanager.cpp \
     sunriseset.cpp \
     sensor.cpp \
@@ -47,21 +45,17 @@ HEADERS  += \
     imageprovider.h \
     mainwindow.h \
     rpidevice.h \
+    shellyrgbw.h \
     widgets/w_hsvpalette.h \
     widgets/w_powercontrol.h \
     widgets/w_scheduledactions.h \
-    widgets/w_systemsettings.h \
     build_number.h \
     logger.h \
     preset.h \
     datagramhandler.h \
     light.h \
-    gpio_defs.h \
-    pca9685.h \
-    i2c/i2c.h \
     build_number.h \
     logger.h \
-    pca9685.h \
     presettask.h \
     tcpsocket.h \
     zone.h \

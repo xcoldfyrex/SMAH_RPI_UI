@@ -206,6 +206,7 @@ Page {
     }
 
     Button {
+        id: quit
         anchors.bottom: parent.bottom
         onClicked: Qt.quit()
         text: "Restart"
@@ -223,8 +224,6 @@ Page {
 
         }
     }
-
-
 }
 
 /*##^##

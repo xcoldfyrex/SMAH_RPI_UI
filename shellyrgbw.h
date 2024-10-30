@@ -1,28 +1,33 @@
 #ifndef SHELLYRGBW_H
 #define SHELLYRGBW_H
 
-#include "qtcpsocket.h"
-#include <QObject>
-#include <QHostAddress>
+#include <QtCore/QObject>
+#include <QtWebSockets/QWebSocket>
 
 class ShellyRGBW : public QObject
 {
+    Q_OBJECT
 public:
-    ShellyRGBW(QString ip, QString mDNS);
-    void setRGBW(int r, int g, int b, int w);
-
-public slots:
-    void readyRead();
-    void disconnected();
-    void socketError();
+    //ShellyRGBW(QString ip, QString mDNS);
+    explicit ShellyRGBW(const QUrl &url, QString mDNS, QObject *parent = nullptr);
+    void setRGBW(int r, int g, int b, int w, int brightness, bool state);
 
 private:
     QString mDNS;
-    QHostAddress ip;
-    QTcpSocket *tcpSocket;
-    bool connectShelly();
-    bool disconnectShelly();
-    quint16 blockSize = 0;
+    QWebSocket m_webSocket;
+    bool m_debug;
+
+//Q_SIGNALS:
+//    void closed();
+
+private Q_SLOTS:
+    void onConnected();
+    void onTextMessageReceived(QString message);
+    void closed();
+
+
+
 };
+
 
 #endif // SHELLYRGBW_H

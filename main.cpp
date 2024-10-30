@@ -24,6 +24,7 @@
 #include "build_number.h"
 #include "imageprovider.h"
 #include "zwavesocket.h"
+#include "shellyrgbw.h"
 
 QMap<QString, Zone*> gZoneMap;
 QMap<int, Preset*> gColorPresetMap;
@@ -36,6 +37,7 @@ QString MY_IP_ADDR;
 bool zwave_ready = false;
 QString homeLocation;
 QString g_zwaveDriver = "0";
+ShellyRGBW *shellyDevice;
 
 int MY_DEVICE_ID;
 
@@ -261,9 +263,13 @@ int main(int argc, char *argv[])
     //DatagramHandler broadcaster;
 
     QDir::setCurrent(homeLocation + "/.smah/");
+
+    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://localhost:4000"), true);
+    shellyDevice = new ShellyRGBW(QUrl("ws://10.2.10.48:80/rpc/RGBW.Set?"), "main");
+
     loadZones();
     loadPresets();
-    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://localhost:4000"), true);
+
 
 
     // headless mode, since qml won't even work without a screen attached

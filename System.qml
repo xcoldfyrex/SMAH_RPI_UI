@@ -18,7 +18,7 @@ Page {
         id: grid
         columnSpacing: 0
         anchors.margins: 5
-
+        x: mainMenu.width
         property var titles: [ "BUILD NUMBER", "BUILD DATE", "IP", "MAC", "Z-WAVE STATUS" ]
         property var values: [ b_build, b_date, net_ip, net_mac, z_driver ]
         anchors.leftMargin: 5
@@ -26,8 +26,6 @@ Page {
         anchors.topMargin: 16
         anchors.bottom: parent.top
         anchors.bottomMargin: -168
-        anchors.right: parent.left
-        anchors.left: parent.left
         rows: 10
         columns: 10
         anchors.rightMargin: -409
@@ -57,125 +55,11 @@ Page {
         }
     }
 
-    GridLayout {
-        id: gridLayout
-        x: 5
-        //width: 404
-        height: 100
-        columns: 10
-        rows: 15
-        anchors.top: header2.bottom
-        anchors.topMargin: 16
 
-        Repeater {
-            model: z_sensortitles
-            SMAHLabel {
-                Layout.row: 1
-                Layout.column: index
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: modelData
-                leftPadding: 5
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 20
-            }
-        }
-
-        Repeater {
-            model: sensorList
-            SMAHLabel {
-                Layout.column: 0
-                Layout.row: index + 2
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: sensorList[index].name
-                leftPadding: 5
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 16
-            }
-        }
-
-        Repeater {
-            model: sensorList
-            SMAHLabel {
-                Layout.column: 1
-                Layout.row: index + 2
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: sensorList[index].temperature.toFixed(1)
-                leftPadding: 5
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 16
-            }
-        }
-
-        Repeater {
-            model: sensorList
-            SMAHLabel {
-                Layout.column: 2
-                Layout.row: index + 2
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: sensorList[index].rh
-                leftPadding: 5
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 16
-            }
-        }
-
-        Repeater {
-            model: sensorList
-            SMAHLabel {
-                Layout.column: 3
-                Layout.row: index + 2
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: sensorList[index].lux
-                leftPadding: 5
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 16
-            }
-        }
-
-        Repeater {
-            model: sensorList
-            SMAHLabel {
-                Layout.column: 4
-                Layout.row: index + 2
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: sensorList[index].uv
-                leftPadding: 5
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 16
-            }
-        }
-        Repeater {
-            model: sensorList
-            SMAHLabel {
-                Layout.column: 5
-                Layout.row: index + 2
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: Qt.formatDateTime(new Date(sensorList[index].updated * 1000), "MM/dd/yyyy hh:mm:ss")
-                leftPadding: 5
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 16
-            }
-        }
-
-    }
 
     SMAHHeader {
         id: header1
-        x: 0
+        x: mainMenu.width
         y: 0
         width: 404
         height: 37
@@ -190,26 +74,13 @@ Page {
         }
     }
 
-    SMAHHeader {
-        id: header2
-        x: 0
-        y: 188
-        width: 404
-        height: 37
-        Text {
-            id: element1
-            color: "#ffffff"
-            text: qsTr("Sensors")
-            anchors.fill: parent
-            font.pixelSize: 20
-        }
-    }
 
     Button {
         id: quit
         anchors.bottom: parent.bottom
         onClicked: Qt.quit()
         text: "Restart"
+        x: mainMenu.width
 
         background: Rectangle {
             implicitWidth: 100

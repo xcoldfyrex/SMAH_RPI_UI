@@ -1,10 +1,13 @@
 #include "light.h"
+#include "shellyrgbw.h"
+
 
 #include <QDebug>
 
 //extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
+extern ShellyRGBW *shellyDevice;
 
 //Q_DECLARE_METATYPE(Light)
 
@@ -95,19 +98,7 @@ void Light::setColorShelly(QString color, bool keepActive = true)
     short g = color.mid(2,2).toShort(&ok, 16);
     short b = color.mid(4,2).toShort(&ok, 16);
     short w = color.mid(6,2).toShort(&ok, 16);
-
-    // devices not on i2c device
-    //gpioPWM(GPIO_PIN_RED, static_cast<uint>(r));
-    //gpioPWM(GPIO_PIN_GREEN, static_cast<uint>(g));
-    //gpioPWM(GPIO_PIN_BLUE, static_cast<uint>(b));
-    //gpioPWM(GPIO_PIN_WHITE, static_cast<uint>(w));
-    // well, it's on a fucking i2c bus.
-    // also matt is a fucking wanker and sj is a troglodite
-    //pca.setPWM((this->pwmbank - 1) * 4 + 1, r * 10);
-    //pca.setPWM((this->pwmbank - 1) * 4 + 2, g * 10);
-    //pca.setPWM((this->pwmbank - 1) * 4 + 3, b * 10);
-    //pca.setPWM((this->pwmbank - 1) * 4 + 4, w * 10);
-
+    shellyDevice->setRGBW(r,g,b,w,100,true);
 }
 
 

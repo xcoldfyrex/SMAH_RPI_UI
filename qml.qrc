@@ -21,8 +21,8 @@
         <file>SMAHButton.qml</file>
         <file>SMAHTabButton.qml</file>
         <file>Perimeter.qml</file>
-        <file>Environment.qml</file>
         <file>SMAHHeader.qml</file>
         <file>suncalc.js</file>
+        <file>Sensors.qml</file>
     </qresource>
 </RCC>

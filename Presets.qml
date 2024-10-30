@@ -23,10 +23,6 @@ Page {
             text:  device.getName
             color: "#fefdfd"
             font.pixelSize: 26
-            //anchors{
-                //top: parent.top
-                //left: parent.left
-            //}
         }
     }
 

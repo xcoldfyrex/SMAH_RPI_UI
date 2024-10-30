@@ -4,16 +4,30 @@ import QtQuick.Controls 2.13
 import smah.sensor 1.0
 
 Page {
-    property var z_sensortitles: [ "Location", "F", "RH%", "Lux", "UV" ]
+    property var z_sensornames: []
+    property var z_sensortitles: [ "Device Name", "Temperature", "RH", "Lux", "UV", "Updated" ]
+    id: page
+    visible: true
+    height: 600
 
     SMAHBackground {}
+
+
     GridLayout {
         id: gridLayout
-        height: 100
+        x: mainMenu.width
+        height: 300
         columns: 10
         rows: 15
-        //anchors.top: rectangle1.bottom
-        ///anchors.topMargin: 16
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        //anchors{
+        //    left: parent.left
+         //   bottom: parent.bottom
+         //   right: parent.right
+         //   top: parent.top
+        //}
 
         Repeater {
             model: z_sensortitles
@@ -52,7 +66,7 @@ Page {
                 Layout.row: index + 2
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: sensorList[index].temperature.toFixed(1)
+                text: sensorList[index].updated >= 1000 ? sensorList[index].temperature.toFixed(1) : "-"
                 leftPadding: 5
                 verticalAlignment: Text.AlignTop
                 horizontalAlignment: Text.AlignLeft
@@ -67,7 +81,7 @@ Page {
                 Layout.row: index + 2
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: sensorList[index].rh
+                text: sensorList[index].updated >= 1000 ? sensorList[index].rh + "%" : "-"
                 leftPadding: 5
                 verticalAlignment: Text.AlignTop
                 horizontalAlignment: Text.AlignLeft
@@ -82,7 +96,7 @@ Page {
                 Layout.row: index + 2
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: sensorList[index].lux
+                text: sensorList[index].updated >= 1000 ? sensorList[index].lux : "-"
                 leftPadding: 5
                 verticalAlignment: Text.AlignTop
                 horizontalAlignment: Text.AlignLeft
@@ -97,7 +111,21 @@ Page {
                 Layout.row: index + 2
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                text: sensorList[index].uv
+                text: sensorList[index].updated >= 1000 ? sensorList[index].uv : "-"
+                leftPadding: 5
+                verticalAlignment: Text.AlignTop
+                horizontalAlignment: Text.AlignLeft
+                font.pixelSize: 16
+            }
+        }
+        Repeater {
+            model: sensorList
+            SMAHLabel {
+                Layout.column: 5
+                Layout.row: index + 2
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                text: sensorList[index].updated >= 1000 ? Qt.formatDateTime(new Date(sensorList[index].updated * 1000), "MM/dd/yyyy hh:mm:ss") : "-"
                 leftPadding: 5
                 verticalAlignment: Text.AlignTop
                 horizontalAlignment: Text.AlignLeft
@@ -106,3 +134,4 @@ Page {
         }
     }
 }
+

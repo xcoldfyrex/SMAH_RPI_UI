@@ -34,6 +34,8 @@ Page {
                     font.pixelSize: 32
                 }
                 width: parent.width
+                height: 40
+
                 onClicked: {
                     stackViewZoneOptions.clear()
                     stackViewZoneOptions.push(ZoneCreation.zoneOverviewMap[zoneName])
@@ -45,6 +47,8 @@ Page {
                     font.pixelSize: 32
                 }
                 width: parent.width
+                height: 40
+
                 onClicked: {
                     stackViewZoneOptions.clear()
                     stackViewZoneOptions.push(ZoneCreation.zoneDeviceMap[zoneName])
@@ -57,6 +61,8 @@ Page {
                     font.pixelSize: 32
                 }
                 width: parent.width
+                height: 40
+
                 onClicked: {
                     //stackView.push("Page1Form.ui.qml")
                 }
@@ -78,11 +84,11 @@ Page {
         Component.onCompleted: {
             var component = Qt.createComponent("DeviceView.qml")
             var loadwin = component.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
-            //ZoneCreation.zoneDeviceMap[zoneName] = loadwin
-            //var component_o = Qt.createComponent("ZoneOverview.qml")
-            //var loadwin_o = component_o.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
-            //ZoneCreation.zoneOverviewMap[zoneName] = loadwin_o
-            //stackViewZoneOptions.clear()
+            ZoneCreation.zoneDeviceMap[zoneName] = loadwin
+            var component_o = Qt.createComponent("ZoneOverview.qml")
+            var loadwin_o = component_o.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
+            ZoneCreation.zoneOverviewMap[zoneName] = loadwin_o
+            stackViewZoneOptions.clear()
         }
     }
 }

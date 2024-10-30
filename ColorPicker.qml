@@ -62,9 +62,13 @@ Page {
         MouseArea {
             id: mouseArea
             anchors.fill: canvas
-            onClicked: {
+            onReleased: {
                 var col = getRGB()
                 device.setColor(col['r']+col['g']+col['b']+toHex(wls.value))
+                deviceName.text = device.getName + " " + col['r']+col['g']+col['b']+toHex(wls.value)
+            }
+            onClicked: {
+                var col = getRGB()
                 deviceName.text = device.getName + " " + col['r']+col['g']+col['b']+toHex(wls.value)
             }
         }

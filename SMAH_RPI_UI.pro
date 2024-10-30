@@ -48,7 +48,6 @@ HEADERS  += \
     logger.h \
     presettask.h \
     zone.h \
-    widgets/w_screensaver.h \
     eventfilter.h \
     sensor.h \
     ui_mainwindow.h \

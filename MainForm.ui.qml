@@ -1,4 +1,4 @@
-import QtQuick 2.12
+/*import QtQuick 2.12
 import QtQuick.Controls 2.5
 
 Page {
@@ -6,3 +6,4 @@ Page {
     height: window.height
     title: qsTr("Home")
 }
+*/

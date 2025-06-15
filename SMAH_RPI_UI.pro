@@ -18,7 +18,6 @@ SOURCES += main.cpp\
     dbmanager.cpp \
     rpidevice.cpp \
     shellyrgbw.cpp \
-    widgets/w_hsvwheel.cpp \
     widgets/w_powercontrol.cpp \
     widgets/w_scheduledactions.cpp \
     logger.cpp \
@@ -37,7 +36,6 @@ HEADERS  += \
     imageprovider.h \
     rpidevice.h \
     shellyrgbw.h \
-    widgets/w_hsvpalette.h \
     widgets/w_powercontrol.h \
     widgets/w_scheduledactions.h \
     build_number.h \

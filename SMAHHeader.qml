@@ -17,11 +17,11 @@ Rectangle {
         gradient: Gradient {
             GradientStop {
                 position: 0
-                color: "#00000000"
+                color: "#0043454E"
             }
             GradientStop {
                 position: 1
-                color: "#ff08111d"
+                color: "#ff43454E"
             }
         }
     }

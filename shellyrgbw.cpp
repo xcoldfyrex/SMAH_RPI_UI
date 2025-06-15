@@ -8,38 +8,47 @@
 
 QT_USE_NAMESPACE
 
-ShellyRGBW::ShellyRGBW(const QUrl &url, QString mDNS, QObject *parent) :
+ShellyRGBW::ShellyRGBW(QString ip, QString mDNS, QObject *parent) :
     QObject(parent)
 {
-    //if (m_debug)
-    qDebug() << "WebSocket server:" << url;
     this->mDNS = mDNS;
+    this->ip = ip;
     connect(&m_webSocket, &QWebSocket::connected, this, &ShellyRGBW::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &ShellyRGBW::closed);
-    m_webSocket.open(url);
+    QUrl url = QUrl("ws://" + ip + ":80/rpc/RGBW.Set?");
+    this->url = QString(url.toString());
+    doConnect();
 }
 
+void ShellyRGBW::doConnect()
+{
+        m_webSocket.open(url);
+}
 void ShellyRGBW::onConnected()
 {
-    qDebug() << "WebSocket connected";
     connect(&m_webSocket, &QWebSocket::textMessageReceived,
             this, &ShellyRGBW::onTextMessageReceived);
-    qDebug() << this->m_webSocket.state();
     qDebug() << this->mDNS << this->m_webSocket.peerAddress();
-
+    getStatus();
 }
 
 void ShellyRGBW::onTextMessageReceived(QString message)
 {
-    //QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
-    //QJsonValue event = doc["event"];
-
-    qDebug() << "Message received:" << message;
-
+    QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
+    if (doc["id"] == 99) {
+        qDebug() << "Message received:" << doc;
+        QJsonObject jsonObj = doc.object();
+        QJsonValue jsonArray = jsonObj["result"];
+        this->setLastUpdate(QDateTime::currentSecsSinceEpoch());
+        //qDebug() << jsonArray;
+        this->lastMessage = jsonArray;
+        //qDebug() << this->lastMessage;
+        emit(messageRecv());
+    }
 }
 
 void ShellyRGBW::setRGBW(int r, int g, int b, int w, int brightness, bool state) {
-    qDebug() << this->mDNS << this->m_webSocket.peerAddress() << this->m_webSocket.state();
+    //qDebug() << this->mDNS << this->m_webSocket.peerAddress() << this->m_webSocket.state();
     if (this->m_webSocket.state() ==  QAbstractSocket::SocketState::ConnectedState) {
         QJsonObject payload;
         QJsonObject params;
@@ -56,12 +65,24 @@ void ShellyRGBW::setRGBW(int r, int g, int b, int w, int brightness, bool state)
         params["white"] = w;
         payload["params"] = params;
         m_webSocket.sendTextMessage(QJsonDocument(payload).toJson(QJsonDocument::Compact));
-        qDebug() << payload;
-
+        //qDebug() << payload;
+        getStatus();
     }
 }
 
 void ShellyRGBW::closed()
 {
-    qDebug() << "CLOSED";
+    qInfo() << "Connection to shelly closed. Retrying " + this->url;
+    doConnect();
+}
+
+void ShellyRGBW::getStatus() {
+    QJsonObject payload;
+    QJsonObject params;
+    QJsonArray arr;
+    payload["method"] = "RGBW.GetStatus";
+    payload["id"] = 99;
+    params["id"] = "0";
+    payload["params"] = params;
+    m_webSocket.sendTextMessage(QJsonDocument(payload).toJson(QJsonDocument::Compact));
 }

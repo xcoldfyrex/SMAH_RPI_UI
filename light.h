@@ -7,6 +7,7 @@
 #include <QLabel>
 #include "preset.h"
 #include "presettask.h"
+#include "shellyrgbw.h"
 
 #include <QDebug>
 
@@ -32,12 +33,12 @@ class Light : public QObject
 public:
     Q_INVOKABLE
     explicit Light(QObject *parent = nullptr);
-    Light(int id, QString name, int type, int deviceid);
+    Light(int id, QString name, int type, ShellyRGBW *shellydevice);
     Q_INVOKABLE int getType() const { return this->type ;}
     QString getName() const { return this->name; }
     QString getColor() { return this->color; }
     int getId() { return this->id; }
-    int getGetDeviceId() { return this->deviceid; }
+    QString getGetDeviceId() { return this->shellydevice->getID(); }
     int getLevel() { return this->level; }
     bool getState() { return this->level; }
 
@@ -74,12 +75,13 @@ private slots:
 
 private:
 
-    int id, type, deviceid;
+    int id, type;
     int level = 0;
     bool state = 0;
     bool localUpdate = false;
 
     QString name;
+    ShellyRGBW *shellydevice;
     QString whiteLevel = "00";
     QString color = "000000";    
     QList<PresetTask*> *taskList;

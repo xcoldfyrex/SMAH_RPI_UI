@@ -3,7 +3,7 @@ import QtQuick.Controls 2.5
 import smah.light 1.0
 import smah.zone 1.0
 import smah.sensor 1.0
-
+import "."
 import QtQuick.Window 2.3
 import QtMultimedia 5.12
 
@@ -12,12 +12,12 @@ import "zoneManagement.js" as ZoneCreation
 ApplicationWindow {
     id: window
     visible: true
-    width: 1280
-    height: 800
-    minimumWidth: 1280
-    maximumWidth: 1280
-    minimumHeight: 800
-    maximumHeight: 800
+    width: 1920
+    height: 1080
+    minimumWidth: 1920
+    maximumWidth: 1920
+    minimumHeight: 1080
+    maximumHeight: 1080
     title: qsTr("SMAH")
     objectName: "toolBar";
     color: "black"
@@ -28,7 +28,7 @@ ApplicationWindow {
         target: idleDetection
         function onUserActivity() {
             idleTimer.restart()
-            hideSaver()
+            window.hideSaver()
         }
     }
 
@@ -36,7 +36,7 @@ ApplicationWindow {
         id: idleTimer
         interval: 30000; running: true; repeat: false
         onTriggered: {
-            showSaver()
+            window.showSaver()
         }
     }
 
@@ -50,6 +50,7 @@ ApplicationWindow {
     {
         toolBar.visible = false
         screenSaver.visible = true
+        drawer.close()
     }
 
     header: ToolBar {
@@ -61,16 +62,18 @@ ApplicationWindow {
         SMAHBackground {
             height: parent.height
         }
+
+        // header at the very top of all pages
         Rectangle{
             //color: "#00000077"
             gradient: Gradient {
                 GradientStop {
                     position: 0
-                    color: "#80000000"
+                    color: "#8043454E"
                 }
                 GradientStop {
                     position: 1
-                    color: "#8008111d"
+                    color: "#8043454E"
                 }
             }
             border.width: 0
@@ -79,6 +82,7 @@ ApplicationWindow {
 
         ToolButton {
             id: toolButton
+            background: Style.menubg
             text: "\u2630"
             font.pixelSize: Qt.application.font.pixelSize * 1.6
             onClicked: {
@@ -110,15 +114,17 @@ ApplicationWindow {
         width: window.width * 0.25
         height: window.height
         font.family: "Tahoma"
-        Rectangle {
+
+        SMAHMenu {
+            id: frame
             width: drawer.width
             height: drawer.height
-            color: "#08111d"
+            //color: "#08111d"
             Column {
                 anchors.fill: parent
                 objectName: "mainMenu";
                 id: mainMenu
-
+                /*
                 ItemDelegate {
                     SMAHLabel {
                         text: qsTr("Home");
@@ -131,7 +137,8 @@ ApplicationWindow {
                         drawer.close()
                     }
                 }
-                ItemDelegate {
+                */
+                SMAHButton {
                     SMAHLabel {
                         text: qsTr("Weather");
                         font.pixelSize: 40
@@ -139,7 +146,43 @@ ApplicationWindow {
                     width: parent.width
                     height: 40
                     onClicked: {
+                        mainSwipeView.setCurrentIndex(0)
+                        drawer.close()
+                    }
+                }
+                SMAHButton {
+                    SMAHLabel {
+                        text: qsTr("Sensors");
+                        font.pixelSize: 40
+                    }
+                    width: parent.width
+                    height: 40
+                    onClicked: {
                         mainSwipeView.setCurrentIndex(1)
+                        drawer.close()
+                    }
+                }
+                SMAHButton {
+                    SMAHLabel {
+                        text: qsTr("System");
+                        font.pixelSize: 40
+                    }
+                    width: parent.width
+                    height: 40
+                    onClicked: {
+                        mainSwipeView.setCurrentIndex(2)
+                        drawer.close()
+                    }
+                }
+                SMAHButton {
+                    SMAHLabel {
+                        text: qsTr("Up");
+                        font.pixelSize: 40
+                    }
+                    width: parent.width
+                    height: 40
+                    onClicked: {
+                        mainSwipeView.setCurrentIndex(3)
                         drawer.close()
                     }
                 }
@@ -164,143 +207,31 @@ ApplicationWindow {
         transitions: Transition {
             NumberAnimation { properties: "x,y"; easing.type: Easing.InOutQuad }
         }
-
-        Home {
-            SwipeView
-            {
-                Sensors {}
-                Perimeter {}
-                System { }
-                id: stackOptions
-                interactive: false
-                anchors.fill: parent
-            }
-            Rectangle {
-                id: frame
-                color: "#08111d"
-                opacity: 0.9
-                border.color: "#00000000"
-                width: 300
-                height: parent.height
-                Column {
-                    parent: frame
-                    anchors.fill: parent
-                    ItemDelegate {
-                        SMAHLabel {
-                            text: qsTr("Sensors")
-                            font.pixelSize: 40
-                        }
-                        width: parent.width
-                        height: 40
-                        onClicked: {
-                            Home.title = "Sensors"
-                            stackOptions.setCurrentIndex(0)
-                        }
-                    }
-                    ItemDelegate {
-                        SMAHLabel {
-                            text: qsTr("Perimeter")
-                            font.pixelSize: 40
-                        }
-                        width: parent.width
-                        height: 40
-                        onClicked: {
-                            stackOptions.setCurrentIndex(1)
-                        }
-                    }
-                    ItemDelegate {
-                        SMAHLabel {
-                            text: qsTr("Climate Control")
-                            font.pixelSize: 40
-                        }
-                        width: parent.width
-                        height: 40
-                        onClicked: {
-                            //stackView.push("Page1Form.ui.qml")
-                        }
-                    }
-                    ItemDelegate {
-                        SMAHLabel {
-                            text: qsTr("System");
-                            font.pixelSize: 40
-                        }
-                        width: parent.width
-                        height: 40
-                        onClicked: {
-                            stackOptions.setCurrentIndex(2)
-                        }
-                    }
-                }
-            }
-        }
-
-        Weather { }
-        Component.onCompleted: {
+        Weather {}
+        Sensors {}
+        System { window: window }
+        ViewUpstairs { }
+        Component.onCompleted: {         
+            //mainSwipeView.setCurrentIndex(0)
             var offset = mainSwipeView.count
             for (var i=0; i<zoneList.length; i++) {
-                    ZoneCreation.zoneLightList[zoneList[i].getName] = zoneList[i].getLightList
+                ZoneCreation.zoneLightList[zoneList[i].getName] = zoneList[i].getLightList
                 //if (zoneList[i].getLightList > 0) {
 
-                    var component = Qt.createComponent("ZoneItem.qml")
-                    var loadwin = component.createObject(mainMenu, {id: i, zoneName: zoneList[i].getName, drawerID: "zoneDrawer" + i, lights: zoneList[i].getLightList, index: i+offset })
-                    var zonecomponent= Qt.createComponent("ZoneOptions.qml")
-                    var zoneloadwin = zonecomponent.createObject(mainMenu, {zoneName: zoneList[i].getName, lights: zoneList[i].getLightList} )
-                    ZoneCreation.zoneFunctions[zoneList[i].getName] = zoneloadwin
-                    mainSwipeView.insertItem(i+offset, zoneloadwin)
+                var component = Qt.createComponent("ZoneItem.qml")
+                var loadwin = component.createObject(mainMenu, {id: i, zoneName: zoneList[i].getName, drawerID: "zoneDrawer" + i, lights: zoneList[i].getLightList, index: i+offset })
+                var zonecomponent= Qt.createComponent("ZoneOptions.qml")
+                var zoneloadwin = zonecomponent.createObject(mainMenu, {zoneName: zoneList[i].getName, lights: zoneList[i].getLightList} )
+                ZoneCreation.zoneFunctions[zoneList[i].getName] = zoneloadwin
+                mainSwipeView.insertItem(i+offset, zoneloadwin)
                 //}
             }
-            mainSwipeView.setCurrentIndex(1)
         }
 
     }
     SMAHBackground {}
-
-    Rectangle {
+    ScreenSaver {
         id: screenSaver
-        width: parent.width
-        height: parent.height
-        color: "black"
-        Component.onCompleted: {
-            showSaver()
-            for (var i=0; i<sensorList.length; i++)
-            {
-                if (sensorList[i].name === "Outside")
-                {
-                    outsideIndex = i
-                }
-            }
-        }
-        Timer {
-            interval: 100; running: true; repeat: true;
-            onTriggered: {
-                var ts = Qt.formatTime(new Date(),"hh:mm:ss")
-                timeText.text = ts
-            }
-        }
-        Text {
-            id: timeText
-            //fontSizeMode: Text.Fit
-            elide: Text.ElideRight
-            horizontalAlignment: Text.Center
-            verticalAlignment: Text.Center
-            color: "#454545"
-            font.family: "Helvetica"
-            font.bold: true; font.pixelSize: 256
-            style: Text.Raised; styleColor: "#757575"
-        }
-        Text {
-            id: temperature
-            text: sensorList[outsideIndex].temperature.toFixed(1) + "F\n" + sensorList[outsideIndex].rh + "%"
-            elide: Text.ElideLeft
-            horizontalAlignment: Text.Right
-            //verticalAlignment: Text.Center
-            anchors.bottom: parent.bottom
-            color: "#454545"
-            font.family: "Helvetica"
-            font.bold: true; font.pixelSize: 72
-            style: Text.Raised; styleColor: "#757575"
-        }
-
     }
 }
 

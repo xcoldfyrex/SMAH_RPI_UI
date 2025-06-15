@@ -13,7 +13,7 @@ Rectangle {
     y: 0
     width: window.width
     height: window.height
-    color: "#1c2028"
+    color: "#1f2024"
     //Image {
 //        visible: true
 //        fillMode: Image.Stretch

@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonValue>
-
+#include <QCoreApplication>
 extern QList <Sensor*> g_sensorList;
 QT_USE_NAMESPACE
 
@@ -14,17 +14,16 @@ ZWaveSocket::ZWaveSocket(const QUrl &url, bool debug, QObject *parent) :
     QObject(parent),
     m_debug(debug)
 {
-    //if (m_debug)
-    //    qDebug() << "WebSocket server:" << url;
     connect(&m_webSocket, &QWebSocket::connected, this, &ZWaveSocket::onConnected);
-    connect(&m_webSocket, &QWebSocket::disconnected, this, &ZWaveSocket::closed);
-    m_webSocket.open(url);
+    connect(&m_webSocket, &QWebSocket::disconnected, this, &ZWaveSocket::onClosed);
+    this->url = url;
+    doConnect();
 }
 
 void ZWaveSocket::onConnected()
 {
     if (m_debug)
-        qDebug() << "WebSocket connected";
+        qDebug() << "Zwave WebSocket connected";
     connect(&m_webSocket, &QWebSocket::textMessageReceived,
             this, &ZWaveSocket::onTextMessageReceived);
     QJsonObject start;
@@ -33,6 +32,14 @@ void ZWaveSocket::onConnected()
     m_webSocket.sendTextMessage(QJsonDocument(start).toJson(QJsonDocument::Compact));
 }
 
+void ZWaveSocket::onClosed()
+{
+    qWarning() << "Zwave WebSocket closed. Retrying...";
+    QTime dieTime= QTime::currentTime().addSecs(5);
+    while (QTime::currentTime() < dieTime)
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    doConnect();
+}
 void ZWaveSocket::onTextMessageReceived(QString message)
 {
     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
@@ -56,4 +63,9 @@ void ZWaveSocket::onTextMessageReceived(QString message)
         //if (m_debug)
         //    qDebug() << "Message received:" << event;
     }
+}
+
+void ZWaveSocket::doConnect()
+{
+    m_webSocket.open(this->url);
 }

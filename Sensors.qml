@@ -1,9 +1,11 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.13
-import smah.sensor 1.0
+import smah.sensor
 
 Page {
+    //required property Main window
+    //required property int index
     property var z_sensornames: []
     property var z_sensortitles: [ "Device Name", "Temperature", "RH", "Lux", "UV", "Updated" ]
     id: page
@@ -12,10 +14,9 @@ Page {
 
     SMAHBackground {}
 
-
     GridLayout {
         id: gridLayout
-        x: mainMenu.width
+        //x: mainMenu.width
         height: 300
         columns: 10
         rows: 15
@@ -28,9 +29,10 @@ Page {
          //   right: parent.right
          //   top: parent.top
         //}
+        //required property int index
 
         Repeater {
-            model: z_sensortitles
+            model: page.z_sensortitles
             SMAHLabel {
                 Layout.row: 1
                 Layout.column: index

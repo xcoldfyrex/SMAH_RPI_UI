@@ -6,6 +6,8 @@ import QtQuick.Layouts 1.3
 import smah.zone 1.0
 import smah.light 1.0
 
+import "."
+
 import "zoneManagement.js" as ZoneCreation
 
 Page {
@@ -18,10 +20,8 @@ Page {
     title: qsTr(zoneName)
     id: zoneOptions
 
-    Rectangle {
+    SMAHMenu {
         id: frame
-        color: "#08111d"
-        opacity: 0.9
         border.color: "#00000000"
         width: 300
         height:parent.height
@@ -40,6 +40,11 @@ Page {
                     stackViewZoneOptions.clear()
                     stackViewZoneOptions.push(ZoneCreation.zoneOverviewMap[zoneName])
                 }
+                Component.onCompleted: {
+                    background.color = Style.menubg
+                }
+                background: Rectangle {
+                }
             }
             ItemDelegate {
                 SMAHLabel {
@@ -54,6 +59,11 @@ Page {
                     stackViewZoneOptions.push(ZoneCreation.zoneDeviceMap[zoneName])
                     //ZoneCreation.zoneDeviceMap[zoneName]
                 }
+                Component.onCompleted: {
+                    background.color = Style.menubg
+                }
+                background: Rectangle {
+                }
             }
             ItemDelegate {
                 SMAHLabel {
@@ -65,6 +75,11 @@ Page {
 
                 onClicked: {
                     //stackView.push("Page1Form.ui.qml")
+                }
+                Component.onCompleted: {
+                    background.color = Style.menubg
+                }
+                background: Rectangle {
                 }
             }
         }

@@ -7,7 +7,6 @@
 //extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
-extern ShellyRGBW *shellyDevice;
 
 //Q_DECLARE_METATYPE(Light)
 
@@ -15,12 +14,12 @@ Light::Light(QObject *parent) : QObject(parent)
 {
 }
 
-Light::Light(int id, QString name, int type, int deviceid)
+Light::Light(int id, QString name, int type, ShellyRGBW *shellydevice)
 {
     this->id = id;
     this->name = name;
     this->type = type;
-    this->deviceid = deviceid;
+    this->shellydevice = shellydevice;
     this->taskList = new QList<PresetTask*>();
 }
 
@@ -98,7 +97,7 @@ void Light::setColorShelly(QString color, bool keepActive = true)
     short g = color.mid(2,2).toShort(&ok, 16);
     short b = color.mid(4,2).toShort(&ok, 16);
     short w = color.mid(6,2).toShort(&ok, 16);
-    shellyDevice->setRGBW(r,g,b,w,100,true);
+    shellydevice->setRGBW(r,g,b,w,100,true);
 }
 
 

@@ -10,7 +10,7 @@ Page {
     SMAHBackground {}
     id: page
     width: window.width
-    height: 600
+    height: window.height - 100
     visible: false
     SMAHHeader {
         id: header1
@@ -39,12 +39,12 @@ Page {
         y: header1.height + 5
         boundsBehavior: Flickable.StopAtBounds
         Layout.fillWidth: true
-        Layout.fillHeight: true
+        //Layout.fillHeight: true
         highlightMoveDuration: 200
         highlightMoveVelocity: -1
         highlight: Rectangle {
             color: '#111111'
-            width: 950
+            width: 1700
             Text {
                 anchors.centerIn: parent
                 //text: 'Hello ' + presetList.get(presetListView.currentIndex).name
@@ -55,7 +55,7 @@ Page {
         delegate: Component {
             Item {
                 height: 35
-                width: 950
+                width: 1700
                 //width: presetListView.width
                 Row {
                     width: parent.width
@@ -99,11 +99,11 @@ Page {
     }
     SMAHButton {
         id: closeb
-        text: "Close"
+        text: "Back"
         onClicked: page.visible = false
         anchors{
             left: parent.left
         }
-        y: 691
+        y: page.height
     }
 }

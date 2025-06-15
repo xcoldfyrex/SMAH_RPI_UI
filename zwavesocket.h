@@ -15,11 +15,14 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void onConnected();
+    void onClosed();
     void onTextMessageReceived(QString message);
 
 private:
     QWebSocket m_webSocket;
     bool m_debug;
+    QUrl url;
+    void doConnect();
 };
 
 #endif // ZWAVESOCKET_H

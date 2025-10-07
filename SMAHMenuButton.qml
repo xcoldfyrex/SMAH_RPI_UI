@@ -1,4 +1,5 @@
 import QtQuick 2.0
+
 import QtQuick.Controls 2.12
 
 
@@ -10,7 +11,7 @@ Button {
     background: Rectangle {
         implicitWidth: 150
         implicitHeight: 50
-        border.width: button.activeFocus ? 2 : 2
+        border.width: 0
         border.color: "#000"
         radius: 3
         color:  {

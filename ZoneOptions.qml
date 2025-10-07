@@ -1,120 +1,137 @@
-// menu with functions for each zone
+import QtQuick 2.0
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.0
+import smah.light
+import smah.zone
 
-import QtQuick 2.12
-import QtQuick.Controls 2.5
-import QtQuick.Layouts 1.3
-import smah.zone 1.0
-import smah.light 1.0
-
-import "."
-
-import "zoneManagement.js" as ZoneCreation
-
+// shows a list of lights associated with the device
 Page {
-    SMAHBackground {}
-    z: -1000
-    property string zoneName: "_DEF"
-    property var deviceView
+    // create a single map of the objects ahead of time
+    property var presetPages: ({})
+    property var pickerPages: ({})
     property var lights
-    visible: true
-    title: qsTr(zoneName)
-    id: zoneOptions
+    property var zoneName
 
-    SMAHMenu {
-        id: frame
-        border.color: "#00000000"
-        width: 300
-        height:parent.height
-        Column {
-            parent: frame
-            anchors.fill: parent
-            ItemDelegate {
-                SMAHLabel {
-                    text: qsTr("Overview")
-                    font.pixelSize: 32
-                }
-                width: parent.width
-                height: 40
 
-                onClicked: {
-                    stackViewZoneOptions.clear()
-                    stackViewZoneOptions.push(ZoneCreation.zoneOverviewMap[zoneName])
+    SMAHBackground {}
+    id: page
+    title: zoneName
+    Component.onCompleted:
+    {
+        if (lights.length !== 0) {
+            for (var i=0; i<lights.length; i++) {
+                if (lights[i].getType >= 10) {
+                    var zonecomponent = Qt.createComponent("Presets.qml")
+                    var zoneloadwin = zonecomponent.createObject(page, {device: lights[i]})
+                    presetPages[lights[i]] = zoneloadwin
                 }
-                Component.onCompleted: {
-                    background.color = Style.menubg
-                }
-                background: Rectangle {
-                }
-            }
-            ItemDelegate {
-                SMAHLabel {
-                    text: qsTr("Devices")
-                    font.pixelSize: 32
-                }
-                width: parent.width
-                height: 40
-
-                onClicked: {
-                    stackViewZoneOptions.clear()
-                    stackViewZoneOptions.push(ZoneCreation.zoneDeviceMap[zoneName])
-                    //ZoneCreation.zoneDeviceMap[zoneName]
-                }
-                Component.onCompleted: {
-                    background.color = Style.menubg
-                }
-                background: Rectangle {
-                }
-            }
-            ItemDelegate {
-                SMAHLabel {
-                    text: qsTr("Climate Control")
-                    font.pixelSize: 32
-                }
-                width: parent.width
-                height: 40
-
-                onClicked: {
-                    //stackView.push("Page1Form.ui.qml")
-                }
-                Component.onCompleted: {
-                    background.color = Style.menubg
-                }
-                background: Rectangle {
+                if (lights[i].getType >= 10) {
+                    var zonecomponentPicker = Qt.createComponent("ColorPicker.qml")
+                    var zoneloadwinPicker = zonecomponentPicker.createObject(page, {device: lights[i]})
+                    pickerPages[lights[i]] = zoneloadwinPicker
                 }
             }
         }
     }
-    StackView
-    {
-        //parent: zoneOptions
-        id: stackViewZoneOptions
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.left: frame.right
-        anchors.leftMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        Component.onCompleted: {
-            var component = Qt.createComponent("DeviceView.qml")
-            var loadwin = component.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
-            ZoneCreation.zoneDeviceMap[zoneName] = loadwin
-            var component_o = Qt.createComponent("ZoneOverview.qml")
-            var loadwin_o = component_o.createObject(stackViewZoneOptions, {zoneName: zoneName, lights: lights})
-            ZoneCreation.zoneOverviewMap[zoneName] = loadwin_o
-            stackViewZoneOptions.clear()
+    SMAHTBox {
+        id: box
+        SMAHHeader {
+            id: header1
+            y: 0
+            width: 600
+            Layout.alignment: Qt.AlignCenter
+            Text {
+                id: element
+                color: "#ffffff"
+                text: qsTr(zoneName)
+                font.pixelSize: Style.fontHeaderSize
+            }
+        }
+        ListView {
+            id: lightList
+            anchors{
+                top: header1.bottom
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+            }
+            height: 200
+            model: lights
+            interactive: false
+            delegate: RowLayout {
+                height: 75
+                //anchors.fill: parent
+                spacing: 10
+                Column {
+                    SMAHLabel {
+                        //Layout.alignment: Qt.AlignVCenter
+                        text: lights[index].getName
+                        font.pixelSize: 20
+                        width: 200
+                    }
+                }
+                SMAHButton {
+                    id: button
+                    function determine_vis()
+                    {
+                        if (lights[index].getType >= 10){
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                    text: qsTr("Presets")
+                    onClicked: {
+                        var zoneloadwin = presetPages[lights[index]]
+                        box.visible = false
+                        zoneloadwin.visible = true
+                    }
+                    visible: determine_vis()
+                }
+                SMAHButton {
+                    id: pickerButton
+                    function determine_vis()
+                    {
+                        if (lights[index].getType >= 10){
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                    text: qsTr("Color Picker")
+                    onClicked: {
+                        var zoneloadwin = pickerPages[lights[index]]
+                        box.visible = false
+                        zoneloadwin.visible = true
+                    }
+                    visible: determine_vis()
+                }
+
+                SMAHButton {
+                    id: offButton
+                    function determine_vis()
+                    {
+                        if (lights[index].getType >= 10){
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                    text: qsTr("Off")
+                    onClicked: {
+                        lights[index].setColor("00000000")
+                    }
+                    visible: determine_vis()
+                }
+            }
+            snapMode: ListView.SnapToItem
+            highlightRangeMode: ListView.StrictlyEnforceRange
         }
     }
 }
 
-
-
-/*
-
-
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:7;anchors_height:465;anchors_width:409;anchors_x:206;anchors_y:0}
+    D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/

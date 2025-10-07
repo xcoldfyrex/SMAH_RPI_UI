@@ -15,7 +15,8 @@
 #include "qvariant.h"
 
 extern int MY_DEVICE_ID;
-static const QString path = "smah.db";
+extern DbManager *g_sqlDb;
+
 typedef QMap<int, float> SensorValueMap;
 
 Q_DECLARE_METATYPE(SensorValueMap)
@@ -38,15 +39,12 @@ public:
     explicit Sensor(QObject *parent = nullptr);
     bool isFarenheit() { return this->farenheit; }
     QVariant getTemperature() {
-        if (this->isFarenheit())
-            return this->getValue(1);
-        return this->getValue(1) * 9/5 + 32;
+        return this->getValue(1);
     }
     float getLux() { return this->getValue(3); }
     float getHumidity() { return this->getValue(5); }
     float getUV() { return this->getValue(27); }
     int getNodeId() { return this->node_id; }
-    int getBattery() { return this->battery; }
     qint64 getLastUpdate() { return this->updated; }
     void setLastUpdate(qint64 ts) { this->updated = ts; }
 
@@ -59,6 +57,7 @@ public:
         ///DbManager db(path);
         this->values[index] = value;
         setLastUpdate(QDateTime::currentSecsSinceEpoch());
+        g_sqlDb->addValue(this->node_id, this->getTemperature().toInt(),this->getHumidity(),this->getLux(),(int(this->getLastUpdate() / 60)) * 60);
         ///db.addValue(index, value, this->getLastUpdate());
         emit(valueChanged());
     }
@@ -67,7 +66,6 @@ public:
             return this->values[index];
         return 0;
     }
-    void setBattery(int level) { this->battery = level; }
 
 signals:
     void valueChanged();

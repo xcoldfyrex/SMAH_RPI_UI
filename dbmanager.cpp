@@ -31,31 +31,61 @@ bool DbManager::createTable()
     bool success = false;
 
     QSqlQuery query;
-    query.prepare("CREATE TABLE sensor_values(id INTEGER, value FLOAT, ts LONG);");
+    query.prepare("CREATE TABLE sensor_values(id INTEGER, temp INTEGER, rh INTEGER, lux INTEGER, ts LONG, PRIMARY KEY (ts, id));");
+
     return success;
 }
 
-bool DbManager::addValue(const int id, float value,  quint64 ts)
+bool DbManager::addValue(const int id, int temp, int rh, int lux,  quint64 ts)
 {
     bool success = false;
 
 
         QSqlQuery queryAdd;
-        queryAdd.prepare("CREATE TABLE sensor_values(id INTEGER, value FLOAT, ts LONG);");
+        // ID TEMP RH LUX TS
+        queryAdd.prepare("CREATE TABLE sensor_values(id INTEGER, temp INTEGER, rh INTEGER, lux INTEGER, ts LONG, PRIMARY KEY (ts, id));");
         queryAdd.exec();
 
-        queryAdd.prepare("INSERT INTO sensor_values (id, value, ts) VALUES (:id, :value, :ts);");
-        queryAdd.bindValue(":value", value);
+        queryAdd.prepare("REPLACE INTO sensor_values (id, temp, rh, lux, ts) VALUES (:id, :temp, :rh, :lux, :ts);");
+        queryAdd.bindValue(":temp", temp);
+        queryAdd.bindValue(":rh", rh);
+        queryAdd.bindValue(":lux", lux);
         queryAdd.bindValue(":ts", ts);
         queryAdd.bindValue(":id", id);
         if(queryAdd.exec())
         {
             success = true;
+            m_db.commit();
         }
         else
         {
-            ///////////qDebug() << "add person failed: " << queryAdd.lastError();
+            qWarning() << "Update failed: " << queryAdd.lastError();
         }    
+    return success;
+}
+
+bool DbManager::addPondValue(int temp, float ph, quint64 ts)
+{
+    bool success = false;
+
+
+    QSqlQuery queryAdd;
+    queryAdd.prepare("CREATE TABLE pond_readings(temp INTEGER, ph FLOAT, ts LONG, PRIMARY KEY (ts));");
+    queryAdd.exec();
+
+    queryAdd.prepare("REPLACE INTO pond_readings (temp, ph, ts) VALUES (:temp, :ph, :ts);");
+    queryAdd.bindValue(":temp", temp);
+    queryAdd.bindValue(":ph", ph);
+    queryAdd.bindValue(":ts", ts);
+    if(queryAdd.exec())
+    {
+        success = true;
+        m_db.commit();
+    }
+    else
+    {
+        qWarning() << "Update failed: " << queryAdd.lastError();
+    }
     return success;
 }
 

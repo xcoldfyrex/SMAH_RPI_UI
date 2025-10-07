@@ -7,7 +7,7 @@
 #include <preset.h>
 #include <QDebug>
 
-extern QMap<int, Preset*> gColorPresetMap;
+extern QMap<int, Preset*> g_colorPresetMap;
 
 class ImageProvider : public QQuickImageProvider
 
@@ -18,10 +18,10 @@ public:
 
     }
 
-    virtual QImage requestImage(const QString &id, QSize *size, const QSize& requestedSize)
+    virtual QImage requestImage(const QString &id, QSize *size __attribute__((unused)), const QSize& requestedSize __attribute__((unused)))
     {
         QString rsrcid = ":/" + id;
-        Preset *preset = gColorPresetMap.value(id.toInt()+1);
+        Preset *preset = g_colorPresetMap.value(id.toInt()+1);
         return preset->drawPreview();
     }
 };

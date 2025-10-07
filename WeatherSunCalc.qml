@@ -5,9 +5,13 @@ import QtQml.Models 2.2
 
 import "suncalc.js" as SC
 
-Page {
+Item {
     id: weatherSunCalc
-    title: "Sunrise"
+    width: parent.width
+    //parent: frame
+    //anchors.bottom: parent.anchors.
+    //height: parent.height
+    anchors.bottom: weatherView.bottom
 
     ListModel {
         id: sunTimes
@@ -63,13 +67,19 @@ Page {
         }
     }
 
-    SMAHBackground {}
+
+    //anchors.centerIn: parent
     GridLayout {
         id: grid
         columnSpacing: 0
         anchors.margins: 5
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.alignment: Qt.AlignHCenter
+        width: parent.width
         property var titles: [ "Date",  "Sunrise", "Sunset", "Length", "Diff", "Solar Noon" ]
-        anchors.fill: parent
+        //anchors.fill: parent
+
         Repeater {
             model: grid.titles
             SMAHLabel {
@@ -185,9 +195,3 @@ Page {
         }
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:4}
-}
-##^##*/

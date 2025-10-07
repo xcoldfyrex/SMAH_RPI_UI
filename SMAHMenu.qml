@@ -6,6 +6,6 @@ Rectangle {
     id: frame
     color: Style.menubg
     border.color: "#00000000"
-    width: 300
+    width: 30
     height: parent.height
 }

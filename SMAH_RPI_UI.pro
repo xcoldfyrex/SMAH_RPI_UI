@@ -4,40 +4,42 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network widgets xml qml quick quickwidgets sql websockets
+QT       += core gui network widgets xml qml quick quickwidgets sql websockets httpserver
 CONFIG   += console
 CONFIG   += debug
 
-greaterThan(QT_MAJOR_VERSION, 6): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 6): QT += widgets charts
 
 TARGET = SMAH_RPI_UI
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    config.cpp \
     dbmanager.cpp \
+    ponddata.cpp \
     rpidevice.cpp \
+    scheduled_actions.cpp \
     shellyrgbw.cpp \
-    widgets/w_powercontrol.cpp \
-    widgets/w_scheduledactions.cpp \
     logger.cpp \
     preset.cpp \
     light.cpp \
     presettask.cpp \
+    weatherdata.cpp \
     zone.cpp \
     sensor.cpp \
-    ui_mainwindow.cpp \
     zwavesocket.cpp
 
 
 
 HEADERS  += \
+    config.h \
     dbmanager.h \
     imageprovider.h \
+    ponddata.h \
     rpidevice.h \
+    scheduled_actions.h \
     shellyrgbw.h \
-    widgets/w_powercontrol.h \
-    widgets/w_scheduledactions.h \
     build_number.h \
     logger.h \
     preset.h \
@@ -45,16 +47,14 @@ HEADERS  += \
     build_number.h \
     logger.h \
     presettask.h \
+    weatherdata.h \
     zone.h \
     eventfilter.h \
     sensor.h \
-    ui_mainwindow.h \
     zwavesocket.h
 
 
-FORMS    += \
-    ui_mainwindow.ui \
-    weatherwidget.ui
+FORMS    +=
 
 DEFINES += QT_MESSAGELOGCONTEXT
 

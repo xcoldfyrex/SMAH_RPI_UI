@@ -8,62 +8,75 @@ Page {
     property var sunloadwin
     property var weatherloadwin
     SMAHBackground {}
-    z: -1000
     title: qsTr("Weather")
     id: weatherHome
-    SMAHMenu {
-        id: frame
-        Column {
-            parent: frame
+    SMAHTBox {
+        ColumnLayout {
             anchors.fill: parent
-            SMAHButton {
-                SMAHLabel {
+            spacing: 0
+            id: frame
+            SMAHHeader {
+                id: header1
+                y: 0
+                width: 600
+                Text {
+                    id: element
+                    color: "#ffffff"
+                    text: qsTr("Weather")
+                    //anchors.fill: parent
+                    //anchors.centerIn: parent
+                    //verticalAlignment: Qt.AlignVCenter
+                    //horizontalAlignment: Text.AlignLeft
+                    font.pixelSize: Style.fontHeaderSize
+                }
+            }
+            TabBar {
+                Layout.fillWidth: true
+                id: bar
+                background: Rectangle{
+                    color: "transparent"
+                }
+                TabButton {
+                    background: Rectangle{
+                        color: "transparent"
+                    }
                     text: qsTr("Current Conditions")
                     font.pixelSize: 32
+                    onClicked: {
+                        weatherView.clear()
+                        weatherView.push(weatherloadwin)
+                    }
                 }
-                width: parent.width
-                height: 40
-                onClicked: {
-                    weatherView.clear()
-                    weatherView.push(weatherloadwin)
-                }
-            }
-            SMAHButton {
-                SMAHLabel {
+                TabButton {
+                    background: Rectangle{
+                        color: "transparent"
+                    }
                     text: qsTr("Sunrise/set")
                     font.pixelSize: 32
-                }
-                width: parent.width
-                height: 40
-
-                onClicked: {
-                    weatherView.clear()
-                    weatherView.push(sunloadwin)
+                    onClicked: {
+                        weatherView.clear()
+                        weatherView.push(sunloadwin)
+                    }
                 }
             }
+            StackView
+            {
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: parent.height
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                id: weatherView
+            }
+
+            Component.onCompleted: {
+                var weathercomponent = Qt.createComponent("WeatherConditions.qml")
+                weatherloadwin = weathercomponent.createObject(weatherView)
+                weatherloadwin.visible = false
+                var suncomponent = Qt.createComponent("WeatherSunCalc.qml")
+                sunloadwin = suncomponent.createObject(weatherView)
+                sunloadwin.visible = false
+                weatherloadwin.visible = true
+                weatherView.push(weatherloadwin)
+            }
         }
-    }
-    StackView
-    {
-        //parent: zoneOptions
-        id: weatherView
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.left: frame.right
-        anchors.leftMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        Component.onCompleted: {
-            weatherView.clear()
-            weatherView.push(sunloadwin)
-        }
-    }
-    Component.onCompleted: {
-        var weathercomponent = Qt.createComponent("WeatherConditions.qml")
-        weatherloadwin = weathercomponent.createObject(weatherView)
-        var suncomponent = Qt.createComponent("WeatherSunCalc.qml")
-        sunloadwin = suncomponent.createObject(weatherView)
     }
 }

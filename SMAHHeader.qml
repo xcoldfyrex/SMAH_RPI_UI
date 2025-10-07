@@ -3,10 +3,11 @@ import QtQuick.Controls 2.13
 
 Rectangle {
     id: inner
-    anchors.left: parent.left
-    anchors.leftMargin: 0
-    border.width: 1
+    //anchors.left: parent.left
+    //anchors.leftMargin: 0
+    border.width: 0
     color: "#00000000"
+    height: 80
     Rectangle {
         rotation: 90
         x: ((parent.height / 2) * -1)  + (parent.width / 2)
@@ -17,11 +18,11 @@ Rectangle {
         gradient: Gradient {
             GradientStop {
                 position: 0
-                color: "#0043454E"
+                color: "#00000000"
             }
             GradientStop {
                 position: 1
-                color: "#ff43454E"
+                color: "#ff000000"
             }
         }
     }

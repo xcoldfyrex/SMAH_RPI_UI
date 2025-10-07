@@ -1,35 +1,49 @@
 #ifndef DBMANAGER_H
 #define DBMANAGER_H
 
+#include "qjsonobject.h"
+#include "qsqlerror.h"
 #include <QSqlDatabase>
+#include <QSqlQuery>
 
-class DbManager
-{
+class DbManager : public QObject {
+    Q_OBJECT
 public:
+    Q_INVOKABLE QVariant search(QString mInputText) {
+        if (!isOpen()) {
+            qWarning() << "DB not open";
+            return "";
+        }
+        QSqlQuery query;
+        QList<QString> data;
+        query.prepare(mInputText);
+        if(!query.exec()) {
+            qWarning() << "Query error" << query.lastError();
+            qWarning() << mInputText;
+            return "";
+        }
+
+        while(query.next() ) {
+            data.append(query.value(0).toString() + "," + query.value(1).toString() + "," + query.value(2).toString());
+        }
+        if(query.first()) {
+            return data;
+        }
+        else
+            return "";
+    }
+
     DbManager(const QString& path);
     ~DbManager();
     bool isOpen() const;
     bool createTable();
 
-    /**
-     * @brief Add person data to db
-     * @param name - name of person to add
-     * @return true - person added successfully, false - person not added
-     */
-    bool addValue(const int id, float value, quint64 ts);
 
-    /**
-     * @brief Remove person data from db
-     * @param name - name of person to remove.
-     * @return true - person removed successfully, false - person not removed
-     */
+    bool addValue(const int id, int temp, int rh, int lux, quint64 ts);
+    bool addPondValue(int temp, float ph, quint64 ts);
+
     bool removePerson(const QString& name);
 
-    /**
-     * @brief Check if person of name "name" exists in db
-     * @param name - name of person to check.
-     * @return true - person exists, false - person does not exist
-     */
     bool personExists(const QString& name) const;
     void printAllPersons() const;
 

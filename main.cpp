@@ -14,11 +14,16 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QQmlApplicationEngine>
 #include <QtQuick/QQuickWindow>
+#include <QHttpServer>
+#include <QTcpServer>
 
+#include "config.h"
+
+#include "ponddata.h"
 #include "qnetworkreply.h"
 #include "zone.h"
-#include "light.h"
-#include "preset.h"
+//#include "light.h"
+//#include "preset.h"
 #include "logger.h"
 #include "eventfilter.h"
 #include "sensor.h"
@@ -26,204 +31,36 @@
 #include "imageprovider.h"
 #include "zwavesocket.h"
 #include "shellyrgbw.h"
+#include "dbmanager.h"
+#include "weatherdata.h"
 
-QMap<QString, Zone*> gZoneMap;
-QMap<int, Preset*> gColorPresetMap;
-QMap <QString, RPIDevice*> g_deviceList;
-QMap <QString, ShellyRGBW*> g_shellyList;
-QList <Sensor*> g_sensorList;
-QMap <int, Light*> g_lightMap;
-QMap <int, int> g_nodeValues;
 QString MY_HW_ADDR;
 QString MY_IP_ADDR;
-bool zwave_ready = false;
-QString homeLocation;
-QString g_zwaveDriver = "0";
-
 int MY_DEVICE_ID;
 
-void loadZones()
-{
-    QDomDocument zoneXMLDocument;
-    QFile zoneXMLFile("smah_zones.xml");
-    if (!zoneXMLFile.open(QIODevice::ReadOnly))
-        return;
-    if (!zoneXMLDocument.setContent(&zoneXMLFile)) {
-        zoneXMLFile.close();
-        return;
-    }
-    zoneXMLFile.close();
-
-    QDomElement root = zoneXMLDocument.firstChildElement();
-    /* each shelly. must be done before lights */
-    QDomNodeList shellyItems = root.elementsByTagName("shelly");
-    for (int a = 0; a < shellyItems.count(); a++) {
-        QDomNode shellyNode = shellyItems.at(a);
-        if (shellyNode.isElement()) {
-            QDomElement shellyElement = shellyNode.toElement();
-            ShellyRGBW *shelly = new ShellyRGBW(
-                shellyElement.attribute("ip"),
-                shellyElement.attribute("id")
-                );
-            g_shellyList.insert(shellyElement.attribute("id"), shelly);
-        }
-    }
-    QDomNodeList zoneItems = root.elementsByTagName("zone");
-    /* enumrate zones */
-    for (int i = 0; i < zoneItems.count(); i++) {        
-        QDomNode itemnode = zoneItems.at(i);
-        if (itemnode.isElement()) {
-            QDomElement element = itemnode.toElement();
-
-            Zone *zone = new Zone(
-                element.attribute("id").toInt(),
-                element.attribute("name")
-                );
-            /* each rpi device in the zone */
-            QDomNodeList devices = element.elementsByTagName("device");
-            for (int a = 0; a < devices.count(); a++) {
-                QDomNode deviceNode = devices.at(a);
-                if (deviceNode.isElement()) {
-                    QDomElement powerElement = deviceNode.toElement();
-                    RPIDevice *rpidevice = new RPIDevice(
-                        powerElement.attribute("id").toInt(),
-                        powerElement.attribute("name"),
-                        powerElement.attribute("hw")
-                        );
-                    zone->addDevice(rpidevice);
-                    g_deviceList.insert(powerElement.attribute("hw"),rpidevice);
-                    if (rpidevice->getHwAddress() == MY_HW_ADDR)
-                        /* probably unused now from home_id */
-                        MY_DEVICE_ID = rpidevice->getId();
-                    //zone->powerControls.insert(powerElement.attribute("id").toInt(), powerElement.attribute("name"));
-                }
-            }
+extern QMap<QString, Zone*> g_zoneMap;
+extern QMap<int, Preset*> g_colorPresetMap;
+extern QMap <QString, RPIDevice*> g_deviceList;
+extern QMap <QString, ShellyRGBW*> g_shellyList;
+extern QList <Sensor*> g_sensorList;
+// this only exists as we cannot copy qobjects
+QList <WeatherData*> g_weatherList;
+QList <PondData*> g_pondList;
+//
+//QMap <int, Light*> g_lightMap;
+//QMap <int, int> g_nodeValues;
 
 
-
-            /* each light in the zone */
-            QDomNodeList lightItems = element.elementsByTagName("light");
-            for (int a = 0; a < lightItems.count(); a++) {
-                QDomNode lightNode = lightItems.at(a);
-                if (lightNode.isElement()) {
-                    QDomElement lightElement = lightNode.toElement();
-                    Light *light = new Light(lightElement.attribute("id").toInt(),
-                                             lightElement.attribute("name"),
-                                             lightElement.attribute("type").toInt(),
-                                             g_shellyList.value(lightElement.attribute("device"))
-                                             );
-                    zone->addLight(light);
-                    g_lightMap.insert(lightElement.attribute("id").toInt(), light);
-                }
-            }
-
-            /* each sensor device in the zone */
-            QDomNodeList sensors = element.elementsByTagName("sensor");
-            for (int a = 0; a < sensors.count(); a++) {
-                QDomNode sensorNode = sensors.at(a);
-                if (sensorNode.isElement()) {
-                    QDomElement sensorElement = sensorNode.toElement();
-                    Sensor *sensor = new Sensor(
-                        sensorElement.attribute("name"),
-                        sensorElement.attribute("id").toShort(),
-                        sensorElement.attribute("farenheit").toShort()                                );
-                    zone->addSensor(sensor);
-                    g_sensorList.append(sensor);
+//bool zwave_ready = false;
+QString homeLocation;
+//QString g_zwaveDriver = "0";
+DbManager *g_sqlDb;
 
 
-                }
-            }
-            gZoneMap.insert(zone->getName(),zone);
-        }
-    }
-}
-
-void loadPresets()
-{
-    QDomDocument zoneXMLDocument;
-    QFile zoneXMLFile("light_presets.xml");
-    if (!zoneXMLFile.open(QIODevice::ReadOnly))
-        return;
-    if (!zoneXMLDocument.setContent(&zoneXMLFile)) {
-        zoneXMLFile.close();
-        return;
-    }
-    zoneXMLFile.close();
-
-    short presetID = 0;
-    QDomElement root = zoneXMLDocument.firstChildElement();
-
-    QDomNodeList staticItems = root.elementsByTagName("static");
-    QDomNodeList dynamicItems = root.elementsByTagName("dynamic");
-
-    //load static presets
-    for (int i = 0; i < staticItems.count(); i++) {
-        QDomNode itemnode = staticItems.at(i);
-        if (itemnode.isElement()) {
-            QDomElement presetElement = itemnode.toElement();
-            QString staticCode = presetElement.attribute("code");
-            int type = 0;
-            bool ok;
-            type = presetElement.attribute("type").toInt(&ok, 10);
-
-            Preset *preset = new Preset(presetElement.attribute("name"),presetID,false);
-            presetID++;
-            preset->type = type;
-            if (type == 0)
-            {
-                preset->setColor(staticCode);
-            }
-            if (type == 2)
-            {
-                QDomNodeList offsetItems = presetElement.elementsByTagName("offset");
-                for (int a = 0; a < offsetItems.count(); a++) {
-                    QDomNode offsetNode = offsetItems.at(a);
-                    if (offsetNode.isElement()) {
-                        QDomElement offsetElement = offsetNode.toElement();
-                        Preset::Offset *offset = new Preset::Offset();
-                        offset->colorHex = offsetElement.attribute("code");
-                        offset->start = offsetElement.attribute("start").toInt();
-                        offset->end = offsetElement.attribute("end").toInt();
-                        offset->skip = offsetElement.attribute("skip").toInt();
-                        preset->addOffset(offset, a);
-                    }
-                }
-            }
-            gColorPresetMap.insert(presetID, preset);
-
-        }
-    }
-
-    //load dynamic presets
-    for (int i = 0; i < dynamicItems.count(); i++) {
-        QDomNode itemnode = dynamicItems.at(i);
-        if (itemnode.isElement()) {
-            QDomElement presetElement = itemnode.toElement();
-            Preset *preset = new Preset(presetElement.attribute("name"),presetID, true, presetElement.attribute("fade").toInt(), presetElement.attribute("delay").toInt());
-            QDomNodeList stepItems = presetElement.elementsByTagName("step");
-            for (int a = 0; a < stepItems.count(); a++) {
-                QDomNode stepNode = stepItems.at(a);
-                if (stepNode.isElement()) {
-                    QDomElement stepElement = stepNode.toElement();
-                    int h = stepElement.attribute("h").toInt();
-                    int s = stepElement.attribute("s").toInt();
-                    int v = stepElement.attribute("v").toInt();
-                    Preset::Step *step = new Preset::Step();
-                    step->h = h;
-                    step->s = s;
-                    step->v = v;
-                    preset->addStep(step, a);
-                }
-            }
-            presetID++;
-            gColorPresetMap.insert(presetID,preset);
-        }
-    }
-}
 int main(int argc, char *argv[])
 {
-    QGuiApplication a(argc, argv);
-    QGuiApplication::setApplicationName("SMAH");
+    QApplication a(argc, argv);
+    QApplication::setApplicationName("SMAH");
     QCommandLineParser parser;
     QCommandLineOption nogui("nogui", QCoreApplication::translate("main", "Start headless"));
     parser.addOption(nogui);
@@ -241,7 +78,6 @@ int main(int argc, char *argv[])
     a.installEventFilter(&filter);
     qInstallMessageHandler(systemlogHandler);
     qInfo() << "SMAH Verion " << BUILD << DATE;
-
     // determine our MAC addy
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
     {
@@ -272,20 +108,49 @@ int main(int argc, char *argv[])
     }
 
     homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
-    //tcpServer.startListen();
+
+    // start TCP server for weather stuff
+    WeatherData *weatherdata = new WeatherData;
+    PondData *ponddata = new PondData;
+    g_weatherList.append(weatherdata);
+    g_pondList.append(ponddata);
+    QHttpServer httpServer;
+    httpServer.route("/data/report/", [](const QHttpServerRequest &request) {
+        qDebug() << request;
+        return "OK";
+    });
+    httpServer.route("/weather", [weatherdata](const QHttpServerRequest &request) {
+        weatherdata->setHumidity(request.query().queryItemValue("humidity").toInt());
+        weatherdata->setTemperature(request.query().queryItemValue("tempf").toFloat());
+        weatherdata->setWindSpeed(request.query().queryItemValue("windspeedmph").toFloat());
+        return "OK";
+    });
+    httpServer.route("/pond?", [ponddata](const QHttpServerRequest &request) {
+        ponddata->setPH(request.query().queryItemValue("ph").toFloat());
+        ponddata->setTemperature(request.query().queryItemValue("temp").toFloat());
+        qDebug() << request;
+        return "OK";
+    });
+    auto tcpserver = std::make_unique<QTcpServer>();
+    if (!tcpserver->listen(QHostAddress::Any,8888) || !httpServer.bind(tcpserver.get())) {
+        qFatal() << "Server failed to listen on a port.";
+    } else {
+        qInfo() << "HTTP Weather listener on port" << tcpserver->serverPort();
+    }
 
     //DatagramHandler broadcaster;
 
     QDir::setCurrent(homeLocation + "/.smah/");
 
-    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://localhost:4000"), true);
-    //shellyDevice = new ShellyRGBW("10.2.10.48", "main");
-    //g_shellyList.insert("main", shellyDevice);
-
+    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://10.1.10.60:3000"), true);
+    zWaveSock->setObjectName("sock");
+    // Prepare the database now
+    g_sqlDb = new DbManager("smah.db");
+    g_sqlDb->createTable();
 
     loadZones();
     loadPresets();
-
+    loadActions();
 
 
     // headless mode, since qml won't even work without a screen attached
@@ -294,6 +159,9 @@ int main(int argc, char *argv[])
     QVariantList qmlPresets;
     QVariantList qmlSensors;
     QVariantList qmlSHellyRGBW;
+    QVariantList qmlWeatherData;
+    QVariantList qmlPondData;
+
     QQmlEngine engine;
 
     QQmlComponent component(&engine);
@@ -306,10 +174,13 @@ int main(int argc, char *argv[])
     qmlRegisterType<Zone>("smah.preset", 1, 0, "Preset");
     qmlRegisterType<Sensor>("smah.sensor", 1, 0, "Sensor");
     qmlRegisterType<ShellyRGBW>("smah.shellyrgbw", 1, 0, "ShellyRGBW");
+    qmlRegisterType<WeatherData>("smah.weatherdata", 1, 0, "WeatherData");
+    qmlRegisterType<PondData>("smah.ponddata", 1, 0, "PondData");
+    qmlRegisterType<DbManager>("smah.dbmanager", 1, 0, "DbManager");
 
-    foreach (QString key, gZoneMap.keys())
+    foreach (QString key, g_zoneMap.keys())
     {
-        qmlZones.append(QVariant::fromValue(gZoneMap.value(key)));
+        qmlZones.append(QVariant::fromValue(g_zoneMap.value(key)));
     }
 
     foreach (Sensor *key, g_sensorList)
@@ -317,7 +188,7 @@ int main(int argc, char *argv[])
         qmlSensors.append(QVariant::fromValue(key));
     }
 
-    foreach (Preset *preset, gColorPresetMap)
+    foreach (Preset *preset, g_colorPresetMap)
     {
         qmlPresets.append(QVariant::fromValue(preset));
     }
@@ -326,7 +197,14 @@ int main(int argc, char *argv[])
     {
         qmlSHellyRGBW.append(QVariant::fromValue(shelly));
     }
-
+    foreach (WeatherData *weatherdata, g_weatherList)
+    {
+        qmlWeatherData.append(QVariant::fromValue(weatherdata));
+    }
+    foreach (PondData *ponddata, g_pondList)
+    {
+        qmlPondData.append(QVariant::fromValue(ponddata));
+    }
     if (!hideGui) {
 
         QNetworkAccessManager* manager = new QNetworkAccessManager();
@@ -339,7 +217,7 @@ int main(int argc, char *argv[])
             if(reply->error() == QNetworkReply::NoError)
             {
                 QByteArray response = reply->readAll();
-                    //qDebug() << response;
+                //qDebug() << response;
                 // do something with the data...
             }
             else // handle error
@@ -354,11 +232,13 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("presetList", QVariant::fromValue(qmlPresets));
         engine.rootContext()->setContextProperty("zoneList", QVariant::fromValue(qmlZones));
         engine.rootContext()->setContextProperty("shellyRGBWList", QVariant::fromValue(qmlSHellyRGBW));
-        engine.rootContext()->setContextProperty("z_driver", g_zwaveDriver);
         engine.rootContext()->setContextProperty("net_ip", MY_IP_ADDR);
         engine.rootContext()->setContextProperty("net_mac", MY_HW_ADDR);
         engine.rootContext()->setContextProperty("b_date", DATE);
         engine.rootContext()->setContextProperty("b_build", BUILD);
+        engine.rootContext()->setContextProperty("weatherdataitems", qmlWeatherData);
+        engine.rootContext()->setContextProperty("ponddataitems", qmlPondData);
+        engine.rootContext()->setContextProperty("db", g_sqlDb);
         engine.rootContext()->setContextProperty("applicationDirPath", QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory));
         engine.rootContext()->setContextProperty("idleDetection", &filter);
         QObject::connect(&engine, &QQmlApplicationEngine::quit, &QGuiApplication::quit);

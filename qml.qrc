@@ -9,8 +9,6 @@
         <file>Clock.qml</file>
         <file>ZoneItem.qml</file>
         <file>System.qml</file>
-        <file>DeviceView.qml</file>
-        <file>ZoneOverview.qml</file>
         <file>LightOverviewElement.js</file>
         <file>Presets.qml</file>
         <file>ColorPicker.qml</file>
@@ -30,5 +28,9 @@
         <file>ViewUpstairs.qml</file>
         <file>Style.qml</file>
         <file>qmldir</file>
+        <file>weathercalcs.js</file>
+        <file>SMAHTBox.qml</file>
+        <file>Pond.qml</file>
+        <file>SMAHMenuButton.qml</file>
     </qresource>
 </RCC>

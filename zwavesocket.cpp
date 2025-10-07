@@ -20,10 +20,14 @@ ZWaveSocket::ZWaveSocket(const QUrl &url, bool debug, QObject *parent) :
     doConnect();
 }
 
+void ZWaveSocket::doConnect()
+{
+    m_webSocket.open(this->url);
+}
+
 void ZWaveSocket::onConnected()
 {
-    if (m_debug)
-        qDebug() << "Zwave WebSocket connected";
+    qInfo() << "Zwave WebSocket connected";
     connect(&m_webSocket, &QWebSocket::textMessageReceived,
             this, &ZWaveSocket::onTextMessageReceived);
     QJsonObject start;
@@ -63,9 +67,4 @@ void ZWaveSocket::onTextMessageReceived(QString message)
         //if (m_debug)
         //    qDebug() << "Message received:" << event;
     }
-}
-
-void ZWaveSocket::doConnect()
-{
-    m_webSocket.open(this->url);
 }

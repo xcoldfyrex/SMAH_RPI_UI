@@ -1,4 +1,7 @@
 import QtQuick 2.0
+import smah.weatherdata 1.0
+
+import "."
 
 Rectangle {
     id: screenSaver
@@ -7,13 +10,6 @@ Rectangle {
     color: "black"
     Component.onCompleted: {
         window.showSaver()
-        for (var i=0; i<sensorList.length; i++)
-        {
-            if (sensorList[i].name === "Outside")
-            {
-                outsideIndex = i
-            }
-        }
     }
     Timer {
         interval: 100; running: true; repeat: true;
@@ -28,22 +24,21 @@ Rectangle {
         elide: Text.ElideRight
         horizontalAlignment: Text.Center
         verticalAlignment: Text.Center
-        color: "#454545"
+        color: Style.saverClockTextColor
         font.family: "Helvetica"
         font.bold: true; font.pixelSize: 400
-        style: Text.Raised; styleColor: "#757575"
+        style: Text.Raised; styleColor: Style.saverClockTextDropColor
     }
     Text {
         id: temperature
-        text: sensorList[outsideIndex].temperature.toFixed(1) + "F\n" + sensorList[outsideIndex].rh + "%"
+        text: weatherdataitems[0].temp.toFixed(1) + "F\n" + weatherdataitems[0].rh + "%"
         elide: Text.ElideLeft
         horizontalAlignment: Text.Right
         //verticalAlignment: Text.Center
         anchors.bottom: parent.bottom
-        color: "#454545"
+        color: Style.saverClockTextColor
         font.family: "Helvetica"
         font.bold: true; font.pixelSize: 72
-        style: Text.Raised; styleColor: "#757575"
+        style: Text.Raised; styleColor: Style.saverClockTextDropColor
     }
-
 }

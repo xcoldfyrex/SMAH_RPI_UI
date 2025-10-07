@@ -1,11 +1,6 @@
 #include "shellyrgbw.h"
 #include "QtCore"
 
-//ShellyRGBW::ShellyRGBW(QString ip, QString mDNS) {
-//    this->ip = QHostAddress(ip);
-//    this->mDNS = mDNS;
-//}
-
 QT_USE_NAMESPACE
 
 ShellyRGBW::ShellyRGBW(QString ip, QString mDNS, QObject *parent) :
@@ -24,19 +19,26 @@ void ShellyRGBW::doConnect()
 {
         m_webSocket.open(url);
 }
+
 void ShellyRGBW::onConnected()
 {
     connect(&m_webSocket, &QWebSocket::textMessageReceived,
             this, &ShellyRGBW::onTextMessageReceived);
-    qDebug() << this->mDNS << this->m_webSocket.peerAddress();
+    qInfo() << "Connected to Shelly" << this->mDNS << this->m_webSocket.peerAddress().toString();
     getStatus();
+}
+
+void ShellyRGBW::closed()
+{
+    qInfo() << "Connection to shelly closed. Retrying " + this->url;
+    doConnect();
 }
 
 void ShellyRGBW::onTextMessageReceived(QString message)
 {
     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
     if (doc["id"] == 99) {
-        qDebug() << "Message received:" << doc;
+        //qDebug() << "Message received:" << doc;
         QJsonObject jsonObj = doc.object();
         QJsonValue jsonArray = jsonObj["result"];
         this->setLastUpdate(QDateTime::currentSecsSinceEpoch());
@@ -68,12 +70,6 @@ void ShellyRGBW::setRGBW(int r, int g, int b, int w, int brightness, bool state)
         //qDebug() << payload;
         getStatus();
     }
-}
-
-void ShellyRGBW::closed()
-{
-    qInfo() << "Connection to shelly closed. Retrying " + this->url;
-    doConnect();
 }
 
 void ShellyRGBW::getStatus() {

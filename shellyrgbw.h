@@ -15,7 +15,6 @@ class ShellyRGBW : public QObject
     Q_PROPERTY(QVariant updated READ getLastUpdate NOTIFY messageRecv)
 
 public:
-    //ShellyRGBW(QString ip, QString mDNS);
     explicit ShellyRGBW(QString ip, QString mDNS, QObject *parent = nullptr);
     void setRGBW(int r, int g, int b, int w, int brightness, bool state);
     QString getID() { return this->mDNS; }

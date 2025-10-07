@@ -3,12 +3,6 @@
 
 Sensor::Sensor(QString name, int node_id, bool farenheit, QObject *parent) : QObject(parent)
 {
-    //DbManager db(path);
-    //if (this->db.isOpen()) {
-    //        this->db.createTable();
-    //  } else  {
-    //        qWarning() << "Database is not open!";
-    //  }
     this->name = name;
     this->node_id = node_id;
     this->farenheit = farenheit;

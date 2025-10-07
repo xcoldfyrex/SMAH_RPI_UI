@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls.Material 2.12
-
+/*
 Rectangle {
     z: -9000
     visible: true
@@ -21,3 +21,10 @@ Rectangle {
 //        anchors.fill: parent;
 //    }
 }
+*/
+Image {
+       anchors.fill: parent
+       fillMode:  Image.Stretch
+       source: "file:///" + applicationDirPath + ".smah/assets/HD-Bamboo-Forest-Background-1241179526.jpg"
+       opacity: 1.0
+   }

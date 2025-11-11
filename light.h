@@ -7,8 +7,10 @@
 #include <QLabel>
 #include "preset.h"
 #include "presettask.h"
+#include "shellyrelay.h"
 #include "shellyrgbw.h"
-
+#include <variant>
+#include <any>
 #include <QDebug>
 
 const int LIGHT_ZWAVE = 0;
@@ -33,12 +35,19 @@ class Light : public QObject
 public:
     Q_INVOKABLE
     explicit Light(QObject *parent = nullptr);
+
     Light(int id, QString name, int type, ShellyRGBW *shellydevice);
+    Light(int id, QString name, int type, ShellyRelay *shellydevice);
+    Light<ShellyRGBW>(int id, QString name, int type, T*);
+
+
+    //Light<ShellyRGBW>(int id, QString name, int type, T*);
+
     Q_INVOKABLE int getType() const { return this->type ;}
     QString getName() const { return this->name; }
     QString getColor() { return this->color; }
     int getId() { return this->id; }
-    QString getGetDeviceId() { return this->shellydevice->getID(); }
+    QString getGetDeviceId() { return this->shelly->getID(); }
     int getLevel() { return this->level; }
     bool getState() { return this->level; }
 
@@ -81,7 +90,8 @@ private:
     bool localUpdate = false;
 
     QString name;
-    ShellyRGBW *shellydevice;
+    Shelly *shelly;
+    //std::any *shellydevice;
     QString whiteLevel = "00";
     QString color = "000000";    
     QList<PresetTask*> *taskList;

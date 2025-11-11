@@ -7,46 +7,102 @@ import smah.weatherdata
 import "weathercalcs.js" as WC
 
 
+
 Item {
     id: weatherSunCalc
     width: 800
     height: 800
     Rectangle {
-        id: tempCircle
-        width: 300
+        id: current
+        width: 600
         height: 300
-        color: "transparent"
-        border.width: 20
-        radius: width*0.5
+        color: "#99000000"
+        radius: 20
         SMAHLabel {
             id: templabel
-            anchors.centerIn : parent
+            x:50
+            y:100
             font.pixelSize: 48
             text: weatherdataitems[0].temp.toFixed(1) + "F\n" + weatherdataitems[0].rh + "%"
         }
+        Column {
+            id: spacer
+            anchors.left: templabel.right
+            width: 50
+        }
+
         SMAHLabel {
-            id: feelslike
-            anchors.top: tempCircle.bottom
-            anchors.left: tempCircle.Center
-            font.pixelSize: 32
-            text: "F"
+            id: feelslikeLabel
+            anchors.top: current.top
+            anchors.left: spacer.right
+            font.pixelSize: 20
+            text: "Feels like"
+        }
+        SMAHLabel {
+            id: feelslikeVal
+            anchors.top: feelslikeLabel.top
+            anchors.right: current.right
+            font.pixelSize: 20
+            text: "Feels like"
         }
         SMAHLabel {
             id: dewpointLabel
-            anchors.top: feelslike.bottom
-            anchors.left: feelslike.left
-            font.pixelSize: 32
-            text: "Dewpoint: "
+            anchors.top: feelslikeLabel.bottom
+            anchors.left: feelslikeLabel.left
+            font.pixelSize: 20
+            text: "Dewpoint"
         }
         SMAHLabel {
             id: dewpointVal
             anchors.top: dewpointLabel.top
-            anchors.left: dewpointLabel.right
-            font.pixelSize: 32
+            anchors.right: current.right
+            font.pixelSize: 20
+            text: ""
+        }
+        SMAHLabel {
+            id: windLabel
+            anchors.top: dewpointLabel.bottom
+            anchors.left: dewpointLabel.left
+            font.pixelSize: 20
+            text: "Wind"
+        }
+        SMAHLabel {
+            id: windVal
+            anchors.top: windLabel.top
+            anchors.right: current.right
+            font.pixelSize: 20
+            text: ""
+        }
+        SMAHLabel {
+            id: windGustLabel
+            anchors.top: windLabel.bottom
+            anchors.left: windLabel.left
+            font.pixelSize: 20
+            text: "Wind Gust"
+        }
+        SMAHLabel {
+            id: windGustVal
+            anchors.top: windGustLabel.top
+            anchors.right: current.right
+            font.pixelSize: 20
+            text: ""
+        }
+        SMAHLabel {
+            id: uvLabel
+            anchors.top: windGustVal.bottom
+            anchors.left: windLabel.left
+            font.pixelSize: 20
+            text: "UV Index"
+        }
+        SMAHLabel {
+            id: uvVal
+            anchors.top: uvLabel.top
+            anchors.right: current.right
+            font.pixelSize: 20
             text: ""
         }
     }
-
+/*
     ChartView {
         id: chartView
         title: "Weather forecast"
@@ -109,70 +165,79 @@ Item {
             }
         }
     }
+*/
+    Row {
+        id: weatherDayRow
+        anchors.top: current.bottom
+        anchors.topMargin: 200
+        spacing: 40
+        ListModel {
+            id: weatherDayModel
+        }
+
+        Repeater {
+            model: weatherDayModel
+            delegate: SMAHLabel {
+                width: 100
+                text: weatherText
+            }
+        }
+    }
 
     Row {
-           id: weatherImageRow
-           anchors.top: chartView.bottom
-           anchors.topMargin: 5
-           anchors.bottom: poweredByText.top
-           anchors.bottomMargin: 5
-           anchors.horizontalCenter: parent.horizontalCenter
-           height: 50//parent.height - chartView.height - anchors.topMargin
+        id: weatherImageRow
+        anchors.top: weatherDayRow.bottom
+        height: 50
+        spacing: 40
+        ListModel {
+            id: weatherImageModel
+        }
+        Repeater {
+            id: repeater
+            model: weatherImageModel
+            delegate: Image {
+                source: imageSource
+                width: 100
+                height: width
+                fillMode: Image.PreserveAspectCrop
+            }
+        }
+    }
+    Row {
+        id: weatherTextRow
+        anchors.top: weatherImageRow.bottom
+        anchors.topMargin: 50
+        spacing: 40
+        ListModel {
+            id: weatherTextModel
+        }
+        Repeater {
+            id: textrepeater
+            model: weatherTextModel
+            delegate: SMAHLabel {
+                width: 100
+                text: weatherText
+                wrapMode: Text.WordWrap
+            }
+        }
+    }
 
-           ListModel {
-               id: weatherImageModel
-           }
-
-           Repeater {
-               id: repeater
-               model: weatherImageModel
-               delegate: Image {
-                   source: imageSource
-                   width: 100//weatherImageRow.height
-                   height: width
-                   fillMode: Image.PreserveAspectCrop
-               }
-           }
-       }
-
-       Text {
-           id: poweredByText
-           anchors.bottom: parent.bottom
-           anchors.bottomMargin: 5
-           anchors.left: parent.left
-           anchors.leftMargin: 25
-           height: parent.height / 25
-           text: "Powered by World Weather Online"
-       }
     Timer {
-        interval: 100; running: true; repeat: true;
+        interval: 1000; running: true; repeat: true;
         onTriggered: {
-            var color = "#ffffff"
             var temp = weatherdataitems[0].temp.toFixed(1)
             var rh = weatherdataitems[0].rh
-            if(temp <= 20)
-                color = "#bd00f7"
-            if(temp >= 20.1 && temp <= 30)
-                color = "#0035f7"
-            if(temp >= 30.1 && temp <= 40)
-                color = "#00a0f7"
-            if(temp >= 40.1 && temp <= 50)
-                color = "#00f78c"
-            if(temp >= 50.1 && temp <= 60)
-                color = "#adf700"
-            if(temp >= 60.1 && temp <= 70)
-                color = "#adf700"
-            if(temp >= 70.1 && temp <= 80)
-                color = "#f7ef00"
-            if(temp >= 80.1 && temp <= 90)
-                color = "#FFA500"
-            if(temp >= 90.1)
-                color = "#ff2600"
-            tempCircle.border.color = color
+            var wind = weatherdataitems[0].windspeed
+            var windgust = weatherdataitems[0].maxwindgust
+            var uv = weatherdataitems[0].uv
 
-            feelslike.text = "Feels like: " + WC.heatIndexFahrenheit(temp, rh).toFixed(1)
+
+            feelslikeVal.text = WC.heatIndexFahrenheit(temp, rh).toFixed(1)
             var dewpoint = WC.celsiusToFahrenheit(WC.dewPoint(WC.fahrenheitToCelsius(temp), rh)).toFixed(1)
             dewpointVal.text = WC.celsiusToFahrenheit(WC.dewPoint(WC.fahrenheitToCelsius(temp), rh)).toFixed(1)
+            windVal.text = wind
+            windGustVal.text = windgust
+            uvVal.text = uv
             var dewpointColor = "#ffffff"
             if (dewpoint <= 51 )
                 dewpointColor = "#0e5078"
@@ -204,10 +269,11 @@ Item {
     }
     function parseWeatherData(weatherData) {
         // Clear previous values
-        maxTempSeries.clear();
-        minTempSeries.clear();
+        //maxTempSeries.clear();
+        //minTempSeries.clear();
         weatherImageModel.clear();
-
+        weatherTextModel.clear();
+        weatherDayModel.clear();
         //![4]
         // Loop through the parsed JSON
         for (var i in weatherData.properties.periods) {
@@ -220,29 +286,38 @@ Item {
             // middle of the rainfall bars. This makes the temperature lines visually better
             // synchronized with the rainfall bars.
             if (weatherObj.isDaytime === true) {
-            maxTempSeries.append(Number(i) + 0.5, weatherObj.temperature);
+                //maxTempSeries.append(Number(i) + 0.5, weatherObj.temperature);
                 weatherImageModel.append({"imageSource":weatherObj.icon});
+                weatherTextModel.append({"weatherText":weatherObj.shortForecast})
+                weatherDayModel.append({"weatherText":weatherObj.name})
+
             } else {
-                minTempSeries.append(Number(i) + 0.5, weatherObj.temperature);
-                if ( i <= 5 ) weatherImageModel.append({"imageSource":weatherObj.icon});
+                //minTempSeries.append(Number(i) + 0.5, weatherObj.temperature);
+                if ( i <= 5 )
+                {
+                    weatherImageModel.append({"imageSource":weatherObj.icon});
+                    weatherTextModel.append({"weatherText":weatherObj.shortForecast})
+                    weatherDayModel.append({"weatherText":weatherObj.name})
+
+                }
 
             }
             //rainfallSet.append(weatherObj.precipMM);
             //![5]
 
             // Update scale of the chart
-            valueAxisY.max = Math.max(chartView.axisY().max, weatherObj.temperature);
+            //valueAxisY.max = Math.max(chartView.axisY().max, weatherObj.temperature);
             //valueAxisY2.max = Math.max(valueAxisY2.max, weatherObj.precipMM);
-            valueAxisX.min = 0;
-            valueAxisX.max = Number(i) + 1;
+            //valueAxisX.min = 0;
+            //valueAxisX.max = Number(i) + 1;
 
             // Set the x-axis labels to the dates of the forecast
-            var xLabels = barCategoriesAxis.categories;
-            xLabels[Number(i)] = weatherObj.startTime.substring(5, 10);
-            barCategoriesAxis.categories = xLabels;
-            barCategoriesAxis.visible = true;
-            barCategoriesAxis.min = 0;
-            barCategoriesAxis.max = xLabels.length - 1;
+            //var xLabels = barCategoriesAxis.categories;
+            //xLabels[Number(i)] = weatherObj.startTime.substring(5, 10);
+            //barCategoriesAxis.categories = xLabels;
+            //barCategoriesAxis.visible = true;
+            //barCategoriesAxis.min = 0;
+            //barCategoriesAxis.max = xLabels.length - 1;
         }
     }
 }

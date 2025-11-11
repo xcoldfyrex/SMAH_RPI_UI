@@ -92,12 +92,12 @@ Page {
         GridLayout {
             id: shellyGridLayout
             anchors.top: header2.bottom
-            columns: 5
+            columns: 6
             rows: 10
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            property var shellytitles: [ "Device ID", "IP", "Power", "Current", "Temperature" ]
+            property var shellytitles: [ "Device ID", "HOST", "IP", "Power", "Current", "Temperature" ]
 
             Repeater {
                 model: shellyGridLayout.shellytitles
@@ -152,7 +152,7 @@ Page {
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    text: shellyRGBWList[index].updated >= 1000 ? shellyRGBWList[index].message["apower"] + "W" : "-"
+                    text: shellyRGBWList[index].host
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
@@ -167,6 +167,21 @@ Page {
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    text: shellyRGBWList[index].updated >= 1000 ? shellyRGBWList[index].message["apower"] + "W" : "-"
+                    leftPadding: 5
+                    verticalAlignment: Text.AlignTop
+                    horizontalAlignment: Text.AlignLeft
+                    font.pixelSize: Style.fontCellSize
+                }
+            }
+
+            Repeater {
+                model: shellyRGBWList
+                SMAHLabel {
+                    Layout.column: 4
+                    Layout.row: index + 2
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
                     text: shellyRGBWList[index].updated >= 1000 ? shellyRGBWList[index].message["current"] + "A" : "-"
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
@@ -177,7 +192,7 @@ Page {
             Repeater {
                 model: shellyRGBWList
                 SMAHLabel {
-                    Layout.column: 4
+                    Layout.column: 5
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true

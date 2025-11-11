@@ -314,7 +314,9 @@ Page {
                         datemax = vals[2]
                     }
                     tempSeries.append(Number(i),vals[0])
-                    pHSeries.append(Number(i),Number(vals[1]).toFixed(1))
+                    if (Number(vals[1]) > 5 &&  Number(vals[1]) < 9) {
+                        pHSeries.append(Number(i),Number(vals[1]).toFixed(1))
+                    }
                     //console.log(Number(vals[1]).toFixed(1))
                     valueAxisX.min = 0;
                     valueAxisX.max = Number(i) + 1;

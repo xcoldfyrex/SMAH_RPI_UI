@@ -1,7 +1,4 @@
 #include "light.h"
-#include "shellyrgbw.h"
-
-
 #include <QDebug>
 
 //extern QMap <QString, RPIDevice> g_deviceList;
@@ -14,7 +11,18 @@ Light::Light(QObject *parent) : QObject(parent)
 {
 }
 
-Light::Light(int id, QString name, int type, ShellyRGBW *shellydevice)
+Light::Light(int id, QString name, int type, Shelly *shellydevice)
+{
+    //ShellyRGBW dev = (ShellyRGBW) std::any_cast<ShellyRGBW>(shellydevice);
+    //std::any_cast<ShellyRGBW&>(this->shellydevice);
+    this->id = id;
+    this->name = name;
+    this->type = type;
+    this->shelly = shellydevice;
+    this->taskList = new QList<PresetTask*>();
+}
+/*
+Light::Light(int id, QString name, int type, ShellyRelay *shellydevice)
 {
     this->id = id;
     this->name = name;
@@ -22,6 +30,7 @@ Light::Light(int id, QString name, int type, ShellyRGBW *shellydevice)
     this->shellydevice = shellydevice;
     this->taskList = new QList<PresetTask*>();
 }
+*/
 
 //toggle a binary device
 // TODO 10-20-2024 - probably unused now
@@ -97,7 +106,7 @@ void Light::setColorShelly(QString color, bool keepActive = true)
     short g = color.mid(2,2).toShort(&ok, 16);
     short b = color.mid(4,2).toShort(&ok, 16);
     short w = color.mid(6,2).toShort(&ok, 16);
-    shellydevice->setRGBW(r,g,b,w,100,true);
+    shelly->setRGBW(r,g,b,w);
 }
 
 

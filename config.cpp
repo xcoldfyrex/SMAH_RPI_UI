@@ -5,9 +5,11 @@
 #include <QString>
 
 #include "config.h"
+#include "shellyrelay.h"
+#include "shellyrgbw.h"
 #include "zone.h"
 #include "preset.h"
-#include "shellyrgbw.h"
+#include "shelly.h"
 #include "light.h"
 #include "scheduled_actions.h"
 
@@ -15,8 +17,9 @@ QList <Sensor*> g_sensorList;
 QMap<QString, Zone*> g_zoneMap;
 QMap<int, Preset*> g_colorPresetMap;
 QMap <QString, RPIDevice*> g_deviceList;
-QMap <QString, ShellyRGBW*> g_shellyList;
+QMap <QString, ShellyRGBW*> g_shellyRGBWList;
 QMap <int, Light*> g_lightMap;
+QList<ScheduledActions*> g_actionList;
 
 extern QString MY_HW_ADDR;
 
@@ -48,17 +51,9 @@ void loadActions()
         QDomNode groupNode = groupItems.at(a);
         if (groupNode.isElement()) {
             QDomElement groupElement = groupNode.toElement();
-            qDebug() << groupElement.attribute("name");
-            QDomNodeList actionItems = root.elementsByTagName("action");
-            QList<ScheduledActions> actions;
-            for (int a = 0; a < actionItems.count(); a++) {
-                QDomNode actionNode = actionItems.at(a);
-                if (actionNode.isElement()) {
-                    QDomElement element = actionNode.toElement();
-                    ScheduledActions action;
-                    action.add_action(element.attribute("type"), element.attribute("value"), element.attribute("time"));
-                }
-            }
+            ScheduledActions *action = new ScheduledActions();
+            action->add_action(groupElement);
+            g_actionList.append(action);
         }
     }
 }
@@ -76,11 +71,22 @@ void loadZones()
         QDomNode shellyNode = shellyItems.at(a);
         if (shellyNode.isElement()) {
             QDomElement shellyElement = shellyNode.toElement();
-            ShellyRGBW *shelly = new ShellyRGBW(
-                shellyElement.attribute("ip"),
-                shellyElement.attribute("id")
-                );
-            g_shellyList.insert(shellyElement.attribute("id"), shelly);
+            QString type = shellyElement.attribute("type");
+            if (type == "rgbw") {
+                ShellyRGBW *shelly = new ShellyRGBW(
+                    shellyElement.attribute("ip"),
+                    shellyElement.attribute("id")
+                    );
+                g_shellyRGBWList.insert(shellyElement.attribute("id"), shelly);
+            }
+            if (type == "relay") {
+                ShellyRelay *shelly = new ShellyRelay(
+                    shellyElement.attribute("ip"),
+                    shellyElement.attribute("id")
+                    );
+                g_shellyRGBWList.insert(shellyElement.attribute("id"), shelly);
+            }
+
         }
     }
     QDomNodeList zoneItems = root.elementsByTagName("zone");
@@ -122,11 +128,11 @@ void loadZones()
                 QDomNode lightNode = lightItems.at(a);
                 if (lightNode.isElement()) {
                     QDomElement lightElement = lightNode.toElement();
-                    if (g_shellyList.contains(lightElement.attribute("device"))) {
+                    if (g_shellyRGBWList.contains(lightElement.attribute("device"))) {
                         Light *light = new Light(lightElement.attribute("id").toInt(),
                                                  lightElement.attribute("name"),
                                                  lightElement.attribute("type").toInt(),
-                                                 g_shellyList.value(lightElement.attribute("device"))
+                                                 g_shellyRGBWList.value(lightElement.attribute("device"))
                                                  );
                         zone->addLight(light);
                         g_lightMap.insert(lightElement.attribute("id").toInt(), light);

@@ -31,8 +31,12 @@
 #include "imageprovider.h"
 #include "zwavesocket.h"
 #include "shellyrgbw.h"
+#include "shellyrelay.h"
 #include "dbmanager.h"
 #include "weatherdata.h"
+
+//Debug logging flag
+bool g_debug = false;
 
 QString MY_HW_ADDR;
 QString MY_IP_ADDR;
@@ -41,7 +45,9 @@ int MY_DEVICE_ID;
 extern QMap<QString, Zone*> g_zoneMap;
 extern QMap<int, Preset*> g_colorPresetMap;
 extern QMap <QString, RPIDevice*> g_deviceList;
-extern QMap <QString, ShellyRGBW*> g_shellyList;
+extern QMap <QString, ShellyRGBW*> g_shellyRGBWList;
+extern QMap <QString, ShellyRelay*> g_shellyRelayList;
+
 extern QList <Sensor*> g_sensorList;
 // this only exists as we cannot copy qobjects
 QList <WeatherData*> g_weatherList;
@@ -64,6 +70,8 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     QCommandLineOption nogui("nogui", QCoreApplication::translate("main", "Start headless"));
     parser.addOption(nogui);
+    QCommandLineOption debug("debug", QCoreApplication::translate("debug", "Debug mode"));
+    parser.addOption(debug);
     QCommandLineOption nocursor("nocursor", QCoreApplication::translate("main", "Hide cursor"));
     parser.addOption(nocursor);
     parser.process(a);
@@ -72,7 +80,7 @@ int main(int argc, char *argv[])
 
     bool hideGui = parser.isSet(nogui);
     bool hideCursor = parser.isSet(nocursor);
-
+    g_debug = parser.isSet(debug);
 
     EventFilter filter;
     a.installEventFilter(&filter);
@@ -120,15 +128,20 @@ int main(int argc, char *argv[])
         return "OK";
     });
     httpServer.route("/weather", [weatherdata](const QHttpServerRequest &request) {
+        if (g_debug)
+            qDebug() << request;
         weatherdata->setHumidity(request.query().queryItemValue("humidity").toInt());
         weatherdata->setTemperature(request.query().queryItemValue("tempf").toFloat());
         weatherdata->setWindSpeed(request.query().queryItemValue("windspeedmph").toFloat());
+        weatherdata->setWindMaxGust(request.query().queryItemValue("maxdailygust").toFloat());
+        weatherdata->setUV(request.query().queryItemValue("uv").toInt());
         return "OK";
     });
     httpServer.route("/pond?", [ponddata](const QHttpServerRequest &request) {
+        if (g_debug)
+            qDebug() << request;
         ponddata->setPH(request.query().queryItemValue("ph").toFloat());
         ponddata->setTemperature(request.query().queryItemValue("temp").toFloat());
-        qDebug() << request;
         return "OK";
     });
     auto tcpserver = std::make_unique<QTcpServer>();
@@ -142,7 +155,7 @@ int main(int argc, char *argv[])
 
     QDir::setCurrent(homeLocation + "/.smah/");
 
-    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://10.1.10.60:3000"), true);
+    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://10.3.10.2:3000"), true);
     zWaveSock->setObjectName("sock");
     // Prepare the database now
     g_sqlDb = new DbManager("smah.db");
@@ -151,7 +164,6 @@ int main(int argc, char *argv[])
     loadZones();
     loadPresets();
     loadActions();
-
 
     // headless mode, since qml won't even work without a screen attached
     // setup QML bits
@@ -173,7 +185,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Zone>("smah.zone", 1, 0, "Zone");
     qmlRegisterType<Zone>("smah.preset", 1, 0, "Preset");
     qmlRegisterType<Sensor>("smah.sensor", 1, 0, "Sensor");
-    qmlRegisterType<ShellyRGBW>("smah.shellyrgbw", 1, 0, "ShellyRGBW");
+    qmlRegisterType<Shelly>("smah.shellyrgbw", 1, 0, "ShellyRGBW");
     qmlRegisterType<WeatherData>("smah.weatherdata", 1, 0, "WeatherData");
     qmlRegisterType<PondData>("smah.ponddata", 1, 0, "PondData");
     qmlRegisterType<DbManager>("smah.dbmanager", 1, 0, "DbManager");
@@ -193,7 +205,7 @@ int main(int argc, char *argv[])
         qmlPresets.append(QVariant::fromValue(preset));
     }
 
-    foreach (ShellyRGBW *shelly, g_shellyList)
+    foreach (Shelly *shelly, g_shellyRGBWList)
     {
         qmlSHellyRGBW.append(QVariant::fromValue(shelly));
     }
@@ -241,6 +253,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("db", g_sqlDb);
         engine.rootContext()->setContextProperty("applicationDirPath", QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory));
         engine.rootContext()->setContextProperty("idleDetection", &filter);
+        engine.rootContext()->setContextProperty("debug", QVariant(g_debug));
         QObject::connect(&engine, &QQmlApplicationEngine::quit, &QGuiApplication::quit);
         component.loadUrl(QUrl(QStringLiteral("qrc:/Main.qml")));
         if (component.isReady()) {

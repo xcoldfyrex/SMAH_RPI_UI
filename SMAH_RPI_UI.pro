@@ -20,11 +20,13 @@ SOURCES += main.cpp\
     ponddata.cpp \
     rpidevice.cpp \
     scheduled_actions.cpp \
-    shellyrgbw.cpp \
+    shelly.cpp \
+    shellyrelay.cpp \
     logger.cpp \
     preset.cpp \
     light.cpp \
     presettask.cpp \
+    shellyrgbw.cpp \
     weatherdata.cpp \
     zone.cpp \
     sensor.cpp \
@@ -39,7 +41,8 @@ HEADERS  += \
     ponddata.h \
     rpidevice.h \
     scheduled_actions.h \
-    shellyrgbw.h \
+    shelly.h \
+    shellyrelay.h \
     build_number.h \
     logger.h \
     preset.h \
@@ -47,6 +50,7 @@ HEADERS  += \
     build_number.h \
     logger.h \
     presettask.h \
+    shellyrgbw.h \
     weatherdata.h \
     zone.h \
     eventfilter.h \

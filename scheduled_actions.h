@@ -1,8 +1,13 @@
 #ifndef SCHEDULED_ACTIONS_H
 #define SCHEDULED_ACTIONS_H
 
+#include "shelly.h"
+#include "shellyrelay.h"
+#include "shellyrgbw.h"
 #include <QObject>
 #include <QDateTime>
+#include <QDomElement>
+#include <QTimer>
 
 
 class ScheduledActions : public QObject
@@ -30,20 +35,39 @@ public:
     Q_ENUM(ActionType);
 
     ScheduledActions();
-    void add_action(QString action, QVariant val, QString time);
+    void add_action(QDomElement data);
 
 private:
-
     struct mFunctions
     {
         ScheduledActions::Action action;
         ScheduledActions::ActionType actionType;
         QVariant val;
+        // start time
         QTime time;
         int repeats = 0;
+        // interval in seconds in which to repeat
+        int interval = 0;
+        // TODO: remove this hardcode so we can have other devices
+        ShellyRGBW *rgbwDevice;
+        ShellyRelay *relayDevice;
+        bool on = true;
+        bool isRunning = false;
+        int remaining = 0;
+        QTimer *timer = new QTimer();
     };
 
-    QList<mFunctions> mActionList;
+    struct mFunctionStatus
+    {
+        bool isRunning = false;
+        int remaining = 0;
+    };
+
+    QList<mFunctions*> mActionList;
+
+public slots:
+    void checkTime(mFunctions mFunction);
+
 };
 
 #endif // SCHEDULED_ACTIONS_H

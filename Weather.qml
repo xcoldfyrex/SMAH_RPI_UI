@@ -23,10 +23,6 @@ Page {
                     id: element
                     color: "#ffffff"
                     text: qsTr("Weather")
-                    //anchors.fill: parent
-                    //anchors.centerIn: parent
-                    //verticalAlignment: Qt.AlignVCenter
-                    //horizontalAlignment: Text.AlignLeft
                     font.pixelSize: Style.fontHeaderSize
                 }
             }
@@ -34,11 +30,11 @@ Page {
                 Layout.fillWidth: true
                 id: bar
                 background: Rectangle{
-                    color: "transparent"
+                    color: "#99000000"
                 }
                 TabButton {
                     background: Rectangle{
-                        color: "transparent"
+                        color: bar.currentIndex === 0 ? "grey" : "transparent"
                     }
                     text: qsTr("Current Conditions")
                     font.pixelSize: 32
@@ -49,7 +45,7 @@ Page {
                 }
                 TabButton {
                     background: Rectangle{
-                        color: "transparent"
+                        color: bar.currentIndex === 1 ? "grey" : "transparent"
                     }
                     text: qsTr("Sunrise/set")
                     font.pixelSize: 32
@@ -65,6 +61,7 @@ Page {
                 Layout.preferredHeight: parent.height
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 id: weatherView
+                Layout.topMargin: 25
             }
 
             Component.onCompleted: {

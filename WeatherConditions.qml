@@ -6,7 +6,7 @@ import QtCharts
 import smah.weatherdata
 import "weathercalcs.js" as WC
 
-
+import "SMAHComponents/"
 
 Item {
     id: weatherSunCalc
@@ -212,8 +212,23 @@ Item {
             id: weatherTextModel
         }
         Repeater {
-            id: textrepeater
             model: weatherTextModel
+            delegate: SMAHLabel {
+                width: 100
+                text: weatherText
+                wrapMode: Text.WordWrap
+            }
+        }
+    }
+    Row {
+        id: weatherTextTempRow
+        anchors.top: weatherTextRow.bottom
+        spacing: 40
+        ListModel {
+            id: weatherTextTempModel
+        }
+        Repeater {
+            model: weatherTextTempModel
             delegate: SMAHLabel {
                 width: 100
                 text: weatherText
@@ -273,6 +288,7 @@ Item {
         //minTempSeries.clear();
         weatherImageModel.clear();
         weatherTextModel.clear();
+        weatherTextTempModel.clear();
         weatherDayModel.clear();
         //![4]
         // Loop through the parsed JSON
@@ -290,7 +306,7 @@ Item {
                 weatherImageModel.append({"imageSource":weatherObj.icon});
                 weatherTextModel.append({"weatherText":weatherObj.shortForecast})
                 weatherDayModel.append({"weatherText":weatherObj.name})
-
+                weatherTextTempModel.append({"weatherText":"H" + weatherObj.temperature})
             } else {
                 //minTempSeries.append(Number(i) + 0.5, weatherObj.temperature);
                 if ( i <= 5 )
@@ -298,6 +314,7 @@ Item {
                     weatherImageModel.append({"imageSource":weatherObj.icon});
                     weatherTextModel.append({"weatherText":weatherObj.shortForecast})
                     weatherDayModel.append({"weatherText":weatherObj.name})
+                    weatherTextTempModel.append({"weatherText":"L" + weatherObj.temperature})
 
                 }
 

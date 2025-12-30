@@ -38,14 +38,8 @@ public:
     bool isOpen() const;
     bool createTable();
 
-
     bool addValue(const int id, int temp, int rh, int lux, quint64 ts);
     bool addPondValue(int temp, float ph, quint64 ts);
-
-    bool removePerson(const QString& name);
-
-    bool personExists(const QString& name) const;
-    void printAllPersons() const;
 
 private:
     QSqlDatabase m_db;

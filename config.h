@@ -6,6 +6,7 @@
 void loadActions();
 void loadZones();
 void loadPresets();
+void loadScenes();
 QDomDocument validateConfigFile(QString config);
 
 

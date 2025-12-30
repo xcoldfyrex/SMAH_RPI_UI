@@ -4,22 +4,25 @@ import QtQuick.Layouts 1.0
 import smah.light 1.0
 import smah.zone 1.0
 
-//import QtQuick.Extras
-//import QtQuick.Controls.Styles
+import "SMAHComponents/"
 
 Item {
     property Light device
+    property Zone zone
     property string rgb_palette: "file:" + applicationDirPath + ".smah/assets/palette.png"
-    property var previewReady: false
-    property var parentBox
-    width: 800
-    height: 800
-    visible: false
-    //anchors.centerIn: parent
+    property string daylight_palette: "file:" + applicationDirPath + ".smah/assets/color-temperature.png"
+    property string f_palette: rgb_palette
+    property bool previewReady: false
+    property var parentObject
+
     id: colorPicker
+    width: parent.width
+    height: parent.height
+
     function toHex(d) {
         return  ("0"+(Number(d).toString(16))).slice(-2).toUpperCase()
     }
+
     function getRGB()
     {
         previewReady = true
@@ -40,109 +43,97 @@ Item {
         vals['b'] = toHex(id.data[2]);
         return (vals);
     }
+    Image {
+        id: loader
+        source: f_palette
+    }
 
-    SMAHTBox {
-            SMAHHeader {
-                id: header1
-                y: 0
-                width: 600
-                Layout.alignment: Qt.AlignCenter
-                Text {
-                    id: element
-                    color: "#ffffff"
-                    text: qsTr(device.getName)
-                    font.pixelSize: Style.fontHeaderSize
-                }
+    Canvas {
+        id: canvas
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        width: loader.width
+        height: loader.height
+        onPaint: {
+            var ctx = getContext("2d")
+            if (canvas.isImageLoaded(f_palette)) {
+                var im = ctx.createImageData(f_palette);
+                ctx.drawImage(im, 0, 0)
             }
-            Canvas {
-                id: canvas
-                anchors.top: header1.bottom
-                anchors.topMargin: 0
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                width: 720
-                height: 663
-                onPaint: {
-                    var ctx = getContext("2d")
-                    if (canvas.isImageLoaded(rgb_palette)) {
-                        var im = ctx.createImageData(rgb_palette);
-                        ctx.drawImage(im, 0, 0)
-                    }
-                }
-                Component.onCompleted:loadImage(rgb_palette);
-                onImageLoaded:requestPaint();
+        }
+        Component.onCompleted:loadImage(f_palette);
+        onImageLoaded:requestPaint();
 
-                MouseArea {
-                    id: mouseArea
-                    anchors.fill: canvas
-                    onReleased: {
-                        var col = getRGB()
-                        device.setColor(col['r']+col['g']+col['b']+toHex(wls.value))
-                        element.text = device.getName + " " + col['r']+col['g']+col['b']+toHex(wls.value)
-                    }
-                    onClicked: {
-                        var col = getRGB()
-                        element.text = device.getName + " " + col['r']+col['g']+col['b']+toHex(wls.value)
-                    }
-                }
+        MouseArea {
+            id: mouseArea
+            anchors.fill: canvas
+            onReleased: {
+                var col = getRGB()
+                device.setColor(col['r']+col['g']+col['b']+toHex(wls.value))
+                //element.text = zone.getName + " > " + device.getName + " " + col['r']+col['g']+col['b']+toHex(wls.value)
             }
-            Canvas {
-                id: preview
-                height: 200
-                contextType: qsTr("")
-                width: 200
-                anchors.top: canvas.top
-                anchors.topMargin: 0
-                anchors.left: canvas.right
-                anchors.leftMargin: 0
-                onPaint: {
-                    if (previewReady === false)
-                    {
-                        var ctx = getContext("2d")
-                        //ctx.fillStyle = Qt.rgba(0, 0, 0, 1)
-                        //ctx.fillRect(0, 0, preview.width, preview.height)
-                    }
-                }
+            onClicked: {
+                var col = getRGB()
+                //element.text = zone.getName + " > " + device.getName + " " + col['r']+col['g']+col['b']+toHex(wls.value)
             }
-
-
-
-            SMAHLabel {
-                id: wl
-                text: "White Level: " + toHex(wls.value)
-                font.pixelSize: 18
-                anchors {
-                    left: preview.right
-                    top: canvas.top
-                }
+        }
+    }
+    Canvas {
+        id: preview
+        height: 200
+        contextType: qsTr("")
+        width: 200
+        anchors.top: canvas.top
+        anchors.topMargin: 0
+        anchors.right: wl.left
+        anchors.leftMargin: 0
+        onPaint: {
+            if (previewReady === false)
+            {
+                var ctx = getContext("2d")
+                //ctx.fillStyle = Qt.rgba(0, 0, 0, 1)
+                //ctx.fillRect(0, 0, preview.width, preview.height)
             }
-
-            Slider {
-                anchors.left: wl.left
-                anchors.top: wl.bottom
-                height: 400
-                id: wls
-                orientation: Qt.Vertical
-                to: 255
-                stepSize: 1
-                onMoved: {
-                    var vals = getRGB()
-                    device.setColor(vals['r']+vals['g']+vals['b']+toHex(wls.value))
-                }
+        }
+    }
 
 
+    SMAHLabel {
+        id: wl
+        text: "White Level: " + toHex(wls.value)
+        font.pixelSize: 18
+        anchors {
+            right: parent.right
+            top: canvas.top
+        }
+    }
 
-                handle: Rectangle {
-                    //x: wls.leftPadding + wls.visualPosition * (wls.availableWidth - width)
-                    //y: wls.topPadding + wls.availableHeight / 2 - height / 2
-                    y: wls.topPadding + wls.visualPosition * (wls.availableHeight - height)
-                    x: wls.leftPadding + wls.availableWidth / 2 - width / 2
-                    implicitWidth: 96
-                    implicitHeight: 25
-                    color: wls.pressed ? "#f0f0f0" : "#f6f6f6"
-                    border.color: "#bdbebf"
-                }
-                /*
+    Slider {
+        anchors.right: parent.right
+        anchors.top: wl.bottom
+        height: 400
+        id: wls
+        orientation: Qt.Vertical
+        to: 255
+        stepSize: 1
+        onMoved: {
+            var vals = getRGB()
+            device.setColor(vals['r']+vals['g']+vals['b']+toHex(wls.value))
+        }
+
+
+
+        handle: Rectangle {
+            y: wls.topPadding + wls.visualPosition * (wls.availableHeight - height)
+            x: wls.leftPadding + wls.availableWidth / 2 - width / 2
+            implicitWidth: 96
+            implicitHeight: 25
+            color: wls.pressed ? "#f0f0f0" : "#f6f6f6"
+            border.color: "#bdbebf"
+        }
+        /*
         handle: Rectangle {
                 x: wls.leftPadding + wls.visualPosition * (wls.availableWidth - width)
                 y: Math.max(wls.topPadding, wls.availableHeight - height + wls.topPadding - ((wls.availableHeight - height) * (wls.position * 2)))
@@ -152,36 +143,58 @@ Item {
                 color: 'blue'
             }
             */
-            }
-
-
-            SMAHButton {
-                id: close
-                text: "Close"
-                onClicked: {
-                    colorPicker.visible = false
-                    box.visible = true
-                }
-                anchors{
-                    left: parent.left
-                    bottom: parent.bottom
-                }
-                anchors.leftMargin: 100
-            }
-            SMAHButton {
-                id: reset
-                text: "Reset"
-                anchors.leftMargin: 30
-                onClicked: {
-                    wls.decrease(255)
-                    device.setColor("00000000")
-                }
-                anchors {
-                    left: close.right
-                    bottom: close.bottom
-                }
-            }
     }
+
+
+    SMAHButton {
+        id: close
+        text: "Close"
+        onClicked: {
+            colorPicker.visible = false
+            parentObject.visible = true
+            element.text = zone.getName
+        }
+        anchors{
+            left: parent.left
+            bottom: parent.bottom
+        }
+        anchors.leftMargin: 100
+    }
+    SMAHButton {
+        id: change
+        text: "Change Palette"
+        onClicked: {
+            canvas.unloadImage(f_palette)
+            var ctx = canvas.getContext("2d")
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (f_palette === rgb_palette)
+            {
+                f_palette = daylight_palette
+            } else {
+                f_palette = rgb_palette
+            }
+            canvas.loadImage(f_palette)
+        }
+        anchors{
+            left: close.right
+            bottom: parent.bottom
+        }
+        anchors.leftMargin: 100
+    }
+    SMAHButton {
+        id: reset
+        text: "Reset"
+        anchors.leftMargin: 30
+        onClicked: {
+            wls.decrease(255)
+            device.setColor("00000000")
+        }
+        anchors {
+            left: change.right
+            bottom: close.bottom
+        }
+    }
+
 }
 
 /*##^##

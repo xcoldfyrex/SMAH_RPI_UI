@@ -1,36 +1,42 @@
 <RCC>
     <qresource prefix="/">
         <file>Main.qml</file>
-        <file>LightControls.qml</file>
-        <file>zoneManagement.js</file>
-        <file>ZoneOptions.qml</file>
-        <file>SMAHLabel.qml</file>
-        <file>SMAHBackground.qml</file>
         <file>Clock.qml</file>
-        <file>ZoneItem.qml</file>
         <file>System.qml</file>
-        <file>LightOverviewElement.js</file>
         <file>Presets.qml</file>
         <file>ColorPicker.qml</file>
         <file>ScreenSaver.qml</file>
-        <file>Home.qml</file>
         <file>Weather.qml</file>
-        <file>SMAHButton.qml</file>
-        <file>SMAHTabButton.qml</file>
         <file>Perimeter.qml</file>
-        <file>SMAHHeader.qml</file>
         <file>suncalc.js</file>
         <file>Sensors.qml</file>
         <file>WeatherSunCalc.qml</file>
         <file>WeatherConditions.qml</file>
-        <file>SMAHMenu.qml</file>
         <file>ViewDownStairs.qml</file>
         <file>ViewUpstairs.qml</file>
         <file>Style.qml</file>
         <file>qmldir</file>
         <file>weathercalcs.js</file>
-        <file>SMAHTBox.qml</file>
         <file>Pond.qml</file>
+        <file>Cameras.qml</file>
+    </qresource>
+    <qresource prefix="/SMAHComponents">
+        <file>SMAHScrollbar.qml</file>
         <file>SMAHMenuButton.qml</file>
+        <file>SMAHTBox.qml</file>
+        <file>SMAHMenu.qml</file>
+        <file>SMAHHeader.qml</file>
+        <file>SMAHButton.qml</file>
+        <file>SMAHTabButton.qml</file>
+        <file>SMAHLabel.qml</file>
+        <file>SMAHBackground.qml</file>
+    </qresource>
+    <qresource lang="qml" prefix="/SMAH"/>
+    <qresource lang="QML" prefix="/ZoneComponents">
+        <file>Timers.qml</file>
+        <file>ZoneOptionsPopup.qml</file>
+        <file>ZoneElements.qml</file>
+        <file>ZoneScenes.qml</file>
+        <file>ZoneControls.qml</file>
     </qresource>
 </RCC>

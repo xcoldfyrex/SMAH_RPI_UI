@@ -2,8 +2,8 @@
 #include "qjsonarray.h"
 #include "qjsonobject.h"
 
-ShellyRGBW::ShellyRGBW(QString ip, QString mDNS, QObject *parent)
-    : Shelly{ip,  mDNS,  parent}
+ShellyRGBW::ShellyRGBW(QString ip, QString mDNS, QString type, QObject *parent)
+    : Shelly{ip,  mDNS, type, parent}
 {
     this->ip = ip;
     this->mDNS = mDNS;

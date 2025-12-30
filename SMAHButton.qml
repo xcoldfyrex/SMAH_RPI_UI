@@ -11,11 +11,11 @@ Button {
         implicitWidth: 150
         implicitHeight: 50
         border.width: button.activeFocus ? 2 : 2
-        border.color: "#000"
+        border.color: "#ccc"
         radius: 3
         color:  {
-            button.down ? "#12141C" : "transparent"
-            //button.up ? "#12141C" : "transparent"
+            button.down ? "#12141C" : "#12141C"
+            button.up ? "#12141C" : "#12141C"
         }
     }
 }

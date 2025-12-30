@@ -2,8 +2,6 @@
 #define SCHEDULED_ACTIONS_H
 
 #include "shelly.h"
-#include "shellyrelay.h"
-#include "shellyrgbw.h"
 #include <QObject>
 #include <QDateTime>
 #include <QDomElement>
@@ -49,8 +47,7 @@ private:
         // interval in seconds in which to repeat
         int interval = 0;
         // TODO: remove this hardcode so we can have other devices
-        ShellyRGBW *rgbwDevice;
-        ShellyRelay *relayDevice;
+        Shelly *device;
         bool on = true;
         bool isRunning = false;
         int remaining = 0;

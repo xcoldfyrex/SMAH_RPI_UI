@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network widgets xml qml quick quickwidgets sql websockets httpserver
+QT       += core gui network widgets xml qml quick quickwidgets sql websockets httpserver 3dcore 3drender 3dinput 3dquick 3dlogic qml quick 3dquickextras
 CONFIG   += console
 CONFIG   += debug
 
@@ -15,10 +15,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    camera.cpp \
     config.cpp \
     dbmanager.cpp \
     ponddata.cpp \
     rpidevice.cpp \
+    scene.cpp \
     scheduled_actions.cpp \
     shelly.cpp \
     shellyrelay.cpp \
@@ -35,11 +37,13 @@ SOURCES += main.cpp\
 
 
 HEADERS  += \
+    camera.h \
     config.h \
     dbmanager.h \
     imageprovider.h \
     ponddata.h \
     rpidevice.h \
+    scene.h \
     scheduled_actions.h \
     shelly.h \
     shellyrelay.h \
@@ -77,8 +81,8 @@ build_nr.depends = FORCE
 QMAKE_EXTRA_TARGETS += build_nr
 PRE_TARGETDEPS += build_nr
 
-INCLUDEPATH += $$PWD/../../../../../usr/local/include
-DEPENDPATH += $$PWD/../../../../../usr/local/include
+#INCLUDEPATH += $$PWD/../../../../../usr/local/include
+#DEPENDPATH += $$PWD/../../../../../usr/local/include
 
 RESOURCES += qml.qrc
 # QMAKE_CXXFLAGS += "-fno-sized-deallocation"

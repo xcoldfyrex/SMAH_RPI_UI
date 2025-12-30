@@ -1,16 +1,13 @@
 #include <QMetaEnum>
 #include "scheduled_actions.h"
-#include "shellyrelay.h"
-#include "shellyrgbw.h"
+#include "shelly.h"
 
-extern QMap <QString, ShellyRGBW*> g_shellyRGBWList;
-extern QMap <QString, ShellyRelay*> g_shellyRelayList;
+extern QMap <QString, Shelly*> g_shellyList;
 
 ScheduledActions::ScheduledActions() {}
 
 void ScheduledActions::add_action(QDomElement data)
 {
-    qDebug() << data.attribute("name");
     QDomNodeList actionItems = data.elementsByTagName("action");
     QList<ScheduledActions> actions;
     for (int a = 0; a < actionItems.count(); a++) {
@@ -44,11 +41,9 @@ void ScheduledActions::add_action(QDomElement data)
             }
             mFunctions *tempValues = new mFunctions();
 
-            if (g_shellyRGBWList.contains(device))
+            if (g_shellyList.contains(device))
             {
-                tempValues->rgbwDevice = g_shellyRGBWList.value(device);
-            } else if (!g_shellyRelayList.contains(device)) {
-                tempValues->relayDevice = g_shellyRelayList.value(device);
+                tempValues->device = g_shellyList.value(device);
             } else {
                 qWarning() << "Action" << action << "references device that was not found:" << device;
                 return;
@@ -63,7 +58,7 @@ void ScheduledActions::add_action(QDomElement data)
             mActionList.append(tempValues);
 
             //QTimer *timer = new QTimer(this);
-            connect(tempValues->timer, &QTimer::timeout, this, [ tempValues]() {
+            connect(tempValues->timer, &QTimer::timeout, this, [tempValues]() {
                 QString strType;
                 switch (tempValues->action) {
                 case Action::SHELLY_ON:
@@ -107,10 +102,9 @@ void ScheduledActions::add_action(QDomElement data)
                     tempValues->timer->start(delay * 1000);
                 }
                 if (strType == "rgb") {
-                    tempValues->rgbwDevice->setRGBW(tempValues->val.toString());
-
+                    tempValues->device->setRGBW(tempValues->val.toString());
                 } else {
-                    tempValues->rgbwDevice->setValue(strType,tempValues->val.toString(),tempValues->on);
+                    tempValues->device->setValue(strType,tempValues->val.toString(),tempValues->on);
                 }
 
                 qDebug() << tempValues->time << tempValues->interval << tempValues->remaining << tempValues->repeats << tempValues->interval << tempValues->timer->remainingTime();

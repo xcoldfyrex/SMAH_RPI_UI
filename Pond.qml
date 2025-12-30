@@ -8,6 +8,7 @@ import smah.dbmanager
 import QtQuick.Controls.Material
 
 import "."
+import "SMAHComponents/"
 
 Page {
     property real phHigh: 0
@@ -165,7 +166,7 @@ Page {
                     //Layout.fillWidth: true
 
                     //displayText: "Window period: " + currentText
-                    model: ["24H", "48H", "3D", "1W", "2W", "1M"]
+                    model: ["24H", "48H", "3D", "1W", "2W", "1M", "3M"]
                     onActivated: {
                         switch(currentText) {
                         case "24H":
@@ -186,8 +187,13 @@ Page {
                         case "1M":
                             searchWindow = 43830
                             break;
+                        case "3M":
+                            searchWindow = 43830 * 3
+                            break;
+
                         }
 
+                        refreshTimer.restart()
                     }
                 }
             }
@@ -217,10 +223,10 @@ Page {
 
             ValueAxis{
                 id: valueAxispH
-                min: 5
+                min: 6
                 max: 9
                 titleText: "pH"
-                color: "#ffffff"
+                color: "#aaaaaa"
                 labelsColor: color
                 gridLineColor: color
                 minorGridLineColor: color
@@ -246,14 +252,12 @@ Page {
                 minorGridLineColor: color
                 titleBrush: color
             }
-
-
             LineSeries {
                 id: tempSeries
                 axisX: valueAxisX
                 axisY: valueAxisY
                 name: "Temperature"
-                color: "green"
+                color: "#0099ff"
                 width: 2
             }
             LineSeries {
@@ -261,7 +265,7 @@ Page {
                 axisX: valueAxisX
                 axisY: valueAxispH
                 name: "pH"
-                color: "red"
+                color: "#ff00ff"
                 width: 2
             }
             LineSeries {
@@ -275,13 +279,16 @@ Page {
 
     }
     Timer {
-        interval: 60*60
+        id: refreshTimer
+        interval: 1000 * 30
         repeat: true
         triggeredOnStart: true
         running: true
         onTriggered: {
-            var data = db.search('select temp,ph,ts from pond_readings ORDER BY ts DESC LIMIT ' + searchWindow)
-            data.reverse();
+            var ts = Math.floor(Date.now() / 1000) - (searchWindow  * 60)
+            var mod = searchWindow < 11000 ? "" : " AND ts % 360 = 0"
+            var data = db.search('select temp,ph,ts from pond_readings WHERE ts >= ' + ts + mod + ' ORDER BY ts ASC LIMIT ' + searchWindow)
+            //data.reverse();
             var min = 100
             var max = 1
             var tphmin = 100
@@ -317,7 +324,6 @@ Page {
                     if (Number(vals[1]) > 5 &&  Number(vals[1]) < 9) {
                         pHSeries.append(Number(i),Number(vals[1]).toFixed(1))
                     }
-                    //console.log(Number(vals[1]).toFixed(1))
                     valueAxisX.min = 0;
                     valueAxisX.max = Number(i) + 1;
                 }
@@ -328,7 +334,6 @@ Page {
             tempHigh = parseInt(max)
             barCategoriesAxis.min = new Date(datemin * 1000)
             barCategoriesAxis.max = new Date(datemax * 1000)
-
         }
     }
 }

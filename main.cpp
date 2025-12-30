@@ -17,6 +17,7 @@
 #include <QHttpServer>
 #include <QTcpServer>
 
+#include "camera.h"
 #include "config.h"
 
 #include "ponddata.h"
@@ -30,8 +31,6 @@
 #include "build_number.h"
 #include "imageprovider.h"
 #include "zwavesocket.h"
-#include "shellyrgbw.h"
-#include "shellyrelay.h"
 #include "dbmanager.h"
 #include "weatherdata.h"
 
@@ -45,13 +44,14 @@ int MY_DEVICE_ID;
 extern QMap<QString, Zone*> g_zoneMap;
 extern QMap<int, Preset*> g_colorPresetMap;
 extern QMap <QString, RPIDevice*> g_deviceList;
-extern QMap <QString, ShellyRGBW*> g_shellyRGBWList;
-extern QMap <QString, ShellyRelay*> g_shellyRelayList;
-
+extern QMap <QString, Shelly*> g_shellyList;
 extern QList <Sensor*> g_sensorList;
+extern QList <Camera> g_cameraList;
+
 // this only exists as we cannot copy qobjects
 QList <WeatherData*> g_weatherList;
 QList <PondData*> g_pondList;
+
 //
 //QMap <int, Light*> g_lightMap;
 //QMap <int, int> g_nodeValues;
@@ -128,8 +128,8 @@ int main(int argc, char *argv[])
         return "OK";
     });
     httpServer.route("/weather", [weatherdata](const QHttpServerRequest &request) {
-        if (g_debug)
-            qDebug() << request;
+        //if (g_debug)
+            //qDebug() << request;
         weatherdata->setHumidity(request.query().queryItemValue("humidity").toInt());
         weatherdata->setTemperature(request.query().queryItemValue("tempf").toFloat());
         weatherdata->setWindSpeed(request.query().queryItemValue("windspeedmph").toFloat());
@@ -140,8 +140,8 @@ int main(int argc, char *argv[])
     httpServer.route("/pond?", [ponddata](const QHttpServerRequest &request) {
         if (g_debug)
             qDebug() << request;
-        ponddata->setPH(request.query().queryItemValue("ph").toFloat());
-        ponddata->setTemperature(request.query().queryItemValue("temp").toFloat());
+        ponddata->setPH(request.query().queryItemValue("ph_v").toFloat());
+        ponddata->setTemperature(request.query().queryItemValue("temp_v").toFloat());
         return "OK";
     });
     auto tcpserver = std::make_unique<QTcpServer>();
@@ -157,6 +157,7 @@ int main(int argc, char *argv[])
 
     ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://10.3.10.2:3000"), true);
     zWaveSock->setObjectName("sock");
+    //delete zWaveSock;
     // Prepare the database now
     g_sqlDb = new DbManager("smah.db");
     g_sqlDb->createTable();
@@ -164,6 +165,7 @@ int main(int argc, char *argv[])
     loadZones();
     loadPresets();
     loadActions();
+    loadScenes();
 
     // headless mode, since qml won't even work without a screen attached
     // setup QML bits
@@ -173,6 +175,7 @@ int main(int argc, char *argv[])
     QVariantList qmlSHellyRGBW;
     QVariantList qmlWeatherData;
     QVariantList qmlPondData;
+    QVariantList qmlCameras;
 
     QQmlEngine engine;
 
@@ -189,6 +192,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<WeatherData>("smah.weatherdata", 1, 0, "WeatherData");
     qmlRegisterType<PondData>("smah.ponddata", 1, 0, "PondData");
     qmlRegisterType<DbManager>("smah.dbmanager", 1, 0, "DbManager");
+    qmlRegisterType<Scene>("smah.scene", 1, 0, "Scene");
+    qmlRegisterType<Camera>("smah.camera", 1, 0, "Camera");
 
     foreach (QString key, g_zoneMap.keys())
     {
@@ -205,7 +210,7 @@ int main(int argc, char *argv[])
         qmlPresets.append(QVariant::fromValue(preset));
     }
 
-    foreach (Shelly *shelly, g_shellyRGBWList)
+    foreach (Shelly *shelly, g_shellyList)
     {
         qmlSHellyRGBW.append(QVariant::fromValue(shelly));
     }
@@ -217,27 +222,12 @@ int main(int argc, char *argv[])
     {
         qmlPondData.append(QVariant::fromValue(ponddata));
     }
+
+    foreach (Camera camera, g_cameraList)
+    {
+        qmlCameras.append(QVariant::fromValue(camera));
+    }
     if (!hideGui) {
-
-        QNetworkAccessManager* manager = new QNetworkAccessManager();
-        QNetworkRequest request;
-        request.setUrl(QUrl("https://api.weather.gov/gridpoints/SEW/107,55/forecast"));
-        QNetworkReply *reply = manager->get(request);
-
-        QAbstractSocket::connect(reply, &QNetworkReply::finished, [=]() {
-
-            if(reply->error() == QNetworkReply::NoError)
-            {
-                QByteArray response = reply->readAll();
-                //qDebug() << response;
-                // do something with the data...
-            }
-            else // handle error
-            {
-                qDebug() << reply->errorString();
-            }
-        });
-
         ImageProvider *imageProvider = new ImageProvider;
         engine.addImageProvider("images", imageProvider);
         engine.rootContext()->setContextProperty("sensorList", QVariant::fromValue(qmlSensors));
@@ -250,10 +240,15 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("b_build", BUILD);
         engine.rootContext()->setContextProperty("weatherdataitems", qmlWeatherData);
         engine.rootContext()->setContextProperty("ponddataitems", qmlPondData);
+        engine.rootContext()->setContextProperty("cameraList", qmlCameras);
         engine.rootContext()->setContextProperty("db", g_sqlDb);
         engine.rootContext()->setContextProperty("applicationDirPath", QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory));
         engine.rootContext()->setContextProperty("idleDetection", &filter);
         engine.rootContext()->setContextProperty("debug", QVariant(g_debug));
+        engine.addImportPath(":/SMAHComponents/");
+        engine.addImportPath(":/ZoneComponents/");
+
+        qDebug() << engine.importPathList();
         QObject::connect(&engine, &QQmlApplicationEngine::quit, &QGuiApplication::quit);
         component.loadUrl(QUrl(QStringLiteral("qrc:/Main.qml")));
         if (component.isReady()) {

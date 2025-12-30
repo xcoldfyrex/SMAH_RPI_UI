@@ -5,21 +5,23 @@
 #include <QString>
 
 #include "config.h"
-#include "shellyrelay.h"
-#include "shellyrgbw.h"
+#include "camera.h"
+#include "qapplication.h"
 #include "zone.h"
 #include "preset.h"
 #include "shelly.h"
 #include "light.h"
 #include "scheduled_actions.h"
+#include "scene.h"
 
 QList <Sensor*> g_sensorList;
 QMap<QString, Zone*> g_zoneMap;
 QMap<int, Preset*> g_colorPresetMap;
 QMap <QString, RPIDevice*> g_deviceList;
-QMap <QString, ShellyRGBW*> g_shellyRGBWList;
+QMap <QString, Shelly*> g_shellyList;
 QMap <int, Light*> g_lightMap;
 QList<ScheduledActions*> g_actionList;
+QList <Camera> g_cameraList;
 
 extern QString MY_HW_ADDR;
 
@@ -65,6 +67,22 @@ void loadZones()
         return;
     QDomElement root = document.firstChildElement();
 
+    /* each camera. */
+    QDomNodeList cameraItems = root.elementsByTagName("camera");
+    for (int a = 0; a < cameraItems.count(); a++) {
+        QDomNode cameraNode = cameraItems.at(a);
+        if (cameraNode.isElement()) {
+            QDomElement cameraElement = cameraNode.toElement();
+            Camera camera = Camera(
+                cameraElement.attribute("name"),
+                cameraElement.attribute("low"),
+                cameraElement.attribute("med"),
+                cameraElement.attribute("high")
+                );
+            g_cameraList.append(camera);
+        }
+    }
+
     /* each shelly. must be done before lights */
     QDomNodeList shellyItems = root.elementsByTagName("shelly");
     for (int a = 0; a < shellyItems.count(); a++) {
@@ -72,25 +90,19 @@ void loadZones()
         if (shellyNode.isElement()) {
             QDomElement shellyElement = shellyNode.toElement();
             QString type = shellyElement.attribute("type");
-            if (type == "rgbw") {
-                ShellyRGBW *shelly = new ShellyRGBW(
-                    shellyElement.attribute("ip"),
-                    shellyElement.attribute("id")
-                    );
-                g_shellyRGBWList.insert(shellyElement.attribute("id"), shelly);
-            }
-            if (type == "relay") {
-                ShellyRelay *shelly = new ShellyRelay(
-                    shellyElement.attribute("ip"),
-                    shellyElement.attribute("id")
-                    );
-                g_shellyRGBWList.insert(shellyElement.attribute("id"), shelly);
-            }
+            Shelly *shelly = new Shelly(
+                shellyElement.attribute("ip"),
+                shellyElement.attribute("id"),
+                type
+                );
+            g_shellyList.insert(shellyElement.attribute("id"), shelly);
+
 
         }
     }
-    QDomNodeList zoneItems = root.elementsByTagName("zone");
+
     /* enumrate zones */
+    QDomNodeList zoneItems = root.elementsByTagName("zone");
     for (int i = 0; i < zoneItems.count(); i++) {
         QDomNode itemnode = zoneItems.at(i);
         if (itemnode.isElement()) {
@@ -98,7 +110,8 @@ void loadZones()
 
             Zone *zone = new Zone(
                 element.attribute("id").toInt(),
-                element.attribute("name")
+                element.attribute("name"),
+                element.attribute("cc")
                 );
             /* each rpi device in the zone */
             QDomNodeList devices = element.elementsByTagName("device");
@@ -121,18 +134,20 @@ void loadZones()
             }
 
 
-
+            while (g_shellyList.last()->getApp() == "")
+            {
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 50000);
+            }
             /* each light in the zone */
             QDomNodeList lightItems = element.elementsByTagName("light");
             for (int a = 0; a < lightItems.count(); a++) {
                 QDomNode lightNode = lightItems.at(a);
                 if (lightNode.isElement()) {
                     QDomElement lightElement = lightNode.toElement();
-                    if (g_shellyRGBWList.contains(lightElement.attribute("device"))) {
+                    if (g_shellyList.contains(lightElement.attribute("device"))) {
                         Light *light = new Light(lightElement.attribute("id").toInt(),
                                                  lightElement.attribute("name"),
-                                                 lightElement.attribute("type").toInt(),
-                                                 g_shellyRGBWList.value(lightElement.attribute("device"))
+                                                 g_shellyList.value(lightElement.attribute("device"))
                                                  );
                         zone->addLight(light);
                         g_lightMap.insert(lightElement.attribute("id").toInt(), light);
@@ -239,4 +254,46 @@ void loadPresets()
         }
     }
     //*/
+}
+
+void loadScenes()
+{
+    QDomDocument document = validateConfigFile("smah_scenes.xml");
+    if (!document.isDocument())
+        return;
+    QDomElement root = document.firstChildElement();
+
+    QDomNodeList groupItems = root.elementsByTagName("scene");
+    for (int a = 0; a < groupItems.count(); a++) {
+        QDomNode groupNode = groupItems.at(a);
+        if (groupNode.isElement()) {
+            QDomElement groupElement = groupNode.toElement();
+            Scene *scene = new Scene(groupElement.attribute("name"));
+            QDomNodeList sceneItems = groupElement.elementsByTagName("item");
+            for (int a = 0; a < sceneItems.count(); a++) {
+                QDomNode actionNode = sceneItems.at(a);
+                if (actionNode.isElement()) {
+                    QDomElement element = actionNode.toElement();
+                    QVariant state = element.attribute("state");
+                    if (state == "on")
+                        state = true;
+                    if (state == "off")
+                        state = false;
+                    QString device = element.attribute("device");
+                    QString value = element.attribute("value");
+                    if (!g_shellyList.contains(device))
+                    {
+                        qWarning() << "Error adding scene items to" << scene->getName() << ", device" << device << "not found";
+                    } else {
+                        scene->addItem(g_shellyList.value(device), value, state.toBool());
+                    }
+                }
+            }
+            for (Zone *zone : g_zoneMap)
+            {
+                if (zone->getName() == groupElement.attribute("zone"))
+                    zone->addScene(scene);
+            }
+        }
+    }
 }

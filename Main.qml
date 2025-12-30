@@ -7,7 +7,7 @@ import "."
 import QtQuick.Window 2.3
 import QtMultimedia 5.12
 
-import "zoneManagement.js" as ZoneCreation
+import "qrc:/SMAHComponents/"
 
 ApplicationWindow {
     id: window
@@ -22,7 +22,9 @@ ApplicationWindow {
     objectName: "toolBar";
     color: "black"
 
-    property var outsideIndex: 0
+    property int outsideIndex: 0
+
+    signal saverActive()
 
     Connections {
         target: idleDetection
@@ -36,6 +38,7 @@ ApplicationWindow {
         id: idleTimer
         interval: 30000; running: true; repeat: false
         onTriggered: {
+            viewer.hidePopup()
             window.showSaver()
         }
     }
@@ -53,33 +56,12 @@ ApplicationWindow {
         drawer.close()
     }
 
-    header: ToolBar {
+    header: Rectangle {
         z: 2000
         id: toolBar
-        padding: 0
-        topPadding: 0
-        contentHeight: toolButton.implicitHeight
-        //SMAHBackground {
-        //    height: parent.height
-        //}
-
-        // header at the very top of all pages
-        Rectangle{
-            //color: "#00000077"
-            gradient: Gradient {
-                GradientStop {
-                    position: 0
-                    color: "#8043454E"
-                }
-                GradientStop {
-                    position: 1
-                    color: "#8043454E"
-                }
-            }
-            border.width: 0
-            anchors.fill: parent
-        }
-
+        height: toolButton.implicitHeight
+        width: parent.width
+        color: "#000000"
         ToolButton {
             id: toolButton
             text: "\u2630"
@@ -126,27 +108,40 @@ ApplicationWindow {
             anchors.fill: parent
             objectName: "mainMenu";
             id: mainMenu
-            /*
-                ItemDelegate {
-                    SMAHLabel {
-                        text: qsTr("Home");
-                        font.pixelSize: 40
-                    }
-                    width: parent.width
-                    height: 40
-                    onClicked: {
-                        mainSwipeView.setCurrentIndex(0)
-                        drawer.close()
-                    }
+            SMAHMenuButton {
+                SMAHLabel {
+                    text: qsTr("Zones");
+                    font.pixelSize: 64
                 }
-                */
+                width: parent.width
+                height: 64
+                onClicked: {
+                    mainSwipeView.setCurrentIndex(3)
+                    drawer.close()
+                }
+            }
+            Label {
+                text: "\t\n"
+            }
+            SMAHMenuButton {
+                SMAHLabel {
+                    text: qsTr("Pond");
+                    font.pixelSize: 64
+                }
+                width: parent.width
+                height: 64
+                onClicked: {
+                    mainSwipeView.setCurrentIndex(4)
+                    drawer.close()
+                }
+            }
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("Weather");
-                    font.pixelSize: 40
+                    font.pixelSize: 64
                 }
                 width: parent.width
-                height: 40
+                height: 64
                 onClicked: {
                     mainSwipeView.setCurrentIndex(0)
                     drawer.close()
@@ -155,10 +150,10 @@ ApplicationWindow {
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("Sensors");
-                    font.pixelSize: 40
+                    font.pixelSize: 64
                 }
                 width: parent.width
-                height: 40
+                height: 64
                 onClicked: {
                     mainSwipeView.setCurrentIndex(1)
                     drawer.close()
@@ -167,10 +162,10 @@ ApplicationWindow {
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("System");
-                    font.pixelSize: 40
+                    font.pixelSize: 64
                 }
                 width: parent.width
-                height: 40
+                height: 64
                 onClicked: {
                     mainSwipeView.setCurrentIndex(2)
                     drawer.close()
@@ -178,40 +173,26 @@ ApplicationWindow {
             }
             SMAHMenuButton {
                 SMAHLabel {
-                    text: qsTr("Up");
-                    font.pixelSize: 40
+                    text: qsTr("Cameras");
+                    font.pixelSize: 64
                 }
                 width: parent.width
-                height: 40
+                height: 64
                 onClicked: {
-                    mainSwipeView.setCurrentIndex(3)
+                    mainSwipeView.setCurrentIndex(5)
                     drawer.close()
                 }
             }
-            SMAHMenuButton {
-                SMAHLabel {
-                    text: qsTr("Pond");
-                    font.pixelSize: 40
-                }
-                width: parent.width
-                height: 40
-                onClicked: {
-                    mainSwipeView.setCurrentIndex(4)
-                    drawer.close()
-                }
-            }
-            Label {
-                text: "\t\n"
-            }
+
         }
     }
-
+    /*
     function changeZone(index)
     {
         mainSwipeView.setCurrentIndex(index)
         drawer.close()
     }
-
+*/
     SwipeView {
         id: mainSwipeView
         anchors.rightMargin: -222
@@ -223,23 +204,13 @@ ApplicationWindow {
         Weather {}
         Sensors {}
         System { window: window }
-        ViewUpstairs { }
-        Pond {}
-        Component.onCompleted: {
-            var offset = mainSwipeView.count
-            for (var i=0; i<zoneList.length; i++) {
-                ZoneCreation.zoneLightList[zoneList[i].getName] = zoneList[i].getLightList
-                var component = Qt.createComponent("ZoneItem.qml")
-                var loadwin = component.createObject(mainMenu, {id: i, zoneName: zoneList[i].getName, drawerID: "zoneDrawer" + i, lights: zoneList[i].getLightList, index: i+offset })
-                var zonecomponent= Qt.createComponent("ZoneOptions.qml")
-                var zoneloadwin = zonecomponent.createObject(mainMenu, {zoneName: zoneList[i].getName, lights: zoneList[i].getLightList} )
-                ZoneCreation.zoneFunctions[zoneList[i].getName] = zoneloadwin
-                mainSwipeView.insertItem(i+offset, zoneloadwin)
-            }
+        ViewUpstairs {
+            id: viewer
+            saverid: screenSaver
         }
-
+        Pond {}
+        Cameras {}
     }
-    //SMAHBackground {}
     ScreenSaver {
         id: screenSaver
         Component.onCompleted: mainSwipeView.setCurrentIndex(2)

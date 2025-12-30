@@ -6,7 +6,7 @@
 class ShellyRGBW : public Shelly
 {
 public:
-    explicit ShellyRGBW(QString ip, QString mDNS, QObject *parent = nullptr);
+    explicit ShellyRGBW(QString ip, QString mDNS, QString type, QObject *parent = nullptr);
 
     void setRGBW(int r, int g, int b, int w);
     void setRGBW(QString color);

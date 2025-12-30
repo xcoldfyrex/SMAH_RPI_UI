@@ -7,10 +7,8 @@
 #include <QLabel>
 #include "preset.h"
 #include "presettask.h"
-#include "shellyrelay.h"
-#include "shellyrgbw.h"
-#include <variant>
-#include <any>
+#include "shelly.h"
+
 #include <QDebug>
 
 const int LIGHT_ZWAVE = 0;
@@ -28,28 +26,24 @@ class Light : public QObject
 
     Q_OBJECT
     Q_PROPERTY(QString getName READ getName CONSTANT)
-    Q_PROPERTY(QString getColor READ getColor WRITE setColor NOTIFY colorChanged)
-    Q_PROPERTY(int getType READ getType CONSTANT)
-    //Q_PROPERTY(int getLevel READ getLevel WRITE setLevel NOTIFY levelChanged)
+    Q_PROPERTY(QString getColor READ getColor WRITE setColor NOTIFY colorChanged())
+    Q_PROPERTY(QString getType READ getType NOTIFY stateChanged())
+    Q_PROPERTY(bool getState READ getState NOTIFY stateChanged())
+    Q_PROPERTY(int getBrightness READ getBrightness NOTIFY stateChanged())
 
 public:
     Q_INVOKABLE
     explicit Light(QObject *parent = nullptr);
-
-    Light(int id, QString name, int type, ShellyRGBW *shellydevice);
-    Light(int id, QString name, int type, ShellyRelay *shellydevice);
-    Light<ShellyRGBW>(int id, QString name, int type, T*);
-
-
-    //Light<ShellyRGBW>(int id, QString name, int type, T*);
-
-    Q_INVOKABLE int getType() const { return this->type ;}
+    Light(int id, QString name, Shelly *shellydevice);
+    Q_INVOKABLE QString getType() { return this->type ;}
+    Q_INVOKABLE bool getState() { return this->shellydevice->getState(); }
+    Q_INVOKABLE int getBrightness() { return this->shellydevice->getBrightness(); }
     QString getName() const { return this->name; }
     QString getColor() { return this->color; }
+    QString getGetDeviceId() { return this->shellydevice->getID(); }
+
     int getId() { return this->id; }
-    QString getGetDeviceId() { return this->shelly->getID(); }
     int getLevel() { return this->level; }
-    bool getState() { return this->level; }
 
     bool wasLastUpdateLocal()
     {
@@ -63,18 +57,23 @@ public:
 
     QList<int> getColorFromPWM();
     void setColorShelly(QString color, bool keepActive);
-    void updateLevel(int level);
+    void setStateShelly(bool state);
+    void setBrightnessShelly(int brightness);
     void sendUpdate();
 
 
 signals:
     bool levelChanged(Light *light);
     bool colorChanged();
+    bool stateChanged();
     void nameChanged();
 
 public slots:
     Q_INVOKABLE void setColor(QString color, bool keepActive);
     Q_INVOKABLE void setColor(QString color);
+    Q_INVOKABLE void setState(bool state) { setStateShelly(state); };
+    Q_INVOKABLE void setBrightness(int brightness) { setBrightnessShelly(brightness); };
+
     Q_INVOKABLE QString getWhiteLevel() { return this->whiteLevel; }
     Q_INVOKABLE void toggleState();
     Q_INVOKABLE void setActivePreset(Preset *preset);
@@ -84,14 +83,13 @@ private slots:
 
 private:
 
-    int id, type;
+    int id;
     int level = 0;
-    bool state = 0;
+    bool state = false;
     bool localUpdate = false;
 
-    QString name;
-    Shelly *shelly;
-    //std::any *shellydevice;
+    QString name, type;
+    Shelly *shellydevice;
     QString whiteLevel = "00";
     QString color = "000000";    
     QList<PresetTask*> *taskList;

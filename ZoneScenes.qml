@@ -1,23 +1,24 @@
-import QtQuick
+import QtQuick 2.0
 import QtQuick.Controls
 import QtQuick.Layouts
-import smah.preset 1.0
-import smah.light 1.0
 import smah.zone
+import smah.light
+import smah.scene
 
-import "SMAHComponents/"
+import "qrc:/SMAHComponents/"
 
 Item {
-    property var device: "_DEF"
+    id: sceneControlPage
+    property var presetPages: ({})
+    property var pickerPages: ({})
+    property var lights_
+    property Zone zone_
     property var parentObject
-    property Zone zone
-    id: presetPage
-    width: parent.width
-    height: parent.height
-
+    implicitWidth: parent.width
+    implicitHeight: parent.height
     ListView {
         ScrollBar.vertical: ScrollBar {}
-        id: presetListView
+        id: sceneListView
         anchors{
             left: parent.left
             right: parent.right
@@ -46,36 +47,24 @@ Item {
                     width: parent.width
                     Text {
                         color: "#fefdfd"
-                        text: presetList[index].name
+                        text: zone_.getSceneList[index].name
                         font.pixelSize: 32
                         width: 300
-
-                    }
-                    Text {
-                        color: "#636363"
-                        text: presetList[index].hex
-                        font.pixelSize: 32
-                        width: 300
-                    }
-
-                    Image {
-                        source: "image://images/" + index
-                        Layout.alignment: Qt.AlignRight
                     }
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        presetListView.currentIndex = index
-                        device.setActivePreset(presetList[index])
+                        sceneListView.currentIndex = index
+                        zone_.getSceneList[index].activate()
                     }
                 }
             }
         }
 
         Component.onCompleted: {
-            presetListView.model = presetList
+            sceneListView.model = zone_.getSceneList
         }
     }
 
@@ -83,13 +72,13 @@ Item {
         id: closeb
         text: "Close"
         onClicked: {
-            presetPage.visible = false
-            element.text = zone.getName
+            sceneControlPage.visible = false
+            element.text = zone_.getName
             parentObject.visible = true
         }
         anchors{
-            right: presetListView.right
-            top: presetListView.top
+            right: sceneListView.right
+            top: sceneListView.top
         }
         anchors.leftMargin: 100
     }

@@ -13,6 +13,15 @@ Label {
         id: crescent;
         source: "file:" + applicationDirPath + ".smah/assets/Crescent-Regular.ttf"
     }
+    FontLoader {
+        id: dosis;
+        source: "file:" + applicationDirPath + ".smah/assets/Dosis-Light.ttf"
+    }
+    FontLoader {
+        id: tahoma;
+        source: "file:" + applicationDirPath + ".smah/assets/Tahoma.ttf"
+    }
+
     color: "#d4d4d4"
-    font.family: crescent.name
+    font.family: tahoma.name
 }

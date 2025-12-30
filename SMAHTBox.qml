@@ -1,8 +1,10 @@
-import QtQuick 2.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 import QtQuick.Effects
+import Qt5Compat.GraphicalEffects
+
 Item {
-    //anchors.horizontalCenter: parent.horizontalCenter
-    //anchors.verticalCenter: parent.verticalCenter
     implicitWidth: window.width / 1.1
     implicitHeight: window.height / 1.1
     x: window.width / 2 - width / 2
@@ -19,11 +21,16 @@ Item {
         radius: 50
         anchors.margins: 100
     }
-    MultiEffect {
-        source: container
-        anchors.fill: parent
-        blurEnabled: true
-        blurMax: 96
-        blur: 1.0
-    }
 }
+
+/*
+    background:
+        GaussianBlur
+    {
+        id: theBlur;
+        visible: true;
+        anchors.fill: parent;
+        source: tbox.parent;
+        radius: 16
+        samples: 72
+    }

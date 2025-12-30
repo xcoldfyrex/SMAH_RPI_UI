@@ -5,12 +5,11 @@ import QtQml.Models 2.2
 
 import "suncalc.js" as SC
 
+import "SMAHComponents/"
+
 Item {
     id: weatherSunCalc
     width: parent.width
-    //parent: frame
-    //anchors.bottom: parent.anchors.
-    //height: parent.height
     anchors.bottom: weatherView.bottom
 
     ListModel {

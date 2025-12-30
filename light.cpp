@@ -1,7 +1,7 @@
 #include "light.h"
-#include <QDebug>
+#include "qapplication.h"
+#include "shelly.h"
 
-//extern QMap <QString, RPIDevice> g_deviceList;
 extern QString MY_HW_ADDR;
 extern int MY_DEVICE_ID;
 
@@ -11,26 +11,26 @@ Light::Light(QObject *parent) : QObject(parent)
 {
 }
 
-Light::Light(int id, QString name, int type, Shelly *shellydevice)
-{
-    //ShellyRGBW dev = (ShellyRGBW) std::any_cast<ShellyRGBW>(shellydevice);
-    //std::any_cast<ShellyRGBW&>(this->shellydevice);
-    this->id = id;
-    this->name = name;
-    this->type = type;
-    this->shelly = shellydevice;
-    this->taskList = new QList<PresetTask*>();
-}
-/*
-Light::Light(int id, QString name, int type, ShellyRelay *shellydevice)
+Light::Light(int id, QString name, Shelly *shellydevice)
 {
     this->id = id;
     this->name = name;
-    this->type = type;
     this->shellydevice = shellydevice;
+    while (this->shellydevice->getApp() == "" && (!this->shellydevice->isReady()))
+    {
+        QTime dieTime = QTime::currentTime().addSecs(1);
+        while (QTime::currentTime() < dieTime) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        }
+        qDebug() << this->name << "slow to respond, polling..";
+
+    }
+    this->type = shellydevice->getApp();
+    //this->state = shellydevice.
+    //qDebug() << this->type << this->name;
+
     this->taskList = new QList<PresetTask*>();
 }
-*/
 
 //toggle a binary device
 // TODO 10-20-2024 - probably unused now
@@ -62,26 +62,6 @@ void Light::setColor(QString color, bool keepActive)
     emit colorChanged();
 }
 
-// callback for when something happened
-void Light::updateLevel(int level)
-{
-    this->level = level;
-    QString text = "OFF";
-    if (this->type == LIGHT_ZWAVE)
-    {
-        if (level == 1)
-            text = "ON";
-        //this->statusLabel = text;
-    }
-
-    if (this->type == LIGHT_ZWAVE_DIMMABLE)
-    {
-        text = QString::number(level) + '%';
-        //this->statusLabel = text;
-    }
-}
-
-
 // from an active preset - next color
 void Light::colorStepAction(QColor color)
 {
@@ -106,14 +86,11 @@ void Light::setColorShelly(QString color, bool keepActive = true)
     short g = color.mid(2,2).toShort(&ok, 16);
     short b = color.mid(4,2).toShort(&ok, 16);
     short w = color.mid(6,2).toShort(&ok, 16);
-    shelly->setRGBW(r,g,b,w);
+    shellydevice->setRGBW(r,g,b,w);
 }
-
-
 
 void Light::setActivePreset(Preset *preset)
 {
-    //gColorPresetMap.value(value)
     // a new preset and it's local. kill any tasks
     if (this->taskList->length() > 0){
         PresetTask *toTerm;
@@ -138,3 +115,10 @@ void Light::setActivePreset(Preset *preset)
     }
 }
 
+void Light::setStateShelly(bool state) {
+    shellydevice->setState(state);
+}
+
+void Light::setBrightnessShelly(int brightness) {
+    shellydevice->setBrightness(brightness);
+}

@@ -5,9 +5,7 @@ import smah.sensor 1.0
 import smah.shellyrgbw
 
 import "."
-
-//test
-//import QtQuick.Controls.Styles 1.4
+import "SMAHComponents/"
 
 Page {
     id: page
@@ -89,23 +87,18 @@ Page {
                 font.pixelSize: Style.fontHeaderSize
             }
         }
-        GridLayout {
-            id: shellyGridLayout
+        ListView {
+            clip: true
+            model: shellyRGBWList
             anchors.top: header2.bottom
-            columns: 6
-            rows: 10
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            property var shellytitles: [ "Device ID", "HOST", "IP", "Power", "Current", "Temperature" ]
+            width: parent.width
+            anchors.bottom: quit.top
+            ScrollBar.vertical: ScrollBar {}
+            property var shellytitles: [ "Device ID", "Host", "Power", "Current", "Temp.", "Type", "FW", "Model", "Name" ]
 
             Repeater {
-                model: shellyGridLayout.shellytitles
+                model: shellyRGBWList.shellytitles
                 SMAHLabel {
-                    Layout.row: 1
-                    Layout.column: index
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
                     text: modelData
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
@@ -114,100 +107,117 @@ Page {
                     color: "#9c806e"
                 }
             }
+            delegate: Component {
+                Item {
+                    height: 35
+                    width: 300
+                    Row {
+                        width: parent.width
+                        SMAHLabel {
+                            text: shellyRGBWList[index].id
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 300
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].host
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 350
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].updated >= 5000 ? (shellyRGBWList[index].app === "PlusWallDimmer" ? "" : shellyRGBWList[index].message["apower"] + "W")  : "Waiting.."
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 100
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].updated >= 5000 ? (shellyRGBWList[index].app === "PlusWallDimmer" ? "" : shellyRGBWList[index].message["current"] + "A" )  : "Waiting.."
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 100
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].updated >= 5000 ? (shellyRGBWList[index].app === "PlusWallDimmer" ? "" : shellyRGBWList[index].message["temperature"]["tF"]+ "F")  : "Waiting.."
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 100
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].app
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 200
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].ver
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 100
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].model
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 200
+                        }
+                        SMAHLabel {
+                            text: shellyRGBWList[index].name
+                            leftPadding: 5
+                            verticalAlignment: Text.AlignTop
+                            horizontalAlignment: Text.AlignLeft
+                            font.pixelSize: Style.fontCellSize
+                            width: 100
+                        }
+                    }
+                }
+                //anchors.fill: parent
+                //contentHeight: shellyGridLayout.height
+                //contentWidth: shellyGridLayout.width
+                /*Row {
+                id: shellyGridLayout
 
-            Repeater {
-                model: shellyRGBWList
-                SMAHLabel {
-                    Layout.column: 0
-                    Layout.row: index + 2
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    text: shellyRGBWList[index].id
-                    leftPadding: 5
-                    verticalAlignment: Text.AlignTop
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: Style.fontCellSize
-                }
-            }
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            Repeater {
-                model: shellyRGBWList
-                SMAHLabel {
-                    Layout.column: 1
-                    Layout.row: index + 2
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    text: shellyRGBWList[index].ip
-                    leftPadding: 5
-                    verticalAlignment: Text.AlignTop
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: Style.fontCellSize
+                property var shellytitles: [ "Device ID", "Host", "Power", "Current", "Temp.", "Type", "FW", "Model", "Name" ]
+                /*
+                Repeater {
+                    model: shellyGridLayout.shellytitles
+                    SMAHLabel {
+                        Layout.row: 1
+                        Layout.column: index
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        text: modelData
+                        leftPadding: 5
+                        verticalAlignment: Text.AlignTop
+                        horizontalAlignment: Text.AlignLeft
+                        font.pixelSize: Style.fontColumnHeaderSize
+                        color: "#9c806e"
+                    }
                 }
-            }
 
-            Repeater {
-                model: shellyRGBWList
-                SMAHLabel {
-                    Layout.column: 2
-                    Layout.row: index + 2
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    text: shellyRGBWList[index].host
-                    leftPadding: 5
-                    verticalAlignment: Text.AlignTop
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: Style.fontCellSize
-                }
-            }
 
-            Repeater {
-                model: shellyRGBWList
-                SMAHLabel {
-                    Layout.column: 3
-                    Layout.row: index + 2
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    text: shellyRGBWList[index].updated >= 1000 ? shellyRGBWList[index].message["apower"] + "W" : "-"
-                    leftPadding: 5
-                    verticalAlignment: Text.AlignTop
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: Style.fontCellSize
-                }
-            }
 
-            Repeater {
-                model: shellyRGBWList
-                SMAHLabel {
-                    Layout.column: 4
-                    Layout.row: index + 2
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    text: shellyRGBWList[index].updated >= 1000 ? shellyRGBWList[index].message["current"] + "A" : "-"
-                    leftPadding: 5
-                    verticalAlignment: Text.AlignTop
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: Style.fontCellSize
-                }
-            }
-            Repeater {
-                model: shellyRGBWList
-                SMAHLabel {
-                    Layout.column: 5
-                    Layout.row: index + 2
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    text: shellyRGBWList[index].updated >= 1000 ? shellyRGBWList[index].message["temperature"]["tF"] + "F" : "-"
-                    leftPadding: 5
-                    verticalAlignment: Text.AlignTop
-                    horizontalAlignment: Text.AlignLeft
-                    font.pixelSize: Style.fontCellSize
-                }
-            }
-            Timer {
-                interval: 100; running: true; repeat: true;
-                onTriggered: {
-                    //console.log(shellyRGBWList[0].message["temperature"]["tF"])
-                }
+                }*/
+
             }
         }
 
@@ -220,10 +230,3 @@ Page {
         }
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}D{i:7;anchors_y:221}D{i:11;anchors_x:8;anchors_y:14}
-D{i:10;anchors_x:5}D{i:13;anchors_x:8;anchors_y:14}D{i:12;anchors_x:5}
-}
-##^##*/

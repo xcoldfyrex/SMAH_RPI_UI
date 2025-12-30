@@ -11,22 +11,28 @@
 #include "rpidevice.h"
 #include "light.h"
 #include "sensor.h"
+#include "scene.h"
 
 typedef QMap<QString, Sensor*> SensorListMap;
 
 Q_DECLARE_METATYPE(SensorListMap)
 
+
 class Zone : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString getName READ getName);
-    Q_PROPERTY(QVariantList getLightList READ getLightList);
-    Q_PROPERTY(SensorListMap getSensorList READ getSensorList);
+    Q_PROPERTY(QString getName READ getName CONSTANT);
+    Q_PROPERTY(QString getCC READ getCC CONSTANT);
+    Q_PROPERTY(QVariantList getLightList READ getLightList CONSTANT);
+    Q_PROPERTY(SensorListMap getSensorList READ getSensorList CONSTANT);
+    Q_PROPERTY(QVariantList getSceneList READ getSceneList CONSTANT);
 
 
 public:
     Q_INVOKABLE
-    Zone(int id, QString name);
+        Q_INVOKABLE void addScene(Scene *scene);
+
+    Zone(int id, QString name, QString cc);
     Zone();
     virtual ~Zone() {}
     int getId() const { return this->id; }
@@ -46,19 +52,27 @@ public:
     }
 
     QString getName() const { return this->name; }
+    QString getCC() const { return this->cc.toUpper(); }
+
+    /* these are all const.
+     * refeacotr if we want to dynamic load */
+
     QMap<QString, RPIDevice*> getDeviceList() const { return this->deviceList; }
     QMap<QString, Sensor*> getSensorList() const { return this->sensorList; }
+
+    QVariantList getSceneList() const { return this->sceneList; }
     QVariantList getLightList() const { return this->zoneLightList; }
     Light *getLightById(int id);
     Sensor *getSensorById(int id);
-    //QList<QWidget*> pageStack;
     void addDevice(RPIDevice *device);
 
 private:
     int id;
     QString name;
+    QString cc = "FF";
     QMap <QString, RPIDevice*> deviceList;
     QMap <QString, Sensor*> sensorList;
+    QVariantList sceneList;
     QVariantList zoneLightList;
 };
 

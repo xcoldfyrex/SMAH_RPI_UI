@@ -6,7 +6,7 @@
 class ShellyRelay : public Shelly
 {
 public:
-    explicit ShellyRelay(QString ip, QString mDNS, QObject *parent);
+    explicit ShellyRelay(QString ip, QString mDNS, QString type, QObject *parent);
 };
 
 #endif // SHELLYRELAY_H

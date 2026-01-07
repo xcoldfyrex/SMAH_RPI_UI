@@ -3,27 +3,30 @@
 
 #include <QtQuick/QQuickImageProvider>
 #include <QImage>
-#include <QMap>
 #include <preset.h>
-#include <QDebug>
 
-extern QMap<int, Preset*> g_colorPresetMap;
 
 class ImageProvider : public QQuickImageProvider
 
 {
 public:
-    explicit ImageProvider() : QQuickImageProvider(QQuickImageProvider::Image)
+    explicit ImageProvider(QList<Preset*> presets) : QQuickImageProvider(QQuickImageProvider::Image)
     {
-
+        this->presets = presets;
     }
 
     virtual QImage requestImage(const QString &id, QSize *size __attribute__((unused)), const QSize& requestedSize __attribute__((unused)))
     {
         QString rsrcid = ":/" + id;
-        Preset *preset = g_colorPresetMap.value(id.toInt()+1);
+        Preset *preset = presets.value(id.toInt());
+        if (preset == NULL) {
+            qCritical() << "Tried to render a preset image but source object was NULL! Returning dummy image.";
+            return QImage(256, 30, QImage::Format_RGB888);
+        }
         return preset->drawPreview();
     }
+
+    QList<Preset*> presets;
 };
 
 #endif // IMAGEPROVIDER_H

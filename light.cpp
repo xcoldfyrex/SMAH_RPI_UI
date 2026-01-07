@@ -1,5 +1,7 @@
-#include "light.h"
+#include <QDebug>
 #include "qapplication.h"
+
+#include "light.h"
 #include "shelly.h"
 
 extern QString MY_HW_ADDR;
@@ -11,9 +13,8 @@ Light::Light(QObject *parent) : QObject(parent)
 {
 }
 
-Light::Light(int id, QString name, Shelly *shellydevice)
+Light::Light(QString name, Shelly *shellydevice)
 {
-    this->id = id;
     this->name = name;
     this->shellydevice = shellydevice;
     while (this->shellydevice->getApp() == "" && (!this->shellydevice->isReady()))
@@ -26,26 +27,16 @@ Light::Light(int id, QString name, Shelly *shellydevice)
 
     }
     this->type = shellydevice->getApp();
-    //this->state = shellydevice.
-    //qDebug() << this->type << this->name;
 
     this->taskList = new QList<PresetTask*>();
+    QObject::connect(shellydevice, &Shelly::messageRecv, this, &Light::shellyUpdated);
 }
 
-//toggle a binary device
-// TODO 10-20-2024 - probably unused now
+
 void Light::toggleState()
 {
-    //do shit to send to network
-    //QJsonObject jsonPayload;
-    //jsonPayload["id"] = this->id;
-    //ClientSocket *sock = determineZone(this);
-    //if (!sock) {
-    // pray and broadcast. need to send to proper home_id
-    //tcpServer.broadcastMessageJSON("TOGGLE", jsonPayload);
+    // FIXME
     return;
-    //}
-    //sock->prepareToSend("TOGGLE", jsonPayload);
 }
 
 //set an RGBW device

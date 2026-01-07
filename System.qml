@@ -1,8 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.13
-import smah.sensor 1.0
 import smah.shellyrgbw
+import smah.objectfactory
 
 import "."
 import "SMAHComponents/"
@@ -34,8 +34,8 @@ Page {
         GridLayout {
             id: grid
             columnSpacing: 10
-            property var titles: [ "Build Number", "Build Date", "IP", "MAC", "Z-Wave Socket",  ]
-            property var values: [ b_build, b_date, net_ip, net_mac, "X" ]
+            property var titles: [ "Build Number", "Build Date", "IP", "Z-Wave Socket",  ]
+            property var values: [ b_build, b_date, net_ip, "X" ]
             anchors.leftMargin: 5
             anchors.top: header1.bottom
             anchors.topMargin: 16
@@ -88,16 +88,15 @@ Page {
             }
         }
         ListView {
+            id: listView
             clip: true
-            model: shellyRGBWList
+            model: factory.getShellyObjects()
             anchors.top: header2.bottom
             width: parent.width
             anchors.bottom: quit.top
             ScrollBar.vertical: ScrollBar {}
-            property var shellytitles: [ "Device ID", "Host", "Power", "Current", "Temp.", "Type", "FW", "Model", "Name" ]
-
             Repeater {
-                model: shellyRGBWList.shellytitles
+                model: [ "Device ID", "Host", "Power", "Current", "Temp.", "Type", "FW", "Model", "Name" ]
                 SMAHLabel {
                     text: modelData
                     leftPadding: 5
@@ -114,7 +113,7 @@ Page {
                     Row {
                         width: parent.width
                         SMAHLabel {
-                            text: shellyRGBWList[index].id
+                            text: factory.getShellyObjects()[index].id
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -122,7 +121,7 @@ Page {
                             width: 300
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].host
+                            text: factory.getShellyObjects()[index].host
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -130,7 +129,7 @@ Page {
                             width: 350
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].updated >= 5000 ? (shellyRGBWList[index].app === "PlusWallDimmer" ? "" : shellyRGBWList[index].message["apower"] + "W")  : "Waiting.."
+                            text: factory.getShellyObjects()[index].updated >= 5000 ? (factory.getShellyObjects()[index].app === "PlusWallDimmer" ? "" : factory.getShellyObjects()[index].message["apower"] + "W")  : "Waiting.."
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -138,7 +137,7 @@ Page {
                             width: 100
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].updated >= 5000 ? (shellyRGBWList[index].app === "PlusWallDimmer" ? "" : shellyRGBWList[index].message["current"] + "A" )  : "Waiting.."
+                            text: factory.getShellyObjects()[index].updated >= 5000 ? (factory.getShellyObjects()[index].app === "PlusWallDimmer" ? "" : factory.getShellyObjects()[index].message["current"] + "A" )  : "Waiting.."
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -146,7 +145,7 @@ Page {
                             width: 100
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].updated >= 5000 ? (shellyRGBWList[index].app === "PlusWallDimmer" ? "" : shellyRGBWList[index].message["temperature"]["tF"]+ "F")  : "Waiting.."
+                            text: factory.getShellyObjects()[index].updated >= 5000 ? (factory.getShellyObjects()[index].app === "PlusWallDimmer" ? "" : factory.getShellyObjects()[index].message["temperature"]["tF"]+ "F")  : "Waiting.."
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -154,7 +153,7 @@ Page {
                             width: 100
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].app
+                            text: factory.getShellyObjects()[index].app
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -162,7 +161,7 @@ Page {
                             width: 200
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].ver
+                            text: factory.getShellyObjects()[index].ver
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -170,7 +169,7 @@ Page {
                             width: 100
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].model
+                            text: factory.getShellyObjects()[index].model
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft
@@ -178,7 +177,7 @@ Page {
                             width: 200
                         }
                         SMAHLabel {
-                            text: shellyRGBWList[index].name
+                            text: factory.getShellyObjects()[index].name
                             leftPadding: 5
                             verticalAlignment: Text.AlignTop
                             horizontalAlignment: Text.AlignLeft

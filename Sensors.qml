@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.13
 import smah.sensor
+import smah.objectfactory
+
 import "."
 import "SMAHComponents/"
 
@@ -50,13 +52,13 @@ Page {
             }
 
             Repeater {
-                model: sensorList
+                model: factory.getSensorObjects()
                 SMAHLabel {
                     Layout.column: 0
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    text: sensorList[index].name
+                    text: factory.getSensorObjects()[index].name
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
@@ -65,13 +67,13 @@ Page {
             }
 
             Repeater {
-                model: sensorList
+                model: factory.getSensorObjects()
                 SMAHLabel {
                     Layout.column: 1
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    text: sensorList[index].updated >= 1000 ? sensorList[index].temperature.toFixed(1) : "-"
+                    text: factory.getSensorObjects()[index].updated >= 1000 ? factory.getSensorObjects()[index].temperature.toFixed(1) : "-"
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
@@ -80,13 +82,13 @@ Page {
             }
 
             Repeater {
-                model: sensorList
+                model: factory.getSensorObjects()
                 SMAHLabel {
                     Layout.column: 2
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    text: sensorList[index].updated >= 1000 ? sensorList[index].rh + "%" : "-"
+                    text: factory.getSensorObjects()[index].updated >= 1000 ? factory.getSensorObjects()[index].rh + "%" : "-"
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
@@ -95,13 +97,13 @@ Page {
             }
 
             Repeater {
-                model: sensorList
+                model: factory.getSensorObjects()
                 SMAHLabel {
                     Layout.column: 3
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    text: sensorList[index].updated >= 1000 ? sensorList[index].lux : "-"
+                    text: factory.getSensorObjects()[index].updated >= 1000 ? factory.getSensorObjects()[index].lux : "-"
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
@@ -110,13 +112,13 @@ Page {
             }
 
             Repeater {
-                model: sensorList
+                model: factory.getSensorObjects()
                 SMAHLabel {
                     Layout.column: 4
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    text: sensorList[index].updated >= 1000 ? sensorList[index].uv : "-"
+                    text: factory.getSensorObjects()[index].updated >= 1000 ? factory.getSensorObjects()[index].uv : "-"
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft
@@ -124,13 +126,13 @@ Page {
                 }
             }
             Repeater {
-                model: sensorList
+                model: factory.getSensorObjects()
                 SMAHLabel {
                     Layout.column: 5
                     Layout.row: index + 2
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    text: sensorList[index].updated >= 1000 ? Qt.formatDateTime(new Date(sensorList[index].updated * 1000), "MM/dd/yyyy hh:mm:ss") : "-"
+                    text: factory.getSensorObjects()[index].updated >= 1000 ? Qt.formatDateTime(new Date(factory.getSensorObjects()[index].updated * 1000), "MM/dd/yyyy hh:mm:ss") : "-"
                     leftPadding: 5
                     verticalAlignment: Text.AlignTop
                     horizontalAlignment: Text.AlignLeft

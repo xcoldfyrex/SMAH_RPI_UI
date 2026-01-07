@@ -7,16 +7,16 @@
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QCoreApplication>
-extern QList <Sensor*> g_sensorList;
 QT_USE_NAMESPACE
 
-ZWaveSocket::ZWaveSocket(const QUrl &url, bool debug, QObject *parent) :
+ZWaveSocket::ZWaveSocket(const QUrl &url, bool debug, QList<Sensor*> sensorList, QObject *parent) :
     QObject(parent),
     m_debug(debug)
 {
     connect(&m_webSocket, &QWebSocket::connected, this, &ZWaveSocket::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &ZWaveSocket::onClosed);
     this->url = url;
+    this->sensorList = sensorList;
     doConnect();
 }
 
@@ -44,13 +44,14 @@ void ZWaveSocket::onClosed()
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     doConnect();
 }
+
 void ZWaveSocket::onTextMessageReceived(QString message)
 {
     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
     QJsonValue event = doc["event"];
     if (event["event"] == "value updated" && event["source"] == "node") {
         QJsonValue args = event["args"];
-        foreach (Sensor *sensor, g_sensorList) {
+        foreach (Sensor *sensor, this->sensorList) {
             if (event["nodeId"] == sensor->getNodeId() ) {
                 if (args["commandClass"] == 49) {
                     if (args["propertyName"] == "Humidity")

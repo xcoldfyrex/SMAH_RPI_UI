@@ -18,8 +18,8 @@ class Preset : public QObject
 
 public:
     Q_INVOKABLE
-    Preset(QString name, short id, bool dynamic = false, int fade = 0, int delay = 10, int type = 1);
-    Preset();
+    Preset(QString name, bool dynamic = false, int fade = 0, int delay = 10, int type = 1);
+    Preset(QString name, QString code);
     class Step {
     public:
         void getHSV();
@@ -40,8 +40,6 @@ public:
     void getStep(int key);
     void addOffset(Offset *offset, int key);
     void getOffset(int key);
-    int getID();
-    short id;
     int delay;
     int fade;
     int r;

@@ -23,7 +23,6 @@ QMap <int, Light*> g_lightMap;
 QList<ScheduledActions*> g_actionList;
 QList <Camera> g_cameraList;
 
-extern QString MY_HW_ADDR;
 
 QDomDocument validateConfigFile(QString config)
 {
@@ -108,30 +107,7 @@ void loadZones()
         if (itemnode.isElement()) {
             QDomElement element = itemnode.toElement();
 
-            Zone *zone = new Zone(
-                element.attribute("id").toInt(),
-                element.attribute("name"),
-                element.attribute("cc")
-                );
-            /* each rpi device in the zone */
-            QDomNodeList devices = element.elementsByTagName("device");
-            for (int a = 0; a < devices.count(); a++) {
-                QDomNode deviceNode = devices.at(a);
-                if (deviceNode.isElement()) {
-                    QDomElement powerElement = deviceNode.toElement();
-                    RPIDevice *rpidevice = new RPIDevice(
-                        powerElement.attribute("id").toInt(),
-                        powerElement.attribute("name"),
-                        powerElement.attribute("hw")
-                        );
-                    zone->addDevice(rpidevice);
-                    g_deviceList.insert(powerElement.attribute("hw"),rpidevice);
-                    if (rpidevice->getHwAddress() == MY_HW_ADDR)
-                        /* probably unused now from home_id */
-                        MY_DEVICE_ID = rpidevice->getId();
-                    //zone->powerControls.insert(powerElement.attribute("id").toInt(), powerElement.attribute("name"));
-                }
-            }
+
 
 
             while (g_shellyList.last()->getApp() == "")
@@ -139,40 +115,9 @@ void loadZones()
                 QCoreApplication::processEvents(QEventLoop::AllEvents, 50000);
             }
             /* each light in the zone */
-            QDomNodeList lightItems = element.elementsByTagName("light");
-            for (int a = 0; a < lightItems.count(); a++) {
-                QDomNode lightNode = lightItems.at(a);
-                if (lightNode.isElement()) {
-                    QDomElement lightElement = lightNode.toElement();
-                    if (g_shellyList.contains(lightElement.attribute("device"))) {
-                        Light *light = new Light(lightElement.attribute("id").toInt(),
-                                                 lightElement.attribute("name"),
-                                                 g_shellyList.value(lightElement.attribute("device"))
-                                                 );
-                        zone->addLight(light);
-                        g_lightMap.insert(lightElement.attribute("id").toInt(), light);
-                    } else {
-                        qWarning() << "Failed to get shelly object from" << lightElement.attribute("device");
-                    }
-                }
-            }
 
-            /* each sensor device in the zone */
-            QDomNodeList sensors = element.elementsByTagName("sensor");
-            for (int a = 0; a < sensors.count(); a++) {
-                QDomNode sensorNode = sensors.at(a);
-                if (sensorNode.isElement()) {
-                    QDomElement sensorElement = sensorNode.toElement();
-                    Sensor *sensor = new Sensor(
-                        sensorElement.attribute("name"),
-                        sensorElement.attribute("id").toShort(),
-                        sensorElement.attribute("farenheit").toShort()
-                        );
-                    zone->addSensor(sensor);
-                    g_sensorList.append(sensor);
-                }
-            }
-            g_zoneMap.insert(zone->getName(),zone);
+
+
         }
     }
 }
@@ -189,6 +134,7 @@ void loadPresets()
     QDomNodeList dynamicItems = root.elementsByTagName("dynamic");
 
     //load static presets
+    /*
     for (int i = 0; i < staticItems.count(); i++) {
         QDomNode itemnode = staticItems.at(i);
         if (itemnode.isElement()) {

@@ -1,18 +1,19 @@
 #include "preset.h"
 
-Preset::Preset(QString name, short id, bool dynamic, int fade, int delay, int type)
+Preset::Preset(QString name, bool dynamic, int fade, int delay, int type)
 {
     this->name = name;
     this->dynamic = dynamic;
-    this->id = id;
     this->fade = fade;
     this->delay = delay;
     this->type = type;
 }
 
-Preset::Preset()
+Preset::Preset(QString name, QString color)
 {
-
+    this->name = name;
+    this->dynamic = false;
+    this->setColor(color);
 }
 
 QMap<int, Preset::Step *> Preset::getSteps()
@@ -53,11 +54,6 @@ void Preset::addStep(Step *step, int key)
 void Preset::addOffset(Offset *offset, int key)
 {
     this->offsetMap.insert(key,offset);
-}
-
-int Preset::getID()
-{
-    return this->id;
 }
 
 int Preset::getDelay()

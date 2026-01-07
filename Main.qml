@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import smah.light 1.0
-import smah.zone 1.0
 import smah.sensor 1.0
 import "."
 import QtQuick.Window 2.3
@@ -99,11 +98,7 @@ ApplicationWindow {
         background: Rectangle{
             color: "#aa000000"
         }
-        //SMAHMenu {
-        //id: frame
-        //width: drawer.width
-        //height: drawer.height
-        //color: "#6608111d"
+
         Column {
             anchors.fill: parent
             objectName: "mainMenu";
@@ -183,16 +178,21 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
-
+            SMAHMenuButton {
+                SMAHLabel {
+                    text: qsTr("Media");
+                    font.pixelSize: 64
+                }
+                width: parent.width
+                height: 64
+                onClicked: {
+                    mainSwipeView.setCurrentIndex(6)
+                    drawer.close()
+                }
+            }
         }
     }
-    /*
-    function changeZone(index)
-    {
-        mainSwipeView.setCurrentIndex(index)
-        drawer.close()
-    }
-*/
+
     SwipeView {
         id: mainSwipeView
         anchors.rightMargin: -222
@@ -210,6 +210,7 @@ ApplicationWindow {
         }
         Pond {}
         Cameras {}
+        Media {}
     }
     ScreenSaver {
         id: screenSaver

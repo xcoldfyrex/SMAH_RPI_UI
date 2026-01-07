@@ -17,7 +17,9 @@ TEMPLATE = app
 SOURCES += main.cpp\
     camera.cpp \
     config.cpp \
+    configuration.cpp \
     dbmanager.cpp \
+    objectfactory.cpp \
     ponddata.cpp \
     rpidevice.cpp \
     scene.cpp \
@@ -39,8 +41,10 @@ SOURCES += main.cpp\
 HEADERS  += \
     camera.h \
     config.h \
+    configuration.h \
     dbmanager.h \
     imageprovider.h \
+    objectfactory.h \
     ponddata.h \
     rpidevice.h \
     scene.h \

@@ -32,11 +32,9 @@ public:
     Q_INVOKABLE
         Q_INVOKABLE void addScene(Scene *scene);
 
-    Zone(int id, QString name, QString cc);
-    Zone();
+    Zone(QString name, QString cc);
     virtual ~Zone() {}
-    int getId() const { return this->id; }
-    void setId(int id) { this->id = id; }
+
     void setName(QString name)
     {
         this->name = name;
@@ -62,12 +60,11 @@ public:
 
     QVariantList getSceneList() const { return this->sceneList; }
     QVariantList getLightList() const { return this->zoneLightList; }
-    Light *getLightById(int id);
+    //Light *getLightById(int id);
     Sensor *getSensorById(int id);
     void addDevice(RPIDevice *device);
 
 private:
-    int id;
     QString name;
     QString cc = "FF";
     QMap <QString, RPIDevice*> deviceList;

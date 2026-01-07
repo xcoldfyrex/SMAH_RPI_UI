@@ -1,11 +1,11 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import smah.preset 1.0
-import smah.light 1.0
+import smah.preset
 import smah.zone
+import smah.objectfactory
 
-import "SMAHComponents/"
+import "qrc:/SMAHComponents/"
 
 Item {
     property var device: "_DEF"
@@ -16,16 +16,18 @@ Item {
     height: parent.height
 
     ListView {
-        ScrollBar.vertical: ScrollBar {}
+        ScrollBar.vertical: SMAHScrollBar { }
         id: presetListView
         anchors{
+            top: parent.top
             left: parent.left
             right: parent.right
+            bottom: closeb.top
         }
-        height: parent.height
+        implicitHeight: 500 //parent.height
         boundsBehavior: Flickable.StopAtBounds
         Layout.fillWidth: true
-        Layout.fillHeight: false
+        Layout.fillHeight: true
         highlightMoveDuration: 200
         highlightMoveVelocity: -1
         clip: true
@@ -46,14 +48,14 @@ Item {
                     width: parent.width
                     Text {
                         color: "#fefdfd"
-                        text: presetList[index].name
+                        text: factory.getPresetObjects()[index].name
                         font.pixelSize: 32
                         width: 300
 
                     }
                     Text {
                         color: "#636363"
-                        text: presetList[index].hex
+                        text: factory.getPresetObjects()[index].hex
                         font.pixelSize: 32
                         width: 300
                     }
@@ -68,14 +70,14 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         presetListView.currentIndex = index
-                        device.setActivePreset(presetList[index])
+                        device.setActivePreset(factory.getPresetObjects()[index])
                     }
                 }
             }
         }
 
         Component.onCompleted: {
-            presetListView.model = presetList
+            presetListView.model = factory.getPresetObjects()
         }
     }
 
@@ -87,10 +89,9 @@ Item {
             element.text = zone.getName
             parentObject.visible = true
         }
-        anchors{
-            right: presetListView.right
-            top: presetListView.top
+        anchors {
+            left: parent.left
+            bottom: parent.bottom
         }
-        anchors.leftMargin: 100
     }
 }

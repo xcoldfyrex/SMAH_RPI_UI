@@ -4,11 +4,13 @@
 #include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
 
+#include "sensor.h"
+
 class ZWaveSocket : public QObject
 {
     Q_OBJECT
 public:
-    explicit ZWaveSocket(const QUrl &url, bool debug = false, QObject *parent = nullptr);
+    explicit ZWaveSocket(const QUrl &url, bool debug, QList<Sensor*> sensorList, QObject *parent = nullptr);
 
 Q_SIGNALS:
     void closed();
@@ -23,6 +25,7 @@ private:
     bool m_debug;
     QUrl url;
     void doConnect();
+    QList<Sensor*> sensorList;
 };
 
 #endif // ZWAVESOCKET_H

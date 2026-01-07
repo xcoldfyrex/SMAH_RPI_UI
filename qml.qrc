@@ -12,16 +12,15 @@
         <file>Sensors.qml</file>
         <file>WeatherSunCalc.qml</file>
         <file>WeatherConditions.qml</file>
-        <file>ViewDownStairs.qml</file>
         <file>ViewUpstairs.qml</file>
         <file>Style.qml</file>
         <file>qmldir</file>
         <file>weathercalcs.js</file>
         <file>Pond.qml</file>
         <file>Cameras.qml</file>
+        <file>Media.qml</file>
     </qresource>
     <qresource prefix="/SMAHComponents">
-        <file>SMAHScrollbar.qml</file>
         <file>SMAHMenuButton.qml</file>
         <file>SMAHTBox.qml</file>
         <file>SMAHMenu.qml</file>
@@ -30,6 +29,8 @@
         <file>SMAHTabButton.qml</file>
         <file>SMAHLabel.qml</file>
         <file>SMAHBackground.qml</file>
+        <file>SMAHScrollBar.qml</file>
+        <file>SMAHComboBox.qml</file>
     </qresource>
     <qresource lang="qml" prefix="/SMAH"/>
     <qresource lang="QML" prefix="/ZoneComponents">
@@ -37,6 +38,5 @@
         <file>ZoneOptionsPopup.qml</file>
         <file>ZoneElements.qml</file>
         <file>ZoneScenes.qml</file>
-        <file>ZoneControls.qml</file>
     </qresource>
 </RCC>

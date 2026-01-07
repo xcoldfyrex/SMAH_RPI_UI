@@ -1,16 +1,9 @@
 #include "zone.h"
 
-Zone::Zone(int id, QString name, QString cc)
+Zone::Zone(QString name, QString cc)
 {
-    this->id = id;
     this->name = name;
     this->cc = cc;
-    //qRegisterMetaType<Zone>("Zone");
-}
-
-Zone::Zone()
-{
-    //qRegisterMetaType<Zone>("Zone");
 }
 
 void Zone::addDevice(RPIDevice *device)
@@ -32,6 +25,7 @@ void Zone::addScene(Scene *scene)
     this->sceneList.append(QVariant::fromValue(scene));
 }
 
+/*
 Light* Zone::getLightById(int id)
 {
     QList<Light*> tempIterator;
@@ -47,6 +41,7 @@ Light* Zone::getLightById(int id)
     return Q_NULLPTR;
 }
 
+*/
 Sensor* Zone::getSensorById(int id)
 {
     for (Sensor *sensor : this->getSensorList())

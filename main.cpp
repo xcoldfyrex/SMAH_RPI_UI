@@ -20,6 +20,7 @@
 #include "camera.h"
 #include "config.h"
 
+#include "objectfactory.h"
 #include "ponddata.h"
 #include "qnetworkreply.h"
 #include "zone.h"
@@ -33,35 +34,19 @@
 #include "zwavesocket.h"
 #include "dbmanager.h"
 #include "weatherdata.h"
+#include "configuration.h"
 
 //Debug logging flag
 bool g_debug = false;
 
-QString MY_HW_ADDR;
 QString MY_IP_ADDR;
-int MY_DEVICE_ID;
-
-extern QMap<QString, Zone*> g_zoneMap;
-extern QMap<int, Preset*> g_colorPresetMap;
-extern QMap <QString, RPIDevice*> g_deviceList;
-extern QMap <QString, Shelly*> g_shellyList;
-extern QList <Sensor*> g_sensorList;
-extern QList <Camera> g_cameraList;
 
 // this only exists as we cannot copy qobjects
 QList <WeatherData*> g_weatherList;
 QList <PondData*> g_pondList;
 
-//
-//QMap <int, Light*> g_lightMap;
-//QMap <int, int> g_nodeValues;
-
-
-//bool zwave_ready = false;
 QString homeLocation;
-//QString g_zwaveDriver = "0";
 DbManager *g_sqlDb;
-
 
 int main(int argc, char *argv[])
 {
@@ -86,25 +71,33 @@ int main(int argc, char *argv[])
     a.installEventFilter(&filter);
     qInstallMessageHandler(systemlogHandler);
     qInfo() << "SMAH Verion " << BUILD << DATE;
-    // determine our MAC addy
-    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces())
-    {
-        if (interface.flags().testFlag(QNetworkInterface::IsUp) && !interface.flags().testFlag(QNetworkInterface::IsLoopBack)) {
-            foreach (QNetworkAddressEntry entry, interface.addressEntries())
-            {
-                if (
-                    interface.name() == "wlp5s0"
-                    || interface.name() == "wlan0"
-                    || interface.name() == "eth0"
-                    || interface.name() == "enp4s0"
-                    )
-                {
-                    MY_HW_ADDR = interface.hardwareAddress();
-                    break;
-                }
-            }
-        }
-    }
+
+    /* setup paths */
+    homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
+    QDir::setCurrent(homeLocation + "/.smah/");
+
+    /* NEW load configs */
+    Configuration *configuration = new Configuration();
+    configuration->loadBaseConfiguration();
+    configuration->loadUserDefinedConfiguration();
+
+    /* Start creating objecrs from config */
+    ObjectFactory factory;
+    factory.createCameraObjects(configuration);
+    factory.createShellyObjects(configuration);
+    factory.createZoneObjects(configuration);
+    factory.createSensorObjects(configuration);
+    factory.createLightObjects(configuration);
+    factory.createPresetObjects(configuration);
+    factory.createSceneObjects(configuration);
+
+    /* open zwave websocket */
+    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://10.3.10.2:3000"), true , factory.getSensorObjects());
+    zWaveSock->setObjectName("sock");
+
+    /* Prepare the database now */
+    g_sqlDb = new DbManager("smah.db");
+    g_sqlDb->createTable();
 
     // determine our IP addy
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
@@ -115,7 +108,6 @@ int main(int argc, char *argv[])
                 MY_IP_ADDR = list[nIter].toString();
     }
 
-    homeLocation = QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory);
 
     // start TCP server for weather stuff
     WeatherData *weatherdata = new WeatherData;
@@ -151,31 +143,16 @@ int main(int argc, char *argv[])
         qInfo() << "HTTP Weather listener on port" << tcpserver->serverPort();
     }
 
-    //DatagramHandler broadcaster;
 
-    QDir::setCurrent(homeLocation + "/.smah/");
 
-    ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://10.3.10.2:3000"), true);
-    zWaveSock->setObjectName("sock");
-    //delete zWaveSock;
-    // Prepare the database now
-    g_sqlDb = new DbManager("smah.db");
-    g_sqlDb->createTable();
 
-    loadZones();
-    loadPresets();
-    loadActions();
-    loadScenes();
+    //loadActions();
+    //loadScenes();
 
     // headless mode, since qml won't even work without a screen attached
     // setup QML bits
-    QVariantList qmlZones;
-    QVariantList qmlPresets;
-    QVariantList qmlSensors;
-    QVariantList qmlSHellyRGBW;
     QVariantList qmlWeatherData;
     QVariantList qmlPondData;
-    QVariantList qmlCameras;
 
     QQmlEngine engine;
 
@@ -194,26 +171,10 @@ int main(int argc, char *argv[])
     qmlRegisterType<DbManager>("smah.dbmanager", 1, 0, "DbManager");
     qmlRegisterType<Scene>("smah.scene", 1, 0, "Scene");
     qmlRegisterType<Camera>("smah.camera", 1, 0, "Camera");
+    qmlRegisterType<Configuration>("smah.configuration", 1, 0, "Configuration");
+    qmlRegisterType<Configuration::AmbientLoopConfiguration>("smah.configuration.ambient", 1, 0, "ConfigurationAmbient");
+    qmlRegisterType<ObjectFactory>("smah.objectfactory", 1, 0, "ObjectFactory");
 
-    foreach (QString key, g_zoneMap.keys())
-    {
-        qmlZones.append(QVariant::fromValue(g_zoneMap.value(key)));
-    }
-
-    foreach (Sensor *key, g_sensorList)
-    {
-        qmlSensors.append(QVariant::fromValue(key));
-    }
-
-    foreach (Preset *preset, g_colorPresetMap)
-    {
-        qmlPresets.append(QVariant::fromValue(preset));
-    }
-
-    foreach (Shelly *shelly, g_shellyList)
-    {
-        qmlSHellyRGBW.append(QVariant::fromValue(shelly));
-    }
     foreach (WeatherData *weatherdata, g_weatherList)
     {
         qmlWeatherData.append(QVariant::fromValue(weatherdata));
@@ -223,32 +184,24 @@ int main(int argc, char *argv[])
         qmlPondData.append(QVariant::fromValue(ponddata));
     }
 
-    foreach (Camera camera, g_cameraList)
-    {
-        qmlCameras.append(QVariant::fromValue(camera));
-    }
     if (!hideGui) {
-        ImageProvider *imageProvider = new ImageProvider;
+        ImageProvider *imageProvider = new ImageProvider(factory.getPresetObjects());
         engine.addImageProvider("images", imageProvider);
-        engine.rootContext()->setContextProperty("sensorList", QVariant::fromValue(qmlSensors));
-        engine.rootContext()->setContextProperty("presetList", QVariant::fromValue(qmlPresets));
-        engine.rootContext()->setContextProperty("zoneList", QVariant::fromValue(qmlZones));
-        engine.rootContext()->setContextProperty("shellyRGBWList", QVariant::fromValue(qmlSHellyRGBW));
         engine.rootContext()->setContextProperty("net_ip", MY_IP_ADDR);
-        engine.rootContext()->setContextProperty("net_mac", MY_HW_ADDR);
         engine.rootContext()->setContextProperty("b_date", DATE);
         engine.rootContext()->setContextProperty("b_build", BUILD);
         engine.rootContext()->setContextProperty("weatherdataitems", qmlWeatherData);
         engine.rootContext()->setContextProperty("ponddataitems", qmlPondData);
-        engine.rootContext()->setContextProperty("cameraList", qmlCameras);
         engine.rootContext()->setContextProperty("db", g_sqlDb);
         engine.rootContext()->setContextProperty("applicationDirPath", QStandardPaths::locate(QStandardPaths::HomeLocation, QString(), QStandardPaths::LocateDirectory));
         engine.rootContext()->setContextProperty("idleDetection", &filter);
         engine.rootContext()->setContextProperty("debug", QVariant(g_debug));
+        engine.rootContext()->setContextProperty("factory", &factory);
+        engine.rootContext()->setContextProperty("configuration", configuration);
+
         engine.addImportPath(":/SMAHComponents/");
         engine.addImportPath(":/ZoneComponents/");
 
-        qDebug() << engine.importPathList();
         QObject::connect(&engine, &QQmlApplicationEngine::quit, &QGuiApplication::quit);
         component.loadUrl(QUrl(QStringLiteral("qrc:/Main.qml")));
         if (component.isReady()) {

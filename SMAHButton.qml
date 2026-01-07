@@ -1,12 +1,11 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.12
 
-
 Button {
     id: button
     flat: true
     palette.buttonText: "#d4d4d4"
-
+    height: 50
     background: Rectangle {
         implicitWidth: 150
         implicitHeight: 50

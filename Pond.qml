@@ -116,7 +116,6 @@ Page {
                         contentItem: Text {
                             text: modelData
                             color: "white"
-                            //font: control.font
                             font.pointSize: Style.fontHeaderSize
                             elide: Text.ElideRight
                             verticalAlignment: Text.AlignVCenter
@@ -135,8 +134,6 @@ Page {
                     background: Rectangle {
                         implicitWidth: 200
                         implicitHeight: 40
-                        //border.color: control.pressed ? "#17a81a" : "#21be2b"
-                        //border.width: control.visualFocus ? 2 : 1
                         radius: 0
                         color: "black"
                     }
@@ -146,13 +143,11 @@ Page {
                         width: control.width
                         implicitHeight: contentItem.implicitHeight
                         padding: 1
-
                         contentItem: ListView {
                             clip: true
                             implicitHeight: contentHeight
                             model: control.popup.visible ? control.delegateModel : null
                             currentIndex: control.highlightedIndex
-
                             ScrollIndicator.vertical: ScrollIndicator { }
                         }
 
@@ -160,12 +155,9 @@ Page {
                             color: "black"
                         }
                     }
+
                     Layout.row: 0
                     Layout.column: 4
-                    //Layout.columnSpan: 3
-                    //Layout.fillWidth: true
-
-                    //displayText: "Window period: " + currentText
                     model: ["24H", "48H", "3D", "1W", "2W", "1M", "3M"]
                     onActivated: {
                         switch(currentText) {
@@ -192,7 +184,6 @@ Page {
                             break;
 
                         }
-
                         refreshTimer.restart()
                     }
                 }

@@ -39,7 +39,7 @@ Popup {
     Component.onCompleted:
     {
         if (zone.getLightList.length !== 0) {
-            var zonecomponent = Qt.createComponent("ZoneControls.qml")
+            var zonecomponent = Qt.createComponent("ZoneElements.qml")
             var zoneloadwin = zonecomponent.createObject(zoneContent, {lights: zone.getLightList, zone: zone, parentObject: zoneContent})
         }
     }

@@ -9,10 +9,7 @@ import "qrc:/SMAHComponents/"
 
 Item {
     id: sceneControlPage
-    property var presetPages: ({})
-    property var pickerPages: ({})
-    property var lights_
-    property Zone zone_
+    property Zone zone
     property var parentObject
     implicitWidth: parent.width
     implicitHeight: parent.height
@@ -47,7 +44,7 @@ Item {
                     width: parent.width
                     Text {
                         color: "#fefdfd"
-                        text: zone_.getSceneList[index].name
+                        text: zone.getSceneList[index].name
                         font.pixelSize: 32
                         width: 300
                     }
@@ -57,14 +54,13 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         sceneListView.currentIndex = index
-                        zone_.getSceneList[index].activate()
+                        zone.getSceneList[index].activate()
                     }
                 }
             }
         }
-
         Component.onCompleted: {
-            sceneListView.model = zone_.getSceneList
+            sceneListView.model = zone.getSceneList
         }
     }
 
@@ -73,13 +69,12 @@ Item {
         text: "Close"
         onClicked: {
             sceneControlPage.visible = false
-            element.text = zone_.getName
+            element.text = zone.getName
             parentObject.visible = true
         }
-        anchors{
-            right: sceneListView.right
-            top: sceneListView.top
+        anchors {
+            left: parent.left
+            bottom: parent.bottom
         }
-        anchors.leftMargin: 100
     }
 }

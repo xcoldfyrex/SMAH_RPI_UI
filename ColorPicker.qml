@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.0
 import smah.light 1.0
 import smah.zone 1.0
 
-import "SMAHComponents/"
+import "qrc:/SMAHComponents/"
 
 Item {
     property Light device
@@ -123,8 +123,6 @@ Item {
             device.setColor(vals['r']+vals['g']+vals['b']+toHex(wls.value))
         }
 
-
-
         handle: Rectangle {
             y: wls.topPadding + wls.visualPosition * (wls.availableHeight - height)
             x: wls.leftPadding + wls.availableWidth / 2 - width / 2
@@ -154,11 +152,10 @@ Item {
             parentObject.visible = true
             element.text = zone.getName
         }
-        anchors{
+        anchors {
             left: parent.left
             bottom: parent.bottom
         }
-        anchors.leftMargin: 100
     }
     SMAHButton {
         id: change
@@ -180,21 +177,7 @@ Item {
             bottom: parent.bottom
         }
         anchors.leftMargin: 100
-    }
-    SMAHButton {
-        id: reset
-        text: "Reset"
-        anchors.leftMargin: 30
-        onClicked: {
-            wls.decrease(255)
-            device.setColor("00000000")
-        }
-        anchors {
-            left: change.right
-            bottom: close.bottom
-        }
-    }
-
+    }    
 }
 
 /*##^##

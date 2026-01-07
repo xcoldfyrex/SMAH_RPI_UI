@@ -7,14 +7,22 @@ import QtMultimedia
 import smah.camera
 
 Page {
+    Component.onCompleted: {
+        console.log(factory.getCameraObjects().length)
+    }
+
     ListView {
-        model: cameraList
+        model: factory.getCameraObjects()
         anchors.fill: parent
         delegate: Component {
             Item {
+                Label {
+                    text: "sdfds"
+                }
+
                 MediaPlayer {
                     id: player1
-                    source: cameraList[index].getSettings.low
+                    source: factory.getCameraObjects()[index].getSettings.low
                     videoOutput: videoOutput1
 
                     onErrorOccurred: {

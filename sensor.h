@@ -32,12 +32,11 @@ class Sensor : public QObject
     Q_PROPERTY(QVariant updated READ getLastUpdate NOTIFY valueChanged)
     Q_PROPERTY(SensorValueMap values READ getValues NOTIFY valueChanged)
     Q_PROPERTY(QString name READ getName CONSTANT)
-    Q_PROPERTY(bool isFarenheit READ isFarenheit CONSTANT)
 
 public:
-    Sensor(QString name, int node_id, bool farenheit=false, QObject *parent = nullptr);
+    Sensor();
+    Sensor(QString name, int node_id, QObject *parent = nullptr);
     explicit Sensor(QObject *parent = nullptr);
-    bool isFarenheit() { return this->farenheit; }
     QVariant getTemperature() {
         return this->getValue(1);
     }
@@ -73,7 +72,6 @@ signals:
     void luxChanged(const float &lux);
 
 private:        
-    bool farenheit = false;
     float humidity = 0; /* DEPRECATE THIS */
     //float raw_temperature = 0; /* DEPRECATE THIS */
     //float raw_humidity = 0;

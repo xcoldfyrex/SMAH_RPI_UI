@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 
 import smah.light 1.0
 import smah.zone 1.0
+import smah.objectfactory
 
 import "qrc:/SMAHComponents/"
 import "qrc:/ZoneComponents"
@@ -23,10 +24,9 @@ Page {
     }
 
     Component.onCompleted: {
-        for (var i=0; i<zoneList.length; i++) {
+        for (var i=0; i<factory.getZoneObjects().length; i++) {
             var zonecomponent= Qt.createComponent("/ZoneComponents/ZoneOptionsPopup.qml")
-            var zoneloadwin = zonecomponent.createObject(viewPage, {zone: zoneList[i], anchorParent: box} )
-            console.log(zoneList[i])
+            var zoneloadwin = zonecomponent.createObject(viewPage, {zone: factory.getZoneObjects()[i], anchorParent: box} )
             zonePages[i] = zoneloadwin
         }
     }

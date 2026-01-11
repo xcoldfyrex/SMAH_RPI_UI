@@ -4,15 +4,12 @@ import QtQuick.Layouts
 
 import QtMultimedia
 
-import smah.camera
+import smah.configuration
+
 
 Page {
-    Component.onCompleted: {
-        console.log(factory.getCameraObjects().length)
-    }
-
     ListView {
-        model: factory.getCameraObjects()
+        model: []//configuration.getCameraConfigurations()
         anchors.fill: parent
         delegate: Component {
             Item {
@@ -22,7 +19,7 @@ Page {
 
                 MediaPlayer {
                     id: player1
-                    source: factory.getCameraObjects()[index].getSettings.low
+                    source: "" //configuration.getCameraConfigurations()[index].mLowRTSP
                     videoOutput: videoOutput1
 
                     onErrorOccurred: {
@@ -32,6 +29,7 @@ Page {
 
                     onPlaybackStateChanged: {
                         console.log(player1.mediaStatus)
+                        console.log(configuration.getCameraConfigurations()[index].mLowRTSP)
                         player1.play()
                     }
 

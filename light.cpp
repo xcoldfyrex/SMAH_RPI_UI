@@ -23,7 +23,7 @@ Light::Light(QString name, Shelly *shellydevice)
         while (QTime::currentTime() < dieTime) {
             QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         }
-        qDebug() << this->name << "slow to respond, polling..";
+        qInfo() << this->name << "slow to respond, polling..";
 
     }
     this->type = shellydevice->getApp();

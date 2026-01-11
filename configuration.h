@@ -34,6 +34,14 @@ public:
         QString mLowRTSP;
         QString mMedRTSP;
         QString mHighRTSP;
+        QVariantMap toMap() {
+            return {
+                { "mName", mName },
+                { "mLowRTSP", mLowRTSP },
+                { "mMedRTSP", mMedRTSP },
+                { "mHighRTSP", mHighRTSP }
+            };
+        }
     };
 
     struct PresetConfiguration {
@@ -86,6 +94,13 @@ public:
     QVariantList getAmbientLoopConfigurations() {
         QVariantList l;
         for (Configuration::AmbientLoopConfiguration &c : this->config.mAmbientLoopConfigurations) {
+            l.append(c.toMap());
+        }
+        return l;
+    };
+    Q_INVOKABLE QVariantList getCameraConfigurations() {
+        QVariantList l;
+        for (Configuration::CameraConfiguration &c : this->config.mCameraConfigurations) {
             l.append(c.toMap());
         }
         return l;

@@ -7,13 +7,15 @@ import smah.zone 1.0
 import "qrc:/SMAHComponents/"
 
 Item {
-    property Light device
+    property var device
     property Zone zone
     property string rgb_palette: "file:" + applicationDirPath + ".smah/assets/palette.png"
     property string daylight_palette: "file:" + applicationDirPath + ".smah/assets/color-temperature.png"
     property string f_palette: rgb_palette
     property bool previewReady: false
     property var parentObject
+
+    signal updateRGB
 
     id: colorPicker
     width: parent.width
@@ -72,6 +74,7 @@ Item {
             onReleased: {
                 var col = getRGB()
                 device.setColor(col['r']+col['g']+col['b']+toHex(wls.value))
+                colorPicker.updateRGB()
                 //element.text = zone.getName + " > " + device.getName + " " + col['r']+col['g']+col['b']+toHex(wls.value)
             }
             onClicked: {
@@ -118,9 +121,11 @@ Item {
         orientation: Qt.Vertical
         to: 255
         stepSize: 1
+        signal updateWhite
         onMoved: {
             var vals = getRGB()
             device.setColor(vals['r']+vals['g']+vals['b']+toHex(wls.value))
+            colorPicker.updateRGB()
         }
 
         handle: Rectangle {
@@ -150,7 +155,8 @@ Item {
         onClicked: {
             colorPicker.visible = false
             parentObject.visible = true
-            element.text = zone.getName
+            if (zone != null)
+                element.text = zone.getName
         }
         anchors {
             left: parent.left

@@ -4,6 +4,7 @@
 #include <QObject>
 #include "configuration.h"
 
+#include "scheduled_actions.h"
 #include "shelly.h"
 #include "camera.h"
 #include "zone.h"
@@ -22,13 +23,14 @@ public:
     Q_INVOKABLE void createLightObjects(Configuration *config);
     Q_INVOKABLE void createPresetObjects(Configuration *config);
     Q_INVOKABLE void createSceneObjects(Configuration *config);
-
+    Q_INVOKABLE void createActionObjects(Configuration *config);
 
     Q_INVOKABLE QList<Shelly*> getShellyObjects() { return this->mShellyList; }
     Q_INVOKABLE QList<Camera> getCameraObjects() { return this->mCameraList; }
     Q_INVOKABLE QList<Zone*> getZoneObjects() { return this->mZoneList; }
     Q_INVOKABLE QList<Preset*> getPresetObjects() { return this->mPresetList; }
     Q_INVOKABLE QList<Scene*> getSceneObjects() { return this->mSceneList; }
+    Q_INVOKABLE QList<ScheduledActions*> getActionObjects() { return this->mActionList; }
     Q_INVOKABLE QList<Sensor*> getSensorObjects();
 
 private:
@@ -37,8 +39,7 @@ private:
     QList<Zone*> mZoneList;
     QList<Preset*> mPresetList;
     QList<Scene*> mSceneList;
-
-
+    QList<ScheduledActions*> mActionList;
 
     Zone *getZoneByName(QString mName);
     Shelly *getShellyByID(QString mID);

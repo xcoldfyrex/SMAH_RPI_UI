@@ -19,6 +19,9 @@
         <file>Pond.qml</file>
         <file>Cameras.qml</file>
         <file>Media.qml</file>
+        <file>Schedules.qml</file>
+        <file>Actions.qml</file>
+        <file>virtuallight.js</file>
     </qresource>
     <qresource prefix="/SMAHComponents">
         <file>SMAHMenuButton.qml</file>
@@ -31,6 +34,9 @@
         <file>SMAHBackground.qml</file>
         <file>SMAHScrollBar.qml</file>
         <file>SMAHComboBox.qml</file>
+        <file>SMAHSpinBox.qml</file>
+        <file>SMAHRadioButton.qml</file>
+        <file>SMAHCheckBox.qml</file>
     </qresource>
     <qresource lang="qml" prefix="/SMAH"/>
     <qresource lang="QML" prefix="/ZoneComponents">

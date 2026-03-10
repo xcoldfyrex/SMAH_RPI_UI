@@ -42,6 +42,7 @@ QDomDocument validateConfigFile(QString config)
 
 void loadActions()
 {
+    /*
     QDomDocument document = validateConfigFile("smah_actions.xml");
     if (!document.isDocument())
         return;
@@ -57,69 +58,7 @@ void loadActions()
             g_actionList.append(action);
         }
     }
-}
-
-void loadZones()
-{
-    QDomDocument document = validateConfigFile("smah_zones.xml");
-    if (!document.isDocument())
-        return;
-    QDomElement root = document.firstChildElement();
-
-    /* each camera. */
-    QDomNodeList cameraItems = root.elementsByTagName("camera");
-    for (int a = 0; a < cameraItems.count(); a++) {
-        QDomNode cameraNode = cameraItems.at(a);
-        if (cameraNode.isElement()) {
-            QDomElement cameraElement = cameraNode.toElement();
-            Camera camera = Camera(
-                cameraElement.attribute("name"),
-                cameraElement.attribute("low"),
-                cameraElement.attribute("med"),
-                cameraElement.attribute("high")
-                );
-            g_cameraList.append(camera);
-        }
-    }
-
-    /* each shelly. must be done before lights */
-    QDomNodeList shellyItems = root.elementsByTagName("shelly");
-    for (int a = 0; a < shellyItems.count(); a++) {
-        QDomNode shellyNode = shellyItems.at(a);
-        if (shellyNode.isElement()) {
-            QDomElement shellyElement = shellyNode.toElement();
-            QString type = shellyElement.attribute("type");
-            Shelly *shelly = new Shelly(
-                shellyElement.attribute("ip"),
-                shellyElement.attribute("id"),
-                type
-                );
-            g_shellyList.insert(shellyElement.attribute("id"), shelly);
-
-
-        }
-    }
-
-    /* enumrate zones */
-    QDomNodeList zoneItems = root.elementsByTagName("zone");
-    for (int i = 0; i < zoneItems.count(); i++) {
-        QDomNode itemnode = zoneItems.at(i);
-        if (itemnode.isElement()) {
-            QDomElement element = itemnode.toElement();
-
-
-
-
-            while (g_shellyList.last()->getApp() == "")
-            {
-                QCoreApplication::processEvents(QEventLoop::AllEvents, 50000);
-            }
-            /* each light in the zone */
-
-
-
-        }
-    }
+*/
 }
 
 void loadPresets()
@@ -129,7 +68,6 @@ void loadPresets()
         return;
     QDomElement root = document.firstChildElement();
 
-    short presetID = 0;
     QDomNodeList staticItems = root.elementsByTagName("static");
     QDomNodeList dynamicItems = root.elementsByTagName("dynamic");
 
@@ -172,9 +110,6 @@ void loadPresets()
         }
     }
 
-    //load dynamic presets
-    //return; //for now
-    ///*
     for (int i = 0; i < dynamicItems.count(); i++) {
         QDomNode itemnode = dynamicItems.at(i);
         if (itemnode.isElement()) {
@@ -200,46 +135,4 @@ void loadPresets()
         }
     }
     //*/
-}
-
-void loadScenes()
-{
-    QDomDocument document = validateConfigFile("smah_scenes.xml");
-    if (!document.isDocument())
-        return;
-    QDomElement root = document.firstChildElement();
-
-    QDomNodeList groupItems = root.elementsByTagName("scene");
-    for (int a = 0; a < groupItems.count(); a++) {
-        QDomNode groupNode = groupItems.at(a);
-        if (groupNode.isElement()) {
-            QDomElement groupElement = groupNode.toElement();
-            Scene *scene = new Scene(groupElement.attribute("name"));
-            QDomNodeList sceneItems = groupElement.elementsByTagName("item");
-            for (int a = 0; a < sceneItems.count(); a++) {
-                QDomNode actionNode = sceneItems.at(a);
-                if (actionNode.isElement()) {
-                    QDomElement element = actionNode.toElement();
-                    QVariant state = element.attribute("state");
-                    if (state == "on")
-                        state = true;
-                    if (state == "off")
-                        state = false;
-                    QString device = element.attribute("device");
-                    QString value = element.attribute("value");
-                    if (!g_shellyList.contains(device))
-                    {
-                        qWarning() << "Error adding scene items to" << scene->getName() << ", device" << device << "not found";
-                    } else {
-                        scene->addItem(g_shellyList.value(device), value, state.toBool());
-                    }
-                }
-            }
-            for (Zone *zone : g_zoneMap)
-            {
-                if (zone->getName() == groupElement.attribute("zone"))
-                    zone->addScene(scene);
-            }
-        }
-    }
 }

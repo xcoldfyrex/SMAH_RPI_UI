@@ -18,7 +18,6 @@
 #include <QTcpServer>
 
 #include "camera.h"
-#include "config.h"
 
 #include "objectfactory.h"
 #include "ponddata.h"
@@ -90,6 +89,7 @@ int main(int argc, char *argv[])
     factory.createLightObjects(configuration);
     factory.createPresetObjects(configuration);
     factory.createSceneObjects(configuration);
+    factory.createActionObjects(configuration);
 
     /* open zwave websocket */
     ZWaveSocket *zWaveSock = new ZWaveSocket(QUrl("ws://10.3.10.2:3000"), true , factory.getSensorObjects());
@@ -143,11 +143,6 @@ int main(int argc, char *argv[])
         qInfo() << "HTTP Weather listener on port" << tcpserver->serverPort();
     }
 
-
-
-
-    //loadActions();
-    //loadScenes();
 
     // headless mode, since qml won't even work without a screen attached
     // setup QML bits

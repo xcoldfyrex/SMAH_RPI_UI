@@ -9,6 +9,8 @@ QtObject {
     property int fontHeaderSize: 38
     property int fontColumnHeaderSize: 32
     property int fontCellSize: 20
+    property int fontSmallSize: 16
+
 
 }
 

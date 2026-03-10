@@ -18,6 +18,7 @@ SOURCES += main.cpp\
     camera.cpp \
     config.cpp \
     configuration.cpp \
+    configurationwriter.cpp \
     dbmanager.cpp \
     objectfactory.cpp \
     ponddata.cpp \
@@ -42,6 +43,7 @@ HEADERS  += \
     camera.h \
     config.h \
     configuration.h \
+    configurationwriter.h \
     dbmanager.h \
     imageprovider.h \
     objectfactory.h \

@@ -129,28 +129,65 @@ bool Configuration::loadUserDefinedConfiguration() {
     }
 
     /* each scene */
-    QDomNodeList sceneGroupItems = root.elementsByTagName("scene");
-    config.mSceneGroupConfigurations.clear();
-    foreach(QDomNode outerNode, sceneGroupItems) {
-        QDomElement sceneGroupElement = outerNode.toElement();
-        Configuration::SceneGroupConfiguration scenegroup;
-        scenegroup.mName = sceneGroupElement.attribute("name");
-        scenegroup.mZones.append(sceneGroupElement.attribute("zone"));
-        // missing zones
-        QDomNodeList sceneItems = sceneGroupElement.elementsByTagName("item");
-        /* each item in the scene */
-        foreach(QDomNode itemNode, sceneItems) {
-            QDomElement sceneItemElement = itemNode.toElement();
-            Configuration::SceneItemConfiguration scene;
-            scene.mColorCode = sceneItemElement.attribute("value");
-            scene.mDevice = sceneItemElement.attribute("device");
-            scene.mState = sceneItemElement.attribute("state").toInt();
-            scenegroup.mSceneItems.append(scene);
+    document = validateConfigFile("scenes.xml");
+    if (document.isDocument()) {
+        root = document.firstChildElement();
+        QDomNodeList sceneGroupItems = root.elementsByTagName("scene");
+        config.mSceneGroupConfigurations.clear();
+        foreach(QDomNode outerNode, sceneGroupItems) {
+            QDomElement sceneGroupElement = outerNode.toElement();
+            Configuration::SceneGroupConfiguration scenegroup;
+            scenegroup.mName = sceneGroupElement.attribute("name");
+            scenegroup.mZones.append(sceneGroupElement.attribute("zone"));
+            // missing zones
+            QDomNodeList sceneItems = sceneGroupElement.elementsByTagName("item");
+            /* each item in the scene */
+            foreach(QDomNode itemNode, sceneItems) {
+                QDomElement sceneItemElement = itemNode.toElement();
+                Configuration::SceneItemConfiguration scene;
+                scene.mColorCode = sceneItemElement.attribute("value");
+                scene.mDevice = sceneItemElement.attribute("device");
+                scene.mState = sceneItemElement.attribute("state").toInt();
+                scenegroup.mSceneItems.append(scene);
+            }
+            config.mSceneGroupConfigurations.append(scenegroup);
         }
-        config.mSceneGroupConfigurations.append(scenegroup);
+    }
+
+    /* each action */
+    document = validateConfigFile("actions.xml");
+    if (document.isDocument()) {
+        root = document.firstChildElement();
+        QDomNodeList actionGroupItems = root.elementsByTagName("action_set");
+        config.mActionGroupConfigurations.clear();
+        foreach(QDomNode outerNode, actionGroupItems) {
+            QDomElement actionGroupElement = outerNode.toElement();
+            Configuration::ActionGroupConfiguration actiongroup;
+            actiongroup.mName = actionGroupElement.attribute("name");
+            QList<QString> ids = actionGroupElement.attribute("shellyid").split(",");
+            for (QString &str : ids) {
+                actiongroup.mShellyID.append(str);
+            }
+
+            // missing zones
+            QDomNodeList actionItems = actionGroupElement.elementsByTagName("action");
+            /* each item in the scene */
+            foreach(QDomNode itemNode, actionItems) {
+                QDomElement actionItemElement = itemNode.toElement();
+                Configuration::ActionItemConfiguration action;
+                action.mValue = actionItemElement.attribute("value");
+                action.mType = actionItemElement.attribute("type");
+                action.mAction = actionItemElement.attribute("action");
+                action.mTime = actionItemElement.attribute("time");
+                action.mRepeat = actionItemElement.attribute("repeat").toInt();
+                action.mInterval = actionItemElement.attribute("interval").toInt();
+
+                actiongroup.mActionItems.append(action);
+            }
+            config.mActionGroupConfigurations.append(actiongroup);
+        }
     }
 
     this->config = config;
-
     return false;
 }

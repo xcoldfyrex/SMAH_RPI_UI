@@ -115,9 +115,11 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+
             Label {
                 text: "\t\n"
             }
+
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("Pond");
@@ -130,6 +132,7 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("Weather");
@@ -142,6 +145,7 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("Sensors");
@@ -154,6 +158,7 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("System");
@@ -166,6 +171,7 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("Cameras");
@@ -178,6 +184,7 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+
             SMAHMenuButton {
                 SMAHLabel {
                     text: qsTr("Media");
@@ -187,6 +194,19 @@ ApplicationWindow {
                 height: 64
                 onClicked: {
                     mainSwipeView.setCurrentIndex(6)
+                    drawer.close()
+                }
+            }
+
+            SMAHMenuButton {
+                SMAHLabel {
+                    text: qsTr("Schedules");
+                    font.pixelSize: 64
+                }
+                width: parent.width
+                height: 64
+                onClicked: {
+                    mainSwipeView.setCurrentIndex(7)
                     drawer.close()
                 }
             }
@@ -211,6 +231,7 @@ ApplicationWindow {
         Pond {}
         Cameras {}
         Media {}
+        Schedules {}
     }
     ScreenSaver {
         id: screenSaver

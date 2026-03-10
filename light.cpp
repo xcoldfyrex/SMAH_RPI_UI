@@ -1,11 +1,9 @@
 #include <QDebug>
+#include <QTimer>
 #include "qapplication.h"
 
 #include "light.h"
 #include "shelly.h"
-
-extern QString MY_HW_ADDR;
-extern int MY_DEVICE_ID;
 
 //Q_DECLARE_METATYPE(Light)
 
@@ -15,27 +13,64 @@ Light::Light(QObject *parent) : QObject(parent)
 
 Light::Light(QString name, Shelly *shellydevice)
 {
+    // TODO: rework tis so it's not blocking
     this->name = name;
     this->shellydevice = shellydevice;
+
     while (this->shellydevice->getApp() == "" && (!this->shellydevice->isReady()))
     {
         QTime dieTime = QTime::currentTime().addSecs(1);
         while (QTime::currentTime() < dieTime) {
             QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         }
-        qInfo() << this->name << "slow to respond, polling..";
+        qInfo() << this->shellydevice->getID() << this->name << "slow to respond, polling..";
 
     }
-    this->type = shellydevice->getApp();
 
-    this->taskList = new QList<PresetTask*>();
-    QObject::connect(shellydevice, &Shelly::messageRecv, this, &Light::shellyUpdated);
+    if (this->shellydevice->getApp() != "") {
+        this->type = shellydevice->getApp();
+
+        this->taskList = new QList<PresetTask*>();
+        QObject::connect(shellydevice, &Shelly::messageRecv, this, &Light::shellyUpdated);
+    }
+}
+
+    /*
+     *     QTimer *polltimer = new QTimer(this);
+    polltimer->setInterval(1000);
+    polltimer->start();
+    connect(polltimer, &QTimer::timeout, this, [this, shellydevice, polltimer]() {
+    while (this->shellydevice->getApp() == "" && (!this->shellydevice->isReady()))
+    {
+        QTime dieTime = QTime::currentTime().addSecs(1);
+        while (QTime::currentTime() < dieTime) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        }
+        qInfo() << this->shellydevice->getID() << this->name << "slow to respond, polling..";
+        if (this->shellydevice->getApp() != "") {
+            this->type = shellydevice->getApp();
+
+            this->taskList = new QList<PresetTask*>();
+            QObject::connect(shellydevice, &Shelly::messageRecv, this, &Light::shellyUpdated);
+            polltimer->stop();
+            polltimer->deleteLater();
+        }
+    }
+    });
+     * /
+
 }
 
 
+/* flip the power state of a light */
 void Light::toggleState()
 {
-    // FIXME
+    if (this->getState()) {
+        this->setState(0);
+    } else {
+        this->setState(1);
+    }
+    emit stateChanged();
     return;
 }
 

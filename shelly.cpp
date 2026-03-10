@@ -24,6 +24,11 @@ Shelly::Shelly(QString ip, QString mDNS, QString type, QObject *parent) :
         getStatus();
     });
     timer->start(10000);
+    this->reconnectTimer.setInterval(5000);
+    this->reconnectTimer.stop();
+    connect(&this->reconnectTimer, &QTimer::timeout, this, [this]() {
+        doConnect();
+    });
 }
 
 void Shelly::getStatus()
@@ -31,7 +36,7 @@ void Shelly::getStatus()
     QJsonObject payload;
     QJsonObject params;
     QJsonArray arr;
-    if (this->app == "Plus1PM") {
+    if (this->app == "Plus1PM" || this->app == "S2PMG4") {
         payload["method"] = "Switch.GetStatus";
     } else if (this->app == "PlusRGBWPM") {
         payload["method"] = "RGBW.GetStatus";
@@ -56,6 +61,7 @@ void Shelly::pollConfig()
                      this, [=](QNetworkReply *reply) {
                          if (reply->error()) {
                              qDebug() << reply->errorString();
+                             manager->deleteLater();
                              return;
                          }
                          QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
@@ -71,6 +77,7 @@ void Shelly::pollConfig()
 
 void Shelly::onConnected()
 {
+    this->reconnectTimer.stop();
     connect(&m_webSocket, &QWebSocket::textMessageReceived,
             this, &Shelly::onTextMessageReceived);
     qInfo() << "Connected to Shelly" << this->mDNS << this->m_webSocket.peerAddress().toString();
@@ -99,7 +106,8 @@ void Shelly::onTextMessageReceived(QString message)
 void Shelly::closed()
 {
     qInfo() << "Connection to shelly closed. Retrying " + this->url;
-    doConnect();
+    this->reconnectTimer.start();
+
 }
 
 /* END OF GENERIC FUNCTIONS */
@@ -156,7 +164,7 @@ void Shelly::setState(bool on) {
     if (this->m_webSocket.state() ==  QAbstractSocket::SocketState::ConnectedState) {
         QJsonObject payload;
         QJsonObject params;
-        if (this->app == "Plus1PM") {
+        if (this->app == "Plus1PM" || this->app == "S2PMG4") {
             payload["method"] = "Switch.Set";
         } else if (this->app == "PlusRGBWPM") {
             payload["method"] = "RGBW.Set";

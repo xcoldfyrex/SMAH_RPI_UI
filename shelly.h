@@ -4,6 +4,7 @@
 #include "qjsonvalue.h"
 #include <QtCore/QObject>
 #include <QtWebSockets/QWebSocket>
+#include <QTimer>
 
 class Shelly : public QObject
 {
@@ -66,6 +67,9 @@ protected:
     void doConnect();
     void pollConfig();
     bool ready = false;
+
+private:
+    QTimer reconnectTimer;
 
 private Q_SLOTS:
     void onConnected();

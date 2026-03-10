@@ -3,8 +3,6 @@ import QtQuick.Controls 2.13
 
 Rectangle {
     id: inner
-    //anchors.left: parent.left
-    //anchors.leftMargin: 0
     border.width: 0
     color: "#00000000"
     height: 80

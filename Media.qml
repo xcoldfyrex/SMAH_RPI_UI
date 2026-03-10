@@ -9,7 +9,7 @@ import "."
 import "qrc:/SMAHComponents"
 
 Page {
-
+    property date timeout: new Date(9999,9,9);
     id: page
     x: 0
     SMAHBackground {}
@@ -91,6 +91,7 @@ Page {
                 playMusic.play()
             }
         }
+
         SMAHButton {
             id: stop
             anchors {
@@ -102,6 +103,7 @@ Page {
                 playMusic.stop()
             }
         }
+
         Slider {
             anchors {
                 top: mediaListView.bottom
@@ -131,18 +133,121 @@ Page {
                     color: "#777"
                 }
             }
-
         }
-        //}
+        SMAHLabel {
+            text: "Play timer: "
+            id: playTimerLabel
+            anchors {
+                top: parent.top
+                left: minutesBox.left
+            }
+            font.pixelSize: Style.fontColumnHeaderSize
+        }
+
+        SMAHLabel {
+            id: countdown
+            anchors {
+                top: parent.top
+                left: playTimerLabel.right
+            }
+            text: "Stopped"
+            font.pixelSize: Style.fontColumnHeaderSize
+        }
+
+        SMAHLabel {
+            id: minuteLabel
+            anchors {
+                top: playTimerLabel.bottom
+                left: minutesBox.left
+            }
+            text: "Minutes"
+            font.pixelSize: Style.fontCellSize
+        }
+
+        SMAHLabel {
+            id: hourLabel
+            anchors {
+                top: playTimerLabel.bottom
+                left: hoursBox.left
+            }
+            text: "Hours"
+            font.pixelSize: Style.fontCellSize
+        }
+
+        SMAHComboBox  {
+            anchors {
+                top: minuteLabel.bottom
+                right: hoursBox.left
+            }
+            id: minutesBox
+            popupHeight: "700"
+            model: Array.from(Array(60).keys())
+        }
+
+        SMAHComboBox  {
+            anchors {
+                top: hourLabel.bottom
+                right: parent.right
+            }
+            id: hoursBox
+            popupHeight: "700"
+            model: Array.from(Array(25).keys())
+        }
+
+        SMAHButton {
+            id: timerStart
+            anchors {
+                top: minutesBox.bottom
+                left: minutesBox.left
+            }
+            text: "Start Timer"
+            onClicked: {
+                page.timeout = new Date(Date.now() + ((minutesBox.currentValue * 60) + (hoursBox.currentValue * 60 * 60)) * 1000);
+                sleeperTimer.restart()
+            }
+        }
+    }
+
+    Timer {
+        id: sleeperTimer
+        interval: 100; running: false; repeat: true;
+        onTriggered: {
+            var now = new Date(Date.now()).getTime();
+            countdown.text = parseMillisecondsIntoReadableTime((page.timeout.getTime() - now) + 1000)
+            if (now >= page.timeout.getTime()) {
+                countdown.text = "Stopped"
+                sleeperTimer.stop()
+                playMusic.stop()
+            }
+        }
     }
 
     MediaPlayer {
         id: playMusic
         loops: MediaPlayer.Infinite
-        //source: "file:///home/lenny/Documents/ice.wav"
         audioOutput: AudioOutput {
             volume: slider.value
         }
     }
 
+    function parseMillisecondsIntoReadableTime(milliseconds){
+        //Get hours from milliseconds
+        var hours = milliseconds / (1000*60*60);
+        var absoluteHours = Math.floor(hours);
+        var h = absoluteHours > 9 ? absoluteHours : '0' + absoluteHours;
+
+        //Get remainder from hours and convert to minutes
+        var minutes = (hours - absoluteHours) * 60;
+        var absoluteMinutes = Math.floor(minutes);
+        var m = absoluteMinutes > 9 ? absoluteMinutes : '0' +  absoluteMinutes;
+
+        //Get remainder from minutes and convert to seconds
+        var seconds = (minutes - absoluteMinutes) * 60;
+        var absoluteSeconds = Math.floor(seconds);
+        var s = absoluteSeconds > 9 ? absoluteSeconds : '0' + absoluteSeconds;
+
+        return h + ':' + m + ':' + s;
+    }
 }
+
+

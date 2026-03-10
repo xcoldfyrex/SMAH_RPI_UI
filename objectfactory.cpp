@@ -50,6 +50,27 @@ void ObjectFactory::createPresetObjects(Configuration *config) {
     }
 }
 
+void ObjectFactory::createActionObjects(Configuration *config) {
+    foreach (Configuration::ActionGroupConfiguration item, config->getConfiguration().mActionGroupConfigurations) {
+        ScheduledActions *action = new ScheduledActions(item.mName);
+        foreach (Configuration::ActionItemConfiguration actionItem, item.mActionItems) {
+            action->add_action(actionItem);
+        }
+        this->mActionList.append(action);
+    }
+}
+
+/*
+ *     for (int a = 0; a < groupItems.count(); a++) {
+        QDomNode groupNode = groupItems.at(a);
+        if (groupNode.isElement()) {
+            QDomElement groupElement = groupNode.toElement();
+            ScheduledActions *action = new ScheduledActions();
+            action->add_action(groupElement);
+            g_actionList.append(action);
+        }
+    }
+ * */
 void ObjectFactory::createSceneObjects(Configuration *config) {
     foreach (Configuration::SceneGroupConfiguration item, config->getConfiguration().mSceneGroupConfigurations) {
         Scene *scene = new Scene(item.mName);

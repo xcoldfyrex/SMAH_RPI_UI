@@ -119,9 +119,9 @@ Item {
                             return false
                         }
                     }
-                    text: qsTr("Off")
+                    text: lights[index].getState === true ? "Off" : "On"
                     onClicked: {
-                        lights[index].setColor("00000000")
+                        lights[index].toggleState()
                     }
                     visible: determine_vis()
                 }
@@ -147,7 +147,7 @@ Item {
                     }
                     function determine_vis()
                     {
-                        if (lights[index].getType === "Plus1PM" || lights[index].getType === "PlusWallDimmer" ){
+                        if (lights[index].getType === "S2PMG4" || lights[index].getType === "Plus1PM" || lights[index].getType === "PlusWallDimmer" ){
                             return true
                         } else {
                             return false

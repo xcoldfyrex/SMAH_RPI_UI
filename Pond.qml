@@ -8,7 +8,7 @@ import smah.dbmanager
 import QtQuick.Controls.Material
 
 import "."
-import "SMAHComponents/"
+import "qrc:/SMAHComponents"
 
 Page {
     property real phHigh: 0

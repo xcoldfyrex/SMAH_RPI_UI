@@ -210,6 +210,18 @@ ApplicationWindow {
                     drawer.close()
                 }
             }
+            SMAHMenuButton {
+                SMAHLabel {
+                    text: qsTr("PS");
+                    font.pixelSize: 64
+                }
+                width: parent.width
+                height: 64
+                onClicked: {
+                    mainSwipeView.setCurrentIndex(8)
+                    drawer.close()
+                }
+            }
         }
     }
 
@@ -232,6 +244,7 @@ ApplicationWindow {
         Cameras {}
         Media {}
         Schedules {}
+        PondSettings {}
     }
     ScreenSaver {
         id: screenSaver

@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 
     // start TCP server for weather stuff
     WeatherData *weatherdata = new WeatherData;
-    PondData *ponddata = new PondData;
+    PondData *ponddata = new PondData(configuration);
     g_weatherList.append(weatherdata);
     g_pondList.append(ponddata);
     QHttpServer httpServer;

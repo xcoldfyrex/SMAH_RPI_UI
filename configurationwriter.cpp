@@ -20,9 +20,12 @@ void ConfigurationWriter::updateNodes(QString parent, QString filename, QVariant
             QVariantMap m = outerkey.value<QVariantMap>();
 
             stream.writeStartElement(parent);
-            stream.writeAttribute("name", m.value("mName").toString());
+            if (m.value("mName").toString() != "")
+                stream.writeAttribute("name", m.value("mName").toString());
             /* if there are multiple shellys, write as list */
-            stream.writeAttribute("shellyid", m.value("mShellyID").toString());
+            QString device = m.value("mShellyID").value<QList<QString>>().join(",");
+            if (device != "")
+                stream.writeAttribute("shellyid", device);
             /*
              *  determine if these are singletons or members of a group
              *  each item is going to a list with a map
@@ -36,10 +39,16 @@ void ConfigurationWriter::updateNodes(QString parent, QString filename, QVariant
                         QString newkey = QString::fromStdString(innerkey.toStdString());
                         newkey.remove(0,1);
                         newkey = newkey.toLower();
-
                         stream.writeAttribute(newkey, innervalue.toString());
                     }
                     stream.writeEndElement();
+                }
+            } else {
+                for (auto [innerkey, innervalue] : m.asKeyValueRange()) {
+                    QString newkey = QString::fromStdString(innerkey.toStdString());
+                    newkey.remove(0,1);
+                    newkey = newkey.toLower();
+                    stream.writeAttribute(newkey, innervalue.toString());
                 }
             }
 

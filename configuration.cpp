@@ -188,6 +188,18 @@ bool Configuration::loadUserDefinedConfiguration() {
         }
     }
 
+    /* pond. */
+    document = validateConfigFile("pond.xml");
+    if (document.isDocument()) {
+        root = document.firstChildElement();
+        QDomNodeList pondItems = root.elementsByTagName("calibrations");
+        foreach(QDomNode outerNode, pondItems) {
+            QDomElement pondElement = outerNode.toElement();
+            config.mPondItemConfigurations.mLowPHCal = pondElement.attribute("lowphcal").toFloat();
+            config.mPondItemConfigurations.mMidPHCal = pondElement.attribute("midphcal").toFloat();
+            config.mPondItemConfigurations.mHighPHCal = pondElement.attribute("highphcal").toFloat();
+        }
+    }
     this->config = config;
     return false;
 }

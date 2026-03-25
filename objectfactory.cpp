@@ -51,8 +51,12 @@ void ObjectFactory::createPresetObjects(Configuration *config) {
 }
 
 void ObjectFactory::createActionObjects(Configuration *config) {
+    this->mActionList.clear();
     foreach (Configuration::ActionGroupConfiguration item, config->getConfiguration().mActionGroupConfigurations) {
         ScheduledActions *action = new ScheduledActions(item.mName);
+        foreach (QString id, item.mShellyID){
+            action->addShelly(getShellyByID(id));
+        }
         foreach (Configuration::ActionItemConfiguration actionItem, item.mActionItems) {
             action->add_action(actionItem);
         }

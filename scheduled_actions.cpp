@@ -38,15 +38,6 @@ void ScheduledActions::add_action(Configuration::ActionItemConfiguration data)
     }
 
     ScheduledActionsItem *tempValues = new ScheduledActionsItem();
-    /*
-            if (g_shellyList.contains(device))
-            {
-                tempValues->device = g_shellyList.value(device);
-            } else {
-                qWarning() << "Action" << action << "references device that was not found:" << device;
-                return;
-            }
-*/
     tempValues->action = action;
     tempValues->val = data.mValue;
     tempValues->interval = data.mInterval;
@@ -55,7 +46,6 @@ void ScheduledActions::add_action(Configuration::ActionItemConfiguration data)
     tempValues->time = parsedTime;
     mActionList.append(tempValues);
 
-    //QTimer *timer = new QTimer(this);
     connect(tempValues->timer, &QTimer::timeout, this, [tempValues, this]() {
         QString strType;
         switch (tempValues->action) {
@@ -86,7 +76,7 @@ void ScheduledActions::add_action(Configuration::ActionItemConfiguration data)
         default:
             break;
         }
-        qDebug() << tempValues->time << tempValues->interval << tempValues->remaining << tempValues->repeats;
+        //qDebug() << tempValues->time << tempValues->interval << tempValues->remaining << tempValues->repeats;
 
         // reset the main timer
         if (tempValues->repeats > 0 && tempValues->remaining > 0) {
@@ -106,9 +96,9 @@ void ScheduledActions::add_action(Configuration::ActionItemConfiguration data)
             } else {
                 device->setValue(strType,tempValues->val.toString(),tempValues->on);
             }
-            device = nullptr;
+            //device = nullptr;
         }
-        qDebug() << tempValues->time << tempValues->interval << tempValues->remaining << tempValues->repeats << tempValues->interval << tempValues->timer->remainingTime();
+        //qDebug() << tempValues->time << tempValues->interval << tempValues->remaining << tempValues->repeats << tempValues->interval << tempValues->timer->remainingTime();
     });
 
     //calculate when the first run should be
@@ -116,9 +106,6 @@ void ScheduledActions::add_action(Configuration::ActionItemConfiguration data)
     if (delay < 0 )
         delay += 86400;
     tempValues->timer->start(delay * 1000);
-    // }
-    //}
-
 }
 /*
 

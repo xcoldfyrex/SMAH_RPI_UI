@@ -121,7 +121,19 @@ public:
                 { "mElements", l}
             };
         }
+    };
 
+    struct PondItemConfiguration {
+        float mLowPHCal = 0.0;
+        float mMidPHCal = 0.0;
+        float mHighPHCal = 0.0;
+        QVariantMap toMap() {
+            return {
+                { "mLowPHCal", mLowPHCal },
+                { "mMidPHCal", mMidPHCal },
+                { "mHighPHCal", mHighPHCal},
+            };
+        }
     };
 
     /* zone members */
@@ -152,10 +164,17 @@ public:
         QList<Configuration::SceneGroupConfiguration> mSceneGroupConfigurations;
         QList<Configuration::AmbientLoopConfiguration> mAmbientLoopConfigurations;
         QList<Configuration::ActionGroupConfiguration> mActionGroupConfigurations;
+        Configuration::PondItemConfiguration mPondItemConfigurations; /* this is a singleton */
     };
 
     /* return a generic config object for QML */
     Q_INVOKABLE Config getConfiguration() { return this->config; };
+
+    Q_INVOKABLE QVariantList getPondItemConfigurations() {
+        QVariantList m;
+        m.append(config.mPondItemConfigurations.toMap());
+        return m;
+    }
 
     /* intented to be used by XML writer */
     Q_INVOKABLE QVariantList getActionConfigurationAsMap() {
@@ -173,6 +192,17 @@ public:
             m.append(c.toMap());
         }
         return m;
+    };
+
+    Q_INVOKABLE QVariantList getActionConfigurationDevices(int index) {
+        if (index < 0)
+            index = 0;
+        QVariantList l;
+
+        for (const QString &str : this->config.mActionGroupConfigurations[index].mShellyID) {
+            l << str; // Implicit conversion to QVariant
+        }
+        return l;
     };
 
     QVariantList getAmbientLoopConfigurations() {
@@ -215,6 +245,7 @@ public:
         }
     };
 
+    /* update each item within an action set */
     Q_INVOKABLE void updateActionItemConfigurations(int index, int itemIndex, QString mAction, QVariant mValue, QString mTime, int mRepeat, int mInterval) {
         if (itemIndex >= config.mActionGroupConfigurations[index].mActionItems.length()) {
             qWarning() << "Tried up update action list element that was beoynd end of list";
@@ -227,9 +258,26 @@ public:
         config.mActionGroupConfigurations[index].mActionItems[itemIndex].mInterval = mInterval;
     };
 
+    /* update the action set itself */
+    Q_INVOKABLE void updateActionConfigurations(int index, QList<QString> mShellyID) {
+        config.mActionGroupConfigurations[index].mShellyID = mShellyID.toList();
+    };
+
     Q_INVOKABLE void saveActionItemConfigurations() {
         ConfigurationWriter c;
         c.updateNodes("action_set", "actions.xml", getActionConfigurationAsMap());
+    };
+
+    /* pond calibration stuff */
+    Q_INVOKABLE void updatePHCalibrations(float newCalibrationLow, float newCalibrationMid, float newCalibrationHigh) {
+        config.mPondItemConfigurations.mLowPHCal = newCalibrationLow;
+        config.mPondItemConfigurations.mMidPHCal = newCalibrationMid;
+        config.mPondItemConfigurations.mHighPHCal = newCalibrationHigh;
+    }
+
+    Q_INVOKABLE void savePondItemConfigurations() {
+        ConfigurationWriter c;
+        c.updateNodes("calibrations", "pond.xml", getPondItemConfigurations());
     };
 
 private:

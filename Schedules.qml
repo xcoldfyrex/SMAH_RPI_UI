@@ -15,8 +15,15 @@ Page {
     x: 0
 
     property var light: new Light.Light()
+    property var shellyObjects: factory.getShellyObjects()
 
     SMAHBackground {}
+    Keyboard {
+        visible: false
+        id: keyboardOverlay
+        x: 0
+        y: 0
+    }
 
     SMAHTBox {
         ColumnLayout {
@@ -64,6 +71,7 @@ Page {
                 Layout.column: 0
                 Layout.row: 0
                 Layout.rowSpan: 50
+                Layout.columnSpan: 2
                 highlightMoveDuration: 200
                 highlightMoveVelocity: -1
                 clip: true
@@ -105,6 +113,30 @@ Page {
                     scheduleListView.model = factory.getActionObjects()
                 }
             }
+            SMAHButton {
+                text: "+"
+                Layout.column: 0
+                Layout.row: 50
+                onClicked: {
+                    keyboardOverlay.visible = true
+                    //configuration.addActionSetConfigurations(scheduleListView.currentIndex)
+                    //scheduleListView.model = factory.getActionObjects()
+                }
+            }
+
+            SMAHButton {
+                text: "-"
+                Layout.column: 1
+                Layout.row: 50
+                onClicked: {
+                    if (scheduleListView.model.length !== 0 ) {
+                        configuration.delActionSetConfigurations(scheduleListView.currentIndex)
+                        scheduleListView.model = factory.getActionObjects()
+                        scheduleItemsListView.currentIndex = 0
+                    }
+                }
+            }
+
             ListView {
                 ScrollBar.vertical: SMAHScrollBar { }
                 id: scheduleItemsListView
@@ -112,7 +144,7 @@ Page {
                 implicitWidth: 1000
                 height: 400
                 boundsBehavior: Flickable.StopAtBounds
-                Layout.column: 1
+                Layout.column: 2
                 Layout.row: 0
                 highlightMoveDuration: 200
                 highlightMoveVelocity: -1
@@ -191,7 +223,7 @@ Page {
                 id: controls
                 Layout.fillHeight: true
                 Layout.alignment: Qt.AlignTop
-                Layout.column: 2
+                Layout.column: 3
                 Layout.row: 0
                 height: 500
 
@@ -204,6 +236,8 @@ Page {
                             doneButton.visible = true
                             editButton.visible = false
                             saveConfigButton.visible = false
+                            scheduleListView.enabled = false
+                            deviceCheckBoxes.visible = true
                         }
                     }
                     SMAHButton {
@@ -211,7 +245,21 @@ Page {
                         text: "Save Configuration"
                         onClicked: {
                             configuration.saveActionItemConfigurations()
-
+                            updateDevices()
+                            factory.createActionObjects(configuration);
+                        }
+                        function updateDevices() {
+                            var checkedList = []
+                            var i = 0
+                            for ( i = 0; i < shellyObjects.length; i++) {
+                                var delegateItem = deviceCheckBoxes.itemAtIndex(i)
+                                if (delegateItem) {
+                                    if (delegateItem.checked) {
+                                        checkedList.push(delegateItem.text)
+                                    }
+                                }
+                            }
+                            configuration.updateActionConfigurations(scheduleListView.currentIndex, checkedList)
                         }
                     }
                     SMAHButton {
@@ -223,30 +271,33 @@ Page {
                             doneButton.visible = false
                             editButton.visible = true
                             saveConfigButton.visible = true
+                            scheduleListView.enabled = true
+                            deviceCheckBoxes.visible = false
                         }
                     }
                 }
                 ButtonGroup {
-                       id: childGroup
-                       exclusive: false
-                   }
+                    id: childGroup
+                    exclusive: false
+                }
                 ListView {
-                    id: multiSelectCheckList
-                    model: factory.getShellyObjects()
+                    id: deviceCheckBoxes
+                    visible: false
+                    model: shellyObjects
                     implicitHeight: 300
                     width: 300
                     ScrollBar.vertical: SMAHScrollBar { }
                     clip: true
+                    cacheBuffer: 10000
                     delegate: SMAHCheckBox {
                         id: modelCheckBoxes
-                        checked: true
-                        text:  factory.getShellyObjects()[index].id
+                        checked: configuration.getActionConfigurationDevices(scheduleListView.currentIndex).includes(factory.getShellyObjects()[index].id)
+                        text: factory.getShellyObjects()[index].id
                         indicator.width: 15
                         indicator.height: 15
                         ButtonGroup.group: childGroup
                     }
                 }
-
             }
             GridLayout {
                 id: editControls

@@ -16,7 +16,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     camera.cpp \
-    config.cpp \
     configuration.cpp \
     configurationwriter.cpp \
     dbmanager.cpp \
@@ -41,7 +40,6 @@ SOURCES += main.cpp\
 
 HEADERS  += \
     camera.h \
-    config.h \
     configuration.h \
     configurationwriter.h \
     dbmanager.h \

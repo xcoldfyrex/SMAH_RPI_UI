@@ -6,9 +6,10 @@ Button {
     flat: true
     palette.buttonText: "#d4d4d4"
     height: 50
+    implicitWidth: 150
     background: Rectangle {
-        implicitWidth: 150
         implicitHeight: 50
+        implicitWidth: parent.implicitWidth
         border.width: button.activeFocus ? 2 : 2
         border.color: "#ccc"
         radius: 3

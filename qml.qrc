@@ -22,6 +22,8 @@
         <file>Schedules.qml</file>
         <file>Actions.qml</file>
         <file>virtuallight.js</file>
+        <file>Keyboard.qml</file>
+        <file>PondSettings.qml</file>
     </qresource>
     <qresource prefix="/SMAHComponents">
         <file>SMAHMenuButton.qml</file>

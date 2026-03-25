@@ -3,12 +3,10 @@
 
 #include "dbmanager.h"
 #include "qdatetime.h"
+#include "configuration.h"
 #include <QObject>
 
 /* vals for sensors */
-const int LOW_PH_CAL = 1880;
-const int MID_PH_CAL = 1290;
-const int HIGH_PH_CAL = 863;
 
 const float RTD_DEFAULT_OFFSET_VOLTAGE_CONST = 1108.00;
 // const float RTD_DEFAULT_OFFSET_VOLTAGE_CONST = 1072.90;
@@ -19,13 +17,24 @@ class PondData : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(float ph READ getPH NOTIFY updatedVal)
+    Q_PROPERTY(float raw_mV READ getVoltage NOTIFY updatedPH)
     Q_PROPERTY(float temp READ getTemperature NOTIFY updatedVal)
     Q_PROPERTY(QVariant updated READ getLastUpdate NOTIFY updatedVal)
+    Q_PROPERTY(bool calibration READ getCalibrationMode NOTIFY updatedMode)
 
 public:
-    explicit PondData();
+    explicit PondData(Configuration *config);
+
+    Q_INVOKABLE void setCalibrateMode(bool mode) {
+        this->calibrate = mode;
+        emit updatedMode();
+    }
+
+    bool getCalibrationMode() { return this->calibrate; }
+
     float getTemperature() { return tempf; }
     float getPH() { return ph; }
+    float getVoltage() { return raw_mV; }
 
     float secondary_temp_correction(float vcal){
         return 5E-06*vcal*vcal - 0.0043*vcal - 0.2768;
@@ -39,6 +48,9 @@ public:
     }
 
     float real_ph(float voltage_mV) {
+        float LOW_PH_CAL = config->getPondItemConfigurations().value(0).toFloat();
+        float MID_PH_CAL = config->getPondItemConfigurations().value(1).toFloat();
+        float HIGH_PH_CAL = config->getPondItemConfigurations().value(2).toFloat();
         if (voltage_mV > MID_PH_CAL) { //high voltage = low ph
             return 7.0 - 3.0 / (LOW_PH_CAL - MID_PH_CAL) * (voltage_mV - MID_PH_CAL);
         } else {
@@ -54,13 +66,16 @@ public:
     }
     void setPH(float val) {
         ph = real_ph(val);
+        raw_mV = val;
         emit updatedVal();
+        emit updatedPH();
     }
     qint64 getLastUpdate() { return this->updated; }
     void setLastUpdate(qint64 ts) {
         this->updated = ts;
         if (this->tempf  > 32) {
-            g_sqlDb->addPondValue(int(this->tempf), this->ph,(int(this->getLastUpdate() / 60)) * 60);
+            if (!calibrate)
+                g_sqlDb->addPondValue(int(this->tempf), this->ph,(int(this->getLastUpdate() / 60)) * 60);
         } else {
             qWarning() << "Out of range value" << tempf;
         }
@@ -69,9 +84,15 @@ public:
 private:
     float tempf = 0;
     float ph = 0;
+    float raw_mV = 0;
     qint64 updated = QDateTime::currentSecsSinceEpoch();
+    Configuration *config;
+    bool calibrate = false;
+
 signals:
     void updatedVal();
+    void updatedPH();
+    void updatedMode();
 };
 
 #endif

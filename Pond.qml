@@ -10,33 +10,20 @@ import QtQuick.Controls.Material
 import "."
 import "qrc:/SMAHComponents"
 
-Page {
+Item {
     property real phHigh: 0
     property real phLow: 0
     property real tempHigh: 0
     property real tempLow: 0
     property real searchWindow: 1440
     id: pondpage
-    visible: true
-    x: 0
-    SMAHBackground {}
     SMAHTBox {
+        headerText: "Pond Conditions"
+        headerFontSize: 32
         ColumnLayout {
             id: realTimeData
             Layout.fillWidth: true
             Layout.fillHeight: true
-            SMAHHeader {
-                id: header1
-                y: 0
-                width: 600
-                Layout.alignment: Qt.AlignCenter
-                Text {
-                    id: element
-                    color: "#ffffff"
-                    text: qsTr("Pond Conditions")
-                    font.pixelSize: Style.fontHeaderSize
-                }
-            }
             GridLayout {
                 id: grid
                 width: parent.width
@@ -108,53 +95,9 @@ Page {
                     text: "Window: "
                     font.pixelSize: Style.fontCellSize
                 }
-                ComboBox  {
+                SMAHComboBox  {
                     id: control
                     font.pointSize: Style.fontCellSize
-                    delegate: ItemDelegate {
-                        width: control.width
-                        contentItem: Text {
-                            text: modelData
-                            color: "white"
-                            font.pointSize: Style.fontHeaderSize
-                            elide: Text.ElideRight
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        highlighted: control.highlightedIndex === index
-                    }
-
-                    contentItem: Text {
-                        text: control.displayText
-                        font: control.font
-                        color: "white"
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-
-                    background: Rectangle {
-                        implicitWidth: 200
-                        implicitHeight: 40
-                        radius: 0
-                        color: "black"
-                    }
-
-                    popup: Popup {
-                        y: control.height - 1
-                        width: control.width
-                        implicitHeight: contentItem.implicitHeight
-                        padding: 1
-                        contentItem: ListView {
-                            clip: true
-                            implicitHeight: contentHeight
-                            model: control.popup.visible ? control.delegateModel : null
-                            currentIndex: control.highlightedIndex
-                            ScrollIndicator.vertical: ScrollIndicator { }
-                        }
-
-                        background: Rectangle {
-                            color: "black"
-                        }
-                    }
 
                     Layout.row: 0
                     Layout.column: 4

@@ -86,7 +86,7 @@ Item {
         text: "Close"
         onClicked: {
             presetPage.visible = false
-            element.text = zone.getName
+            //element.text = zone.getName
             parentObject.visible = true
         }
         anchors {

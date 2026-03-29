@@ -20,7 +20,6 @@
         <file>Cameras.qml</file>
         <file>Media.qml</file>
         <file>Schedules.qml</file>
-        <file>Actions.qml</file>
         <file>virtuallight.js</file>
         <file>Keyboard.qml</file>
         <file>PondSettings.qml</file>
@@ -39,6 +38,7 @@
         <file>SMAHSpinBox.qml</file>
         <file>SMAHRadioButton.qml</file>
         <file>SMAHCheckBox.qml</file>
+        <file>SMAHListView.qml</file>
     </qresource>
     <qresource lang="qml" prefix="/SMAH"/>
     <qresource lang="QML" prefix="/ZoneComponents">
@@ -47,4 +47,5 @@
         <file>ZoneElements.qml</file>
         <file>ZoneScenes.qml</file>
     </qresource>
+    <qresource prefix="/images"/>
 </RCC>

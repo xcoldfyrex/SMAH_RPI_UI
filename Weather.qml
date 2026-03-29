@@ -1,33 +1,20 @@
-// menu with functions for each zone
-
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 
-import "SMAHComponents/"
+import "."
+import "qrc:/SMAHComponents"
 
-Page {
+Item {
     property var sunloadwin
     property var weatherloadwin
-    SMAHBackground {}
-    title: qsTr("Weather")
     id: weatherHome
     SMAHTBox {
+        headerText: "Weather Conditions"
         ColumnLayout {
             anchors.fill: parent
             spacing: 0
             id: frame
-            SMAHHeader {
-                id: header1
-                y: 0
-                width: 600
-                Text {
-                    id: element
-                    color: "#ffffff"
-                    text: qsTr("Weather")
-                    font.pixelSize: Style.fontHeaderSize
-                }
-            }
             TabBar {
                 Layout.fillWidth: true
                 id: bar

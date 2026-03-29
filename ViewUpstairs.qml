@@ -9,7 +9,7 @@ import smah.objectfactory
 import "qrc:/SMAHComponents/"
 import "qrc:/ZoneComponents"
 
-Page {
+Item {
     id: viewPage
     property string level: "file:" + applicationDirPath + ".smah/assets/F1.png"
     property var zonePages: [{}]
@@ -26,41 +26,24 @@ Page {
     Component.onCompleted: {
         for (var i=0; i<factory.getZoneObjects().length; i++) {
             var zonecomponent= Qt.createComponent("/ZoneComponents/ZoneOptionsPopup.qml")
-            var zoneloadwin = zonecomponent.createObject(viewPage, {zone: factory.getZoneObjects()[i], anchorParent: box} )
+            var zoneloadwin = zonecomponent.createObject(viewPage, {zone: factory.getZoneObjects()[i], anchorParent: viewPage} )
             zonePages[i] = zoneloadwin
         }
     }
 
-    SMAHBackground {}
     SMAHTBox {
         id: box
-        /*
-        SMAHHeader {
-            id: header1
-            y: 0
-            width: 600
-            Text {
-                id: element
-                color: "#ffffff"
-                text: qsTr("System Overview")
-                anchors.fill: parent
-                anchors.centerIn: parent
-                verticalAlignment: Qt.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: Style.fontHeaderSize
-            }
-        }
-        */
         Image {
             id: imageBuf
             source: level
             visible: false
         }
+        headerText: "Zone Selection"
         Canvas {
             id: image
             width: imageBuf.width
             height: imageBuf.height
-            anchors.centerIn: box
+            anchors.centerIn: parent
             x: (parent.width - imageBuf.width) / 2
             smooth: true
             onPaint: {
@@ -76,8 +59,6 @@ Page {
                 id: mouseArea
                 anchors.fill: image
                 onClicked: {
-                    //bar.open()
-
                     var ctx = image.getContext("2d")
                     var id = ctx.getImageData(mouseArea.mouseX, mouseArea.mouseY, 1, 1)
                     var vals = toHex(id.data[0]) + toHex(id.data[1]) + toHex(id.data[2])

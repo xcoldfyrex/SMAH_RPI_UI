@@ -13,6 +13,11 @@ Rectangle {
     Component.onCompleted: {
         window.showSaver()
     }
+    // Prevent clicks from passing through to background
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {}  // Consume the click
+    }
     Timer {
         interval: 100; running: true; repeat: true;
         onTriggered: {
@@ -23,7 +28,6 @@ Rectangle {
     }
     Text {
         id: timeText
-        //fontSizeMode: Text.Fit
         elide: Text.ElideRight
         horizontalAlignment: Text.Center
         verticalAlignment: Text.Center
@@ -37,7 +41,6 @@ Rectangle {
         text: weatherdataitems[0].temp.toFixed(1) + "F\n" + weatherdataitems[0].rh + "%"
         elide: Text.ElideLeft
         horizontalAlignment: Text.Right
-        //verticalAlignment: Text.Center
         anchors.bottom: parent.bottom
         color: Style.saverClockTextColor
         font.family: "Helvetica"

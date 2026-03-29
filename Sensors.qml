@@ -7,42 +7,21 @@ import smah.objectfactory
 import "."
 import "qrc:/SMAHComponents"
 
-Page {
+Item {
     property var z_sensornames: []
     property var z_sensortitles: [ "Device Name", "Temperature", "RH", "Lux", "UV", "Updated" ]
     id: page
     visible: true
-    SMAHBackground {}
-
     SMAHTBox {
-        SMAHHeader {
-            id: header1
-            y: 0
-            width: 600
-            Layout.alignment: Qt.AlignCenter
-            Text {
-                id: element
-                color: "#ffffff"
-                text: qsTr("Sensor Readings")
-                font.pixelSize: Style.fontHeaderSize
-            }
-        }
+        headerText: "Environmental"
         GridLayout {
             id: gridLayout
-            anchors.top: header1.bottom
+            //anchors.top: header1.bottom
             height: 300
             columns: 10
             rows: 15
             Layout.fillWidth: true
             Layout.fillHeight: true
-
-            //anchors{
-            //    left: parent.left
-            //   bottom: parent.bottom
-            //   right: parent.right
-            //   top: parent.top
-            //}
-            //required property int index
 
             Repeater {
                 model: page.z_sensortitles

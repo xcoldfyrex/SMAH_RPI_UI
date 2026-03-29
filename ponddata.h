@@ -48,9 +48,9 @@ public:
     }
 
     float real_ph(float voltage_mV) {
-        float LOW_PH_CAL = config->getPondItemConfigurations().value(0).toFloat();
-        float MID_PH_CAL = config->getPondItemConfigurations().value(1).toFloat();
-        float HIGH_PH_CAL = config->getPondItemConfigurations().value(2).toFloat();
+        float LOW_PH_CAL = config->getConfiguration().mPondItemConfigurations.mLowPHCal;
+        float MID_PH_CAL = config->getConfiguration().mPondItemConfigurations.mMidPHCal;
+        float HIGH_PH_CAL = config->getConfiguration().mPondItemConfigurations.mHighPHCal;
         if (voltage_mV > MID_PH_CAL) { //high voltage = low ph
             return 7.0 - 3.0 / (LOW_PH_CAL - MID_PH_CAL) * (voltage_mV - MID_PH_CAL);
         } else {

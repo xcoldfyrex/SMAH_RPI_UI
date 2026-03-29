@@ -166,7 +166,8 @@ bool Configuration::loadUserDefinedConfiguration() {
             actiongroup.mName = actionGroupElement.attribute("name");
             QList<QString> ids = actionGroupElement.attribute("shellyid").split(",");
             for (QString &str : ids) {
-                actiongroup.mShellyID.append(str);
+                if (str != "")
+                    actiongroup.mShellyID.append(str);
             }
 
             // missing zones

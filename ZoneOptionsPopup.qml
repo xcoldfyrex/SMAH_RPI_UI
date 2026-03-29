@@ -49,18 +49,7 @@ Popup {
         x: parent.x
         y: parent.y
         id: box
-        SMAHHeader {
-            id: header
-            y: 0
-            width: 600
-            Layout.alignment: Qt.AlignCenter
-            Text {
-                id: element
-                color: "#ffffff"
-                text: zone.getName
-                font.pixelSize: Style.fontHeaderSize
-            }
-        }
+        headerText: zone.getName
     }
     StackView {
         id: zoneContent

@@ -17,8 +17,6 @@ Item {
     property var parentObject
     implicitWidth: parent.width
     implicitHeight: parent.height
-
-
         Component.onCompleted:
         {
             if (lights.length !== 0) {
@@ -84,7 +82,7 @@ Item {
                     onClicked: {
                         var zoneloadwin = presetPages[lights[index]]
                         lightControlPage.visible = false
-                        element.text = zone.getName + " > " + lights[index].getName
+                        //element.text = zone.getName + " > " + lights[index].getName
                         zoneloadwin.visible = true
                     }
                     visible: determine_vis()
@@ -103,7 +101,7 @@ Item {
                     onClicked: {
                         var zoneloadwin = pickerPages[lights[index]]
                         lightControlPage.visible = false
-                        element.text = zone.getName + " > " + lights[index].getName
+                        //element.text = zone.getName + " > " + lights[index].getName
                         zoneloadwin.visible = true
                     }
                     visible: determine_vis()
@@ -237,7 +235,7 @@ Item {
                     onClicked: {
                         var zoneloadwin = timerPages[lights[index]]
                         lightControlPage.visible = false
-                        element.text = zone.getName + " > " + lights[index].getName
+                        //element.text = zone.getName + " > " + lights[index].getName
                         zoneloadwin.visible = true
                     }
                     visible: true
@@ -257,7 +255,7 @@ Item {
             text: qsTr("Scenes")
             onClicked: {
                 lightControlPage.visible = false
-                element.text = zone.getName + " > Scenes "
+                //element.text = zone.getName + " > Scenes "
                 scenePages.visible = true
             }
         }

@@ -9,15 +9,13 @@ import "."
 import "qrc:/SMAHComponents"
 import "virtuallight.js" as Light
 
-Page {
+Item {
     id: actionpage
     visible: true
-    x: 0
 
     property var light: new Light.Light()
     property var shellyObjects: factory.getShellyObjects()
 
-    SMAHBackground {}
     Keyboard {
         visible: false
         id: keyboardOverlay
@@ -26,26 +24,10 @@ Page {
     }
 
     SMAHTBox {
-        ColumnLayout {
-            id: topBar
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            SMAHHeader {
-                id: header1
-                y: 0
-                width: 600
-                Layout.alignment: Qt.AlignCenter
-                Text {
-                    id: element
-                    color: "#ffffff"
-                    text: qsTr("Scheduled Actions")
-                    font.pixelSize: Style.fontHeaderSize
-                }
-            }
-        }
+        headerText: "Schedule Editor"
         ColorPicker {
             id: picker
-            anchors.top: topBar.bottom
+            //anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.left: parent.left
@@ -56,33 +38,20 @@ Page {
         }
         GridLayout {
             id: mainGrid
-            anchors.top: topBar.bottom
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.left: parent.left
-            ListView {
-                ScrollBar.vertical: SMAHScrollBar { }
+            //anchors.top: topBar.bottom
+            //anchors.bottom: parent.bottom
+            //anchors.right: parent.right
+            //anchors.left: parent.left
+            SMAHListView {
                 id: scheduleListView
                 width: 400
                 implicitWidth: 400
                 height: 200
-                boundsBehavior: Flickable.StopAtBounds
                 Layout.fillHeight: true
                 Layout.column: 0
                 Layout.row: 0
                 Layout.rowSpan: 50
                 Layout.columnSpan: 2
-                highlightMoveDuration: 200
-                highlightMoveVelocity: -1
-                clip: true
-                highlight: Rectangle {
-                    color: '#666666'
-                    width: scheduleListView.width
-                    Text {
-                        anchors.centerIn: parent
-                        color: 'white'
-                    }
-                }
                 focus: true
                 delegate: Component {
                     Item {
@@ -137,26 +106,15 @@ Page {
                 }
             }
 
-            ListView {
+            SMAHListView {
                 ScrollBar.vertical: SMAHScrollBar { }
                 id: scheduleItemsListView
                 width: 10000
-                implicitWidth: 1000
+                implicitWidth: 900
                 height: 400
-                boundsBehavior: Flickable.StopAtBounds
                 Layout.column: 2
                 Layout.row: 0
-                highlightMoveDuration: 200
-                highlightMoveVelocity: -1
-                clip: true
-                highlight: Rectangle {
-                    color: '#666666'
-                    width: scheduleItemsListView.width
-                    Text {
-                        anchors.centerIn: parent
-                        color: 'white'
-                    }
-                }
+
                 focus: true
 
                 delegate: Component {

@@ -10,7 +10,7 @@ import QtQuick.Controls.Material
 import "."
 import "qrc:/SMAHComponents"
 
-Page {
+Item {
     property var pHReadings: []  // Array to store last 20 readings
     property int maxReadings: 40
     property real averageVoltage: 0.0
@@ -60,27 +60,29 @@ Page {
             }
     }
 
+    function median(arr) {
+        if (arr.length === 0) {
+            return 0
+        }
+
+        const sortedArr = arr.sort((a, b) => a - b);
+        const mid = Math.floor(sortedArr.length / 2);
+
+        if (sortedArr.length % 2 === 0) {
+            return (sortedArr[mid - 1] + sortedArr[mid]) / 2;
+        } else {
+            return sortedArr[mid];
+        }
+    }
+
     id: calibrationPage
     visible: true
-    x: 0
-    SMAHBackground {}
     SMAHTBox {
+        headerText: "Pond Calibrations"
         ColumnLayout {
             id: realTimeData
             Layout.fillWidth: true
             Layout.fillHeight: true
-            SMAHHeader {
-                id: header1
-                y: 0
-                width: 600
-                Layout.alignment: Qt.AlignCenter
-                Text {
-                    id: element
-                    color: "#ffffff"
-                    text: qsTr("Pond Calibrations")
-                    font.pixelSize: Style.fontHeaderSize
-                }
-            }
             ColumnLayout {
                 //anchors.fill: parent
                 anchors.margins: 20
@@ -96,12 +98,12 @@ Page {
                         spacing: 5
 
                         SMAHLabel {
-                            text: "Current Average Voltage (last 40 readings)"
+                            text: "Current Average/Median Voltage (last 40 readings)"
                             font.pixelSize: Style.fontCellSize
                         }
 
                         SMAHLabel {
-                            text: averageVoltage.toFixed(3)
+                            text: averageVoltage.toFixed(0) + " / " + median(pHReadings)
                             font.pixelSize: Style.fontHeaderSize
                             font.bold: true
                             color: "#2196F3"
@@ -121,7 +123,7 @@ Page {
                         }
 
                         SMAHLabel {
-                            text: testpH.toFixed(3)
+                            text: testpH.toFixed(2)
                             font.pixelSize: Style.fontHeaderSize
                             font.bold: true
                             color: "#2196F3"
@@ -151,7 +153,7 @@ Page {
                             }
 
                             Label {
-                                text: calibrationLow.toFixed(2)
+                                text: calibrationLow.toFixed(0)
                                 font.pixelSize: 16
                                 font.bold: true
                                 color: "#FF5722"
@@ -197,7 +199,7 @@ Page {
                             }
 
                             Label {
-                                text: calibrationMid.toFixed(2)
+                                text: calibrationMid.toFixed(0)
                                 font.pixelSize: 16
                                 font.bold: true
                                 color: "#FFC107"
@@ -243,7 +245,7 @@ Page {
                             }
 
                             Label {
-                                text: calibrationHigh.toFixed(2)
+                                text: calibrationHigh.toFixed(0)
                                 font.pixelSize: 16
                                 font.bold: true
                                 color: "#9C27B0"
@@ -282,6 +284,15 @@ Page {
                 // Spacer
                 Item {
                     Layout.fillHeight: true
+                }
+                SMAHButton {
+                    id: resetButton
+                    text: "Reset Last Readings"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 50
+                    onClicked: {
+                        resetPH()
+                    }
                 }
                 SMAHButton {
                     id: enterButton
@@ -356,7 +367,7 @@ Page {
                             height: 20
                             width: readingsList.width
                             SMAHLabel {
-                                text: modelData
+                                text: modelData.toFixed(0)
                             }
                         }
                     }

@@ -69,7 +69,7 @@ Item {
         text: "Close"
         onClicked: {
             sceneControlPage.visible = false
-            element.text = zone.getName
+            //element.text = zone.getName
             parentObject.visible = true
         }
         anchors {

@@ -135,7 +135,7 @@ Item {
             text: "Close"
             onClicked: {
                 timerontrolPage.visible = false
-                element.text = zone.getName
+                //element.text = zone.getName
                 parentObject.visible = true
             }
             Layout.alignment: Qt.AlignBottom || Qt.AlignLeft

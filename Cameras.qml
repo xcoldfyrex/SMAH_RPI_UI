@@ -7,7 +7,7 @@ import QtMultimedia
 import smah.configuration
 
 
-Page {
+Item {
     ListView {
         model: []//configuration.getCameraConfigurations()
         anchors.fill: parent

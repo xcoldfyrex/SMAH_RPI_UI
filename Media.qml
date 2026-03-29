@@ -8,15 +8,12 @@ import smah.configuration
 import "."
 import "qrc:/SMAHComponents"
 
-Page {
+Item {
     property date timeout: new Date(9999,9,9);
     id: page
     x: 0
-    SMAHBackground {}
     SMAHTBox {
-        //ColumnLayout {
-        //Layout.fillWidth: true
-        //Layout.fillHeight: true
+        headerText: "Media"
         SMAHHeader {
             id: header1
             y: 0
@@ -180,7 +177,7 @@ Page {
                 right: hoursBox.left
             }
             id: minutesBox
-            popupHeight: "700"
+            popupHeight: 700
             model: Array.from(Array(60).keys())
         }
 
@@ -190,7 +187,7 @@ Page {
                 right: parent.right
             }
             id: hoursBox
-            popupHeight: "700"
+            popupHeight: 700
             model: Array.from(Array(25).keys())
         }
 
